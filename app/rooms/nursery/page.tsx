@@ -352,7 +352,7 @@ export default function NurseryShadesPage() {
               {
                 icon: <Moon className="w-6 h-6 text-gold" />,
                 title: "100% Light Blocked",
-                body: "True blackout, not "room darkening." Even during the brightest summer day, the room stays dark.",
+                body: "True blackout, not just 'room darkening.' Even during the brightest summer day, the room stays dark.",
               },
               {
                 icon: <ShieldCheck className="w-6 h-6 text-gold" />,
