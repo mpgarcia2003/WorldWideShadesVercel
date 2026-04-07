@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useRef } from "react";
 import { LanguageProvider } from "@/LanguageContext";
-import Builder from "@/pages/Builder";
+import Builder from "@/_legacy/Builder";
 import CheckoutDrawer from "@/components/CheckoutDrawer";
 import { CartItem, Fabric } from "@/types";
 import { initAnalytics, trackEvent } from "@/utils/analytics";
