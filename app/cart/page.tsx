@@ -56,6 +56,14 @@ export default function CartPage() {
     setLoaded(true);
   }, []);
 
+  function editItem(item: CartItemData) {
+    // Save this item's config to builder storage so it pre-loads
+    localStorage.setItem('wws_builder_config', JSON.stringify(item.config));
+    // Track which item we're editing so the builder can update instead of duplicate
+    localStorage.setItem('wws_editing_item', item.id);
+    window.location.href = '/builder';
+  }
+
   function removeItem(id: string) {
     const updated = cart.filter((item) => item.id !== id);
     setCart(updated);
@@ -227,13 +235,13 @@ export default function CartPage() {
                       </div>
 
                       <div className="flex items-center gap-3">
-                        <Link
-                          href="/builder"
+                        <button
+                          onClick={() => editItem(item)}
                           className="flex items-center gap-1.5 text-sm font-medium text-gold hover:text-gold-dark transition-colors"
                         >
                           <Pencil className="w-3.5 h-3.5" />
                           Edit
-                        </Link>
+                        </button>
                         <button
                           onClick={() => removeItem(item.id)}
                           className="flex items-center gap-1.5 text-sm font-medium text-red-500 hover:text-red-700 transition-colors"

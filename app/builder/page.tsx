@@ -67,7 +67,16 @@ export default function BuilderPage() {
   useEffect(() => { persistSwatches(swatches); }, [swatches]);
 
   const addToCart = (item: CartItem) => {
-    setCart(prev => [...prev, item]);
+    const editingId = localStorage.getItem('wws_editing_item');
+    if (editingId) {
+      // Replace existing item instead of adding new
+      setCart(prev => prev.map(existing =>
+        existing.id === editingId ? { ...item, id: editingId } : existing
+      ));
+      localStorage.removeItem('wws_editing_item');
+    } else {
+      setCart(prev => [...prev, item]);
+    }
     setIsCartOpen(true);
     trackEvent('add_to_cart', {
       currency: 'USD', value: item.totalPrice,
