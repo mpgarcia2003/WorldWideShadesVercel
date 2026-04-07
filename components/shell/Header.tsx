@@ -47,7 +47,7 @@ export function Header() {
             <Phone className="w-4 h-4" /><span className="font-medium">{SITE.phone}</span>
           </a>
           <Link href="/builder" className="hidden sm:inline-flex items-center px-4 py-2 text-sm font-semibold text-white bg-gold hover:bg-gold-dark rounded-lg transition-colors">Design Your Shade</Link>
-          <a href="/builder" className="relative p-2 text-dark hover:text-gold transition-colors" aria-label="Cart"><ShoppingBag className="w-5 h-5" /></a>
+          <Link href="/cart" className="relative p-2 text-dark hover:text-gold transition-colors" aria-label="Cart"><ShoppingBag className="w-5 h-5" /></Link>
           <button className="lg:hidden p-2 text-dark" onClick={() => setMobileOpen(!mobileOpen)} aria-label={mobileOpen ? "Close menu" : "Open menu"}>
             {mobileOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
           </button>
