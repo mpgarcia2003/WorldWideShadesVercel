@@ -270,14 +270,8 @@ const CheckoutDrawer: React.FC<CheckoutDrawerProps> = ({
       });
 
       try {
-        const checkoutUrl = await createShopifyCheckout(cart, swatches);
-        if (checkoutUrl) {
-          // Fire admin notification before redirect (don't await - fire and forget)
-          notifyAdminShopifyCheckout({ cart, swatches, checkoutUrl });
-          redirectToShopifyCheckout(checkoutUrl);
-        } else {
-          setStep('details');
-        }
+        // Redirect to custom checkout page
+        window.location.href = '/checkout';
       } catch (error) {
         console.error('Checkout error:', error);
         setStep('details');
