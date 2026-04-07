@@ -31,7 +31,7 @@ export function Header() {
 
   return (
     <header className={cn("sticky top-0 z-40 w-full transition-all duration-300", scrolled ? "bg-white/95 shadow-md backdrop-blur-md" : "bg-white")}>
-      <nav className="container-site flex items-center justify-between h-16 lg:h-18">
+      <nav className="container-site flex items-center justify-between h-14 lg:h-14">
         <Link href="/" className="flex items-center gap-2 shrink-0">
           <span className="heading-display text-xl lg:text-2xl text-dark">World Wide <span className="text-gold">Shades</span></span>
         </Link>
