@@ -24,6 +24,13 @@ export const metadata: Metadata = {
     url: "https://worldwideshades.com/rooms/bathroom",
     siteName: "World Wide Shades",
     type: "website",
+    images: [{ url: "https://res.cloudinary.com/dcmlcfynd/image/upload/c_fill,w_1200,h_630,g_auto/v1774397716/lightfilter-hero-living_ka1oae.png", width: 1200, height: 630, alt: "Custom shades for bathrooms — World Wide Shades" }],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Custom Shades for Bathrooms | World Wide Shades",
+    description: "Custom bathroom shades with moisture-resistant fabrics. Complete privacy without sacrificing light. Custom-fit from $250.",
+    images: ["https://res.cloudinary.com/dcmlcfynd/image/upload/c_fill,w_1200,h_630,g_auto/v1774397716/lightfilter-hero-living_ka1oae.png"],
   },
 }
 
@@ -34,6 +41,7 @@ const jsonLd = {
     { "@type": "FAQPage", mainEntity: [
       { "@type": "Question", name: "Are these shades safe for humid bathrooms?", acceptedAnswer: { "@type": "Answer", text: "Yes. We use Phifer and Ferrari fabrics engineered for high-humidity environments. Won't warp, mold, or peel." } },
       { "@type": "Question", name: "Will light filtering shades give me enough privacy?", acceptedAnswer: { "@type": "Answer", text: "Absolutely. They block outside views entirely while allowing soft diffused light through." } },
+      { "@type": "Question", name: "Can I see through light filtering shades from outside?", acceptedAnswer: { "@type": "Answer", text: "No. Light filtering fabrics block outside views completely when closed." } },
       { "@type": "Question", name: "What about windows above the tub or shower?", acceptedAnswer: { "@type": "Answer", text: "Our specialty. Custom-cut for small or awkward windows. Moisture-resistant fabrics ideal for high-humidity locations." } },
       { "@type": "Question", name: "How do I clean bathroom roller shades?", acceptedAnswer: { "@type": "Answer", text: "Wipe with a damp cloth or mild soap and water. No special products needed." } },
       { "@type": "Question", name: "What fabrics are best for high-humidity rooms?", acceptedAnswer: { "@type": "Answer", text: "Phifer and Ferrari — engineered for moisture resistance, easy to clean, won't warp or degrade." } },
@@ -54,7 +62,7 @@ export default function BathroomShadesPage() {
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
 
       {/* ─── 1. HERO ─── */}
-      <section className="relative min-h-screen flex flex-col justify-center items-center text-center text-white overflow-hidden" style={{ backgroundImage: "url(https://www.theshadestore.com/blog/wp-content/uploads/the-shade-store-flat-roman-shade-nate-berkus-lisbon-woven-bronze-bathroom-window-privacy-tranquil-bathroom-hero-2023-montauk-950x630px.jpg)", backgroundSize: "cover", backgroundPosition: "center" }}>
+      <section className="relative min-h-screen flex flex-col justify-center items-center text-center text-white overflow-hidden" style={{ backgroundImage: "url(https://images.unsplash.com/photo-1552321554-5fefe8c9ef14?auto=format&fit=crop&w=1920&q=80)", backgroundSize: "cover", backgroundPosition: "center" }}>
         <div className="absolute inset-0" style={{ background: "linear-gradient(to bottom, rgba(12,12,12,0.78) 0%, rgba(30,22,10,0.82) 100%)" }} />
         <div className="noise-overlay absolute inset-0 pointer-events-none" />
         <div className="relative z-10 container-site section-padding flex flex-col items-center gap-6 px-4">
@@ -93,6 +101,7 @@ export default function BathroomShadesPage() {
         <div className="container-site px-4">
           <div className="text-center mb-12">
             <h2 className="heading-section font-serif text-dark">Your Bathroom Deserves Better Than Frosted Glass</h2>
+            <p className="font-sans text-warm-gray mt-3 max-w-xl mx-auto">Most bathrooms have the worst window treatments in the house. Here&apos;s why — and how to fix it.</p>
           </div>
           <div className="grid sm:grid-cols-2 md:grid-cols-4 gap-6">
             {[
@@ -157,7 +166,7 @@ export default function BathroomShadesPage() {
                   ))}
                 </ul>
               </div>
-              <div className="overflow-hidden"><img src="https://www.theshadestore.com/blog/wp-content/uploads/the-shade-store-flat-roman-shade-sunbrella-vitela-ivory-bathroom-window-privacy-neutral-classic-bathroom-content-2019-brooklyn-600x400px.jpg" alt="Light filtering shade in elegant bathroom" className="w-full h-52 object-cover" /></div>
+              <div className="overflow-hidden"><img src="https://images.unsplash.com/photo-1584622650111-993a426fbf0a?auto=format&fit=crop&w=800&q=80" alt="Light filtering shade in elegant bathroom" className="w-full h-52 object-cover" /></div>
             </div>
             <div className="bg-dark rounded-lg overflow-hidden shadow-sm border border-white/10">
               <div className="p-8 md:p-10">
@@ -171,7 +180,7 @@ export default function BathroomShadesPage() {
                   ))}
                 </ul>
               </div>
-              <div className="overflow-hidden"><img src="https://normanusa.com/app/uploads/2023/06/1200-x-900-Inserts-BestBathroom-12-1024x768.jpg" alt="Blackout shade in bathroom" className="w-full h-52 object-cover" /></div>
+              <div className="overflow-hidden"><img src="https://images.unsplash.com/photo-1507652313519-d4e9174996dd?auto=format&fit=crop&w=800&q=80" alt="Blackout shade in bathroom" className="w-full h-52 object-cover" /></div>
             </div>
           </div>
           <div className="text-center mt-10"><a href="/builder" className="inline-block bg-dark text-white font-sans font-semibold text-sm px-10 py-4 rounded-sm hover:bg-dark-soft transition-colors duration-200">Find Your Perfect Option</a></div>
@@ -186,9 +195,9 @@ export default function BathroomShadesPage() {
           </div>
           <div className="grid md:grid-cols-3 gap-6">
             {[
-              { badge: "Most Popular", badgeColor: "bg-gold text-dark", image: "https://www.theshadestore.com/blog/wp-content/uploads/the-shade-store-cascade-roman-shade-luxe-linen-optic-white-bathroom-window-privacy-tranquil-bathroom-content-2022-east-hampton-950x550px.jpg", imageAlt: "Master bathroom with serene shades", heading: "Master Bathroom", title: "Your Private Retreat", body: "Spa-like ambiance. Soft natural light. Complete privacy even with windows next to the shower or tub." },
-              { badge: "Guest Impression", badgeColor: "bg-white/20 text-white", image: "https://lirp.cdn-website.com/bd370df3/dms3rep/multi/opt/window-treatments-that-offer-privacy-and-light-640w.jpg", imageAlt: "Powder room with custom shade", heading: "Powder Room / Half Bath", title: "The Guest Impression", body: "Small windows, big impact. Custom-fit shade elevates the entire space. Typically $250–350." },
-              { badge: "Privacy First", badgeColor: "bg-white/20 text-white", image: "https://www.skylinewindowcoverings.com/wp-content/uploads/2025/07/pirouette-shades-bathroom-window-shades-above-tub-skyline-window-coverings-768x384.jpg", imageAlt: "Ground floor bathroom shade", heading: "Ground Floor Bathroom", title: "Street-Facing Privacy", body: "Blackout for complete peace of mind. Zero visibility from outside. Sleep easy, shower easy." },
+              { badge: "Most Popular", badgeColor: "bg-gold text-dark", image: "https://images.unsplash.com/photo-1600566752355-35792bedcfea?auto=format&fit=crop&w=800&q=80", imageAlt: "Master bathroom with serene shades", heading: "Master Bathroom", title: "Your Private Retreat", body: "Spa-like ambiance. Soft natural light. Complete privacy even with windows next to the shower or tub." },
+              { badge: "Guest Impression", badgeColor: "bg-white/20 text-white", image: "https://images.unsplash.com/photo-1620626011761-996317b8d101?auto=format&fit=crop&w=800&q=80", imageAlt: "Powder room with custom shade", heading: "Powder Room / Half Bath", title: "The Guest Impression", body: "Small windows, big impact. Custom-fit shade elevates the entire space. Typically $250–350." },
+              { badge: "Privacy First", badgeColor: "bg-white/20 text-white", image: "https://images.unsplash.com/photo-1552321554-5fefe8c9ef14?auto=format&fit=crop&w=800&q=80", imageAlt: "Ground floor bathroom shade", heading: "Ground Floor Bathroom", title: "Street-Facing Privacy", body: "Blackout for complete peace of mind. Zero visibility from outside." },
             ].map((s) => (
               <div key={s.heading} className="bg-dark rounded-lg overflow-hidden flex flex-col shadow-lg">
                 <div className="relative"><img src={s.image} alt={s.imageAlt} className="w-full h-52 object-cover" /><span className={`absolute top-3 left-3 font-sans text-xs font-bold uppercase tracking-widest px-3 py-1 rounded-full ${s.badgeColor}`}>{s.badge}</span></div>
@@ -215,8 +224,8 @@ export default function BathroomShadesPage() {
           </div>
           <div className="grid md:grid-cols-3 gap-8 max-w-4xl mx-auto">
             {[
-              { icon: <Droplets className="w-6 h-6 text-gold" />, title: "Moisture-Resistant Fabrics", body: "Phifer and Ferrari fabrics engineered for high-humidity. No warping, no mold, no peeling — even in steam-filled bathrooms." },
-              { icon: <Sparkles className="w-6 h-6 text-gold" />, title: "Easy to Clean", body: "Just wipe with a damp cloth. No special products, no dry cleaning. Quick wipe for regular maintenance." },
+              { icon: <Droplets className="w-6 h-6 text-gold" />, title: "Moisture-Resistant Fabrics", body: "Phifer and Ferrari fabrics engineered for high-humidity. No warping, no mold, no peeling." },
+              { icon: <Sparkles className="w-6 h-6 text-gold" />, title: "Easy to Clean", body: "Just wipe with a damp cloth. No special products, no dry cleaning." },
               { icon: <Shield className="w-6 h-6 text-gold" />, title: "UV-Stabilized", body: "Won't yellow or degrade from sun and steam. Looks as good in five years as day one." },
             ].map((f) => (
               <div key={f.title} className="flex flex-col gap-4">
@@ -237,9 +246,7 @@ export default function BathroomShadesPage() {
       {/* ─── 8. HOW IT WORKS ─── */}
       <section className="section-padding bg-cream-dark">
         <div className="container-site px-4">
-          <div className="text-center mb-12">
-            <h2 className="heading-section font-serif text-dark">How It Works</h2>
-          </div>
+          <div className="text-center mb-12"><h2 className="heading-section font-serif text-dark">How It Works</h2></div>
           <div className="grid sm:grid-cols-2 md:grid-cols-4 gap-8">
             {[
               { icon: <Ruler className="w-6 h-6 text-gold" />, step: "01", heading: "Measure Your Window", body: "Works for small sidelights, above-tub panels, and oddly-sized windows. Takes 5 minutes." },
@@ -299,8 +306,8 @@ export default function BathroomShadesPage() {
           <div className="grid md:grid-cols-3 gap-6">
             {[
               { name: "Emily R.", location: "Austin, TX", review: "Our master bath window is right next to the shower. These light filtering shades give us complete privacy but the room still feels bright and airy.", image: "https://images.unsplash.com/photo-1613545325268-9265e1609167?auto=format&fit=crop&w=800&q=80" },
-              { name: "Tom & Maria G.", location: "Phoenix, AZ", review: "Ground floor condo, bathroom faces the sidewalk. Went with blackout — zero visibility from outside. The moisture-resistant fabric is perfect.", image: "https://ecosmartshades.com/wp-content/uploads/Coulisse-Cordless-Light-Filtering-Bathroom-800.jpg" },
-              { name: "Jessica L.", location: "Seattle, WA", review: "Tiny powder room window that nothing off-the-shelf fit. Custom-cut to our exact size. It looks like it was always meant to be there.", image: "https://www.theshadestore.com/blog/wp-content/uploads/the-shade-store-flat-roman-shade-nate-berkus-lisbon-woven-bronze-bathroom-window-privacy-tranquil-bathroom-hero-2023-montauk-950x630px.jpg" },
+              { name: "Tom & Maria G.", location: "Phoenix, AZ", review: "Ground floor condo, bathroom faces the sidewalk. Went with blackout — zero visibility from outside. The moisture-resistant fabric is perfect.", image: "https://images.unsplash.com/photo-1584622650111-993a426fbf0a?auto=format&fit=crop&w=800&q=80" },
+              { name: "Jessica L.", location: "Seattle, WA", review: "Tiny powder room window that nothing off-the-shelf fit. Custom-cut to our exact size. It looks like it was always meant to be there.", image: "https://images.unsplash.com/photo-1507652313519-d4e9174996dd?auto=format&fit=crop&w=800&q=80" },
             ].map((r) => (
               <div key={r.name} className="bg-dark rounded-lg overflow-hidden flex flex-col shadow-lg">
                 <div className="overflow-hidden"><img src={r.image} alt={`Bathroom shade — ${r.name}`} className="w-full h-44 object-cover" /></div>
@@ -318,9 +325,7 @@ export default function BathroomShadesPage() {
       {/* ─── 11. FAQ ─── */}
       <section className="section-padding bg-cream">
         <div className="container-narrow px-4 mx-auto">
-          <div className="text-center mb-12">
-            <h2 className="heading-section font-serif text-dark">Bathroom Shade Questions, Answered</h2>
-          </div>
+          <div className="text-center mb-12"><h2 className="heading-section font-serif text-dark">Bathroom Shade Questions, Answered</h2></div>
           <div className="space-y-0 divide-y divide-cream-dark border border-cream-dark rounded-lg overflow-hidden">
             {[
               { q: "Are these shades safe for humid bathrooms?", a: "Yes. We use Phifer and Ferrari fabrics engineered for high-humidity. They won't warp, mold, or peel from steam and moisture." },
@@ -329,7 +334,7 @@ export default function BathroomShadesPage() {
               { q: "What about windows above the tub or shower?", a: "Our specialty. Custom-cut for small or awkward windows. Moisture-resistant fabrics ideal for this location." },
               { q: "How do I clean bathroom roller shades?", a: "Wipe with a damp cloth or mild soap and water. No special products needed." },
               { q: "What fabrics are best for high-humidity rooms?", a: "Phifer and Ferrari — engineered for moisture resistance, easy to clean, won't degrade." },
-              { q: "Can I get a shade for a small or odd-shaped window?", a: "Yes — custom-cut to your exact measurements, down to 1/8 inch. We cut to your spec, not standard sizes." },
+              { q: "Can I get a shade for a small or odd-shaped window?", a: "Yes — custom-cut to your exact measurements, down to 1/8 inch." },
               { q: "Do you offer blackout for bathrooms?", a: "Yes. Ideal for ground-floor bathrooms facing the street. Light filtering is more popular for most bathrooms." },
             ].map((item, i) => (
               <details key={i} className="group bg-white">
@@ -345,7 +350,7 @@ export default function BathroomShadesPage() {
       </section>
 
       {/* ─── 12. FINAL CTA ─── */}
-      <section className="relative section-padding flex flex-col justify-center items-center text-center overflow-hidden" style={{ backgroundImage: "url(https://www.theshadestore.com/blog/wp-content/uploads/the-shade-store-cascade-roman-shade-luxe-linen-optic-white-bathroom-window-privacy-tranquil-bathroom-content-2022-east-hampton-950x550px.jpg)", backgroundSize: "cover", backgroundPosition: "center" }}>
+      <section className="relative section-padding flex flex-col justify-center items-center text-center overflow-hidden" style={{ backgroundImage: "url(https://images.unsplash.com/photo-1600566752355-35792bedcfea?auto=format&fit=crop&w=1920&q=80)", backgroundSize: "cover", backgroundPosition: "center" }}>
         <div className="absolute inset-0" style={{ background: "linear-gradient(to bottom, rgba(12,12,12,0.80) 0%, rgba(30,22,10,0.86) 100%)" }} />
         <div className="noise-overlay absolute inset-0 pointer-events-none" />
         <div className="relative z-10 container-narrow px-4 flex flex-col items-center gap-6 py-12">
