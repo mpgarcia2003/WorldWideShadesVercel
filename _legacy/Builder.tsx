@@ -357,6 +357,7 @@ const Builder: React.FC<BuilderProps> = ({ addToCart, addToSwatches, swatches })
     try {
       const editingId = localStorage.getItem('wws_editing_item');
       if (editingId && config.shape) {
+        setPath('build'); // Skip landing page, go straight to stepper
         const allSteps = new Set<number>();
         for (let i = 0; i < STEPS.length - 1; i++) allSteps.add(i);
         setCompletedSteps(allSteps);
