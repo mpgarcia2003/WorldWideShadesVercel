@@ -39,7 +39,7 @@ const STRIPE_PK = 'pk_test_51SYqIGFRaiFwpthJYbVNO02GXjz5JO8M5BC9TbA69TYIXOMKNQDz
 // ─── CART ITEM CARD ─────────────────────────────────────────────────────────
 // Shows room preview image (if captured) + collapsible spec table
 const CartItemCard: React.FC<{
-  item: ReturnType<typeof Array.prototype.map> extends (infer T)[] ? never : any;
+  item: any;
   onRemove: () => void;
   getShapeLabel: (s: string) => string;
   t: (key: string) => string;
