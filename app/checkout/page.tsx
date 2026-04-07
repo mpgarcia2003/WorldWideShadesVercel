@@ -1,30 +1,57 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
-// ---------------------------------------------------------------------------
-// Placeholder order data (will be replaced with cart state)
-// ---------------------------------------------------------------------------
-const orderData = {
-  product: "Custom Blackout Roller Shade",
-  fabric: "Texstyle Milano — Charcoal",
-  dimensions: '48" W × 72" H',
-  mount: "Inside Mount",
-  control: "Motorized — Rechargeable",
-  roll: "Standard Roll",
-  valance: "Cassette Valance",
-  subtotal: 487.0,
-  motorized: 250.0,
-  valancePrice: 192.0,
-  shipping: 0,
-  tax: 74.32,
-  total: 1003.32,
-  retailSavings: 847.0,
-  estimatedDelivery: "April 14–18, 2026",
-};
+interface CartItemData {
+  id: string;
+  config: {
+    shape: string;
+    shadeType: string;
+    material: { name: string; category: string } | null;
+    mountType: string;
+    width: number;
+    widthFraction: string;
+    height: number;
+    heightFraction: string;
+    controlType: string;
+    motorPower?: string;
+    motorizedController: boolean;
+    motorizedHub: boolean;
+    motorizedCharger: boolean;
+    sunSensor: boolean;
+    quantity: number;
+    controlPosition: string;
+    rollType: string;
+    bottomBar: string;
+    valanceType: string;
+    sideChannelType: string;
+    customDims?: Record<string, number>;
+    customFracs?: Record<string, string>;
+  };
+  unitPrice: number;
+  installerFee: number;
+  totalPrice: number;
+  visualizerImage?: string;
+}
+
+const CART_KEY = 'wws_cart_v1';
 
 function fmt(n: number) {
   return n.toLocaleString("en-US", { style: "currency", currency: "USD" });
+}
+
+function formatDim(val: number, frac: string) {
+  return frac && frac !== '0' ? `${val} ${frac}` : `${val}`;
+}
+
+function getDeliveryEstimate() {
+  const d = new Date();
+  let biz = 0;
+  while (biz < 7) { d.setDate(d.getDate() + 1); if (d.getDay() !== 0 && d.getDay() !== 6) biz++; }
+  const start = d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+  d.setDate(d.getDate() + 3);
+  const end = d.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+  return `${start}–${end}`;
 }
 
 function CheckoutHeader() {
@@ -36,10 +63,13 @@ function CheckoutHeader() {
           <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2" /><path d="M7 11V7a5 5 0 0 1 10 0v4" /></svg>
           <span className="hidden sm:inline">Secure Checkout</span>
         </div>
-        <a href="tel:8446742716" className="flex items-center gap-1.5 text-sm font-medium text-dark hover:text-gold transition-colors">
+        <div className="flex items-center gap-4">
+          <a href="/builder" className="text-sm font-medium text-gold hover:text-gold-dark transition-colors">← Back to Cart</a>
+          <a href="tel:8446742716" className="flex items-center gap-1.5 text-sm font-medium text-dark hover:text-gold transition-colors">
           <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 12a19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 3.56 1h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L8.09 8.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z" /></svg>
           <span className="hidden sm:inline">(844) 674-2716</span>
         </a>
+        </div>
       </div>
     </header>
   );
@@ -72,8 +102,8 @@ function MockPaymentElement() {
   );
 }
 
-function AffirmCallout() {
-  const monthly = (orderData.total / 12).toFixed(2);
+function AffirmCallout({ total }: { total: number }) {
+  const monthly = (total / 12).toFixed(2);
   return (
     <div style={{ border: "1px solid #e5ddd0", borderRadius: "0.5rem", padding: "0.875rem 1rem", backgroundColor: "#fdf9f5", display: "flex", alignItems: "flex-start", gap: "0.75rem" }}>
       <div style={{ flexShrink: 0, width: "52px", height: "24px", borderRadius: "4px", backgroundColor: "#060809", display: "flex", alignItems: "center", justifyContent: "center" }}>
@@ -87,10 +117,6 @@ function AffirmCallout() {
   );
 }
 
-function CountdownTimer({ hours, minutes }: { hours: number; minutes: number }) {
-  return <span>{hours}h {minutes}m</span>;
-}
-
 function PricingRow({ label, value, valueStyle }: { label: string; value: string; valueStyle?: React.CSSProperties }) {
   return (
     <div style={{ display: "flex", justifyContent: "space-between", marginBottom: "0.5rem" }}>
@@ -100,41 +126,77 @@ function PricingRow({ label, value, valueStyle }: { label: string; value: string
   );
 }
 
-function OrderSummary({ promoCode, setPromoCode, promoApplied, setPromoApplied }: { promoCode: string; setPromoCode: (v: string) => void; promoApplied: boolean; setPromoApplied: (v: boolean) => void }) {
+function OrderSummary({ cart, promoCode, setPromoCode, promoApplied, setPromoApplied }: { cart: CartItemData[]; promoCode: string; setPromoCode: (v: string) => void; promoApplied: boolean; setPromoApplied: (v: boolean) => void }) {
+  const subtotal = cart.reduce((sum, item) => sum + item.totalPrice, 0);
   const discount = promoApplied ? 50 : 0;
-  const adjustedTotal = orderData.total - discount;
+  const adjustedTotal = subtotal - discount;
 
   return (
     <div style={{ backgroundColor: "#fdf9f5", border: "1px solid #e5ddd0", borderRadius: "0.75rem", overflow: "hidden" }}>
       <div style={{ padding: "1.25rem 1.5rem", borderBottom: "1px solid #e5ddd0" }}>
-        <h2 style={{ fontFamily: "'Playfair Display', Georgia, serif", fontSize: "1.125rem", fontWeight: 700, color: "#0c0c0c", margin: 0 }}>Order Summary</h2>
+        <h2 style={{ fontFamily: "'Playfair Display', Georgia, serif", fontSize: "1.125rem", fontWeight: 700, color: "#0c0c0c", margin: 0 }}>Order Summary ({cart.length} {cart.length === 1 ? 'item' : 'items'})</h2>
       </div>
       <div style={{ padding: "1.25rem 1.5rem" }}>
-        <div style={{ backgroundColor: "#fff", border: "1px solid #e5ddd0", borderRadius: "0.5rem", padding: "1rem", marginBottom: "1.25rem" }}>
-          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: "0.75rem" }}>
-            <div>
-              <p style={{ fontWeight: 700, fontSize: "0.9375rem", color: "#0c0c0c", margin: "0 0 0.15rem" }}>{orderData.product}</p>
-              <p style={{ fontSize: "0.75rem", color: "#9ca3af", margin: 0 }}>Qty: 1</p>
+        {cart.length === 0 && (
+          <div style={{ textAlign: "center", padding: "2rem 0" }}>
+            <p style={{ color: "#9ca3af", marginBottom: "1rem" }}>Your cart is empty</p>
+            <a href="/builder" style={{ color: "#c8a165", fontWeight: 600, textDecoration: "none" }}>← Back to Builder</a>
+          </div>
+        )}
+        {cart.map((item) => {
+          const c = item.config;
+          const isMotorized = c.controlType === 'Motorized';
+          const dims = c.shape === 'Standard'
+            ? `${formatDim(c.width, c.widthFraction)}" W × ${formatDim(c.height, c.heightFraction)}" H`
+            : `${c.shape} — custom dimensions`;
+          const specs: [string, string][] = [
+            ['Fabric', c.material?.name || 'Not selected'],
+            ['Type', c.shadeType || 'Standard'],
+            ['Dimensions', dims],
+            ['Shape', c.shape],
+            ['Mount', c.mountType],
+            ['Control', isMotorized ? `Motorized (${c.motorPower || 'Rechargeable'})` : c.controlType],
+            ['Roll', c.rollType],
+            ['Bottom Bar', c.bottomBar],
+          ];
+          if (c.valanceType && c.valanceType !== 'standard') specs.push(['Valance', c.valanceType]);
+          if (c.sideChannelType && c.sideChannelType !== 'none') specs.push(['Side Channels', c.sideChannelType]);
+          if (c.controlPosition) specs.push(['Control Position', c.controlPosition]);
+          if (isMotorized) {
+            if (c.motorizedHub) specs.push(['Accessory', 'Smart Hub']);
+            if (c.motorizedCharger) specs.push(['Accessory', 'Motor Charger']);
+            if (c.sunSensor) specs.push(['Accessory', 'Sun Sensor']);
+          }
+
+          return (
+            <div key={item.id} style={{ backgroundColor: "#fff", border: "1px solid #e5ddd0", borderRadius: "0.5rem", padding: "1rem", marginBottom: "0.75rem" }}>
+              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: "0.75rem" }}>
+                <div>
+                  <p style={{ fontWeight: 700, fontSize: "0.9375rem", color: "#0c0c0c", margin: "0 0 0.15rem" }}>Custom {c.shadeType} Roller Shade</p>
+                  <p style={{ fontSize: "0.75rem", color: "#9ca3af", margin: 0 }}>Qty: {c.quantity}</p>
+                </div>
+                <p style={{ fontWeight: 700, fontSize: "0.9375rem", color: "#0c0c0c", whiteSpace: "nowrap", marginLeft: "0.5rem" }}>{fmt(item.totalPrice)}</p>
+              </div>
+              <div style={{ display: "grid", gridTemplateColumns: "auto 1fr", gap: "0.25rem 0.75rem", fontSize: "0.75rem" }}>
+                {specs.map(([key, val], i) => (
+                  <span key={`${item.id}-${key}-${i}`}>
+                    <span style={{ color: "#9ca3af", fontWeight: 500 }}>{key}: </span>
+                    <span style={{ color: "#374151" }}>{val}</span>
+                  </span>
+                ))}
+              </div>
+              <a href="/builder" style={{ display: "inline-block", marginTop: "0.75rem", fontSize: "0.75rem", color: "#c8a165", fontWeight: 600, textDecoration: "none" }}>✏ Edit in Builder</a>
             </div>
-            <p style={{ fontWeight: 700, fontSize: "0.9375rem", color: "#0c0c0c", whiteSpace: "nowrap", marginLeft: "0.5rem" }}>{fmt(orderData.subtotal)}</p>
-          </div>
-          <div style={{ display: "grid", gridTemplateColumns: "auto 1fr", gap: "0.25rem 0.75rem", fontSize: "0.75rem" }}>
-            {[["Fabric", orderData.fabric], ["Dimensions", orderData.dimensions], ["Mount", orderData.mount], ["Control", orderData.control], ["Roll", orderData.roll], ["Valance", `${orderData.valance} (+$${orderData.valancePrice.toFixed(0)})`]].map(([key, val]) => (
-              <span key={key + "-k"} style={{ color: "#9ca3af", fontWeight: 500 }}>{key}:</span>
-            ))}
-          </div>
-          <a href="/builder" style={{ display: "inline-block", marginTop: "0.75rem", fontSize: "0.75rem", color: "#c8a165", fontWeight: 600, textDecoration: "none" }}>✏ Edit in Builder</a>
-        </div>
+          );
+        })}
 
         <div style={{ fontSize: "0.875rem", color: "#374151" }}>
-          <PricingRow label="Subtotal" value={fmt(orderData.subtotal)} />
-          <PricingRow label="Motorized Upgrade" value={`+${fmt(orderData.motorized)}`} />
-          <PricingRow label="Cassette Valance" value={`+${fmt(orderData.valancePrice)}`} />
+          <PricingRow label="Subtotal" value={fmt(subtotal)} />
           <div style={{ display: "flex", justifyContent: "space-between", marginBottom: "0.5rem" }}>
             <span>Shipping</span>
             <span><s style={{ color: "#9ca3af", marginRight: "0.35rem" }}>$19.99</s><span style={{ color: "#16a34a", fontWeight: 600 }}>FREE</span></span>
           </div>
-          {promoApplied && <PricingRow label="Promo (SHADE10)" value={`-${fmt(50)}`} valueStyle={{ color: "#16a34a", fontWeight: 600 }} />}
+          {promoApplied && <PricingRow label="Promo" value={`-${fmt(50)}`} valueStyle={{ color: "#16a34a", fontWeight: 600 }} />}
         </div>
 
         <hr style={{ border: "none", borderTop: "1px solid #e5ddd0", margin: "0.75rem 0" }} />
@@ -155,7 +217,7 @@ function OrderSummary({ promoCode, setPromoCode, promoApplied, setPromoApplied }
           <span style={{ fontWeight: 800, fontSize: "1.375rem", color: "#0c0c0c", fontFamily: "'Playfair Display', Georgia, serif" }}>{fmt(adjustedTotal)}</span>
         </div>
 
-        <p style={{ textAlign: "right", fontSize: "0.75rem", color: "#c8a165", fontWeight: 600, marginTop: "0.25rem" }}>Save {fmt(orderData.retailSavings)} vs. retail</p>
+        <p style={{ textAlign: "right", fontSize: "0.75rem", color: "#c8a165", fontWeight: 600, marginTop: "0.25rem" }}>Factory-direct pricing — no showroom markup</p>
 
         <div style={{ marginTop: "1.25rem", padding: "0.75rem", backgroundColor: "#fff", border: "1px dashed #d1c4a8", borderRadius: "0.5rem", fontSize: "0.8125rem", color: "#6b7280" }}>
           <p style={{ fontWeight: 600, color: "#0c0c0c", marginBottom: "0.2rem" }}>Not 100% sure about your fabric?</p>
@@ -169,8 +231,8 @@ function OrderSummary({ promoCode, setPromoCode, promoApplied, setPromoApplied }
         </div>
 
         <div style={{ marginTop: "1rem", padding: "0.75rem", backgroundColor: "#f0fdf4", border: "1px solid #bbf7d0", borderRadius: "0.5rem", fontSize: "0.8125rem" }}>
-          <p style={{ fontWeight: 700, color: "#15803d", marginBottom: "0.2rem" }}>📅 Estimated delivery: {orderData.estimatedDelivery}</p>
-          <p style={{ color: "#166534" }}>Order within <strong><CountdownTimer hours={3} minutes={27} /></strong> for delivery by April 14.</p>
+          <p style={{ fontWeight: 700, color: "#15803d", marginBottom: "0.2rem" }}>📅 Estimated delivery: {getDeliveryEstimate()}</p>
+          <p style={{ color: "#166534" }}>Ships in ~7 business days via FedEx</p>
         </div>
       </div>
     </div>
@@ -206,6 +268,7 @@ function PlaceOrderSection({ total, isProcessing, onPlaceOrder }: { total: numbe
 }
 
 export default function CheckoutPage() {
+  const [cart, setCart] = useState<CartItemData[]>([]);
   const [email, setEmail] = useState("");
   const [phone, setPhone] = useState("");
   const [textUpdates, setTextUpdates] = useState(true);
@@ -223,6 +286,16 @@ export default function CheckoutPage() {
   const [promoApplied, setPromoApplied] = useState(false);
   const [isProcessing, setIsProcessing] = useState(false);
 
+  useEffect(() => {
+    try {
+      const saved = localStorage.getItem(CART_KEY);
+      if (saved) setCart(JSON.parse(saved));
+    } catch {}
+  }, []);
+
+  const subtotal = cart.reduce((sum, item) => sum + item.totalPrice, 0);
+  const adjustedTotal = subtotal - (promoApplied ? 50 : 0);
+
   function handlePlaceOrder() {
     setIsProcessing(true);
     setTimeout(() => setIsProcessing(false), 2800);
@@ -232,8 +305,6 @@ export default function CheckoutPage() {
     setUseBillingAddress(checked);
     setShowBillingAddress(!checked);
   }
-
-  const adjustedTotal = orderData.total - (promoApplied ? 50 : 0);
 
   return (
     <div style={{ minHeight: "100vh", backgroundColor: "#ffffff", fontFamily: "'DM Sans', sans-serif" }}>
@@ -273,7 +344,7 @@ export default function CheckoutPage() {
             </div>
           </button>
           <div className="mobile-summary-content" style={{ display: orderSummaryOpen ? "block" : "none", marginBottom: "1.5rem" }}>
-            <OrderSummary promoCode={promoCode} setPromoCode={setPromoCode} promoApplied={promoApplied} setPromoApplied={setPromoApplied} />
+            <OrderSummary cart={cart} promoCode={promoCode} setPromoCode={setPromoCode} promoApplied={promoApplied} setPromoApplied={setPromoApplied} />
           </div>
         </div>
 
@@ -357,7 +428,7 @@ export default function CheckoutPage() {
                   <span key={brand} style={{ padding: "0.2rem 0.5rem", border: "1px solid #e5ddd0", borderRadius: "0.25rem", fontSize: "0.7rem", fontWeight: 700, color: "#374151", backgroundColor: "#fff", letterSpacing: "0.02em" }}>{brand}</span>
                 ))}
               </div>
-              <div style={{ marginTop: "1rem" }}><AffirmCallout /></div>
+              <div style={{ marginTop: "1rem" }}><AffirmCallout total={adjustedTotal} /></div>
             </div>
 
             <div className="desktop-place-order">
@@ -368,7 +439,7 @@ export default function CheckoutPage() {
           {/* RIGHT COLUMN (desktop) */}
           <div className="desktop-order-summary-col">
             <div style={{ position: "sticky", top: "1.5rem" }}>
-              <OrderSummary promoCode={promoCode} setPromoCode={setPromoCode} promoApplied={promoApplied} setPromoApplied={setPromoApplied} />
+              <OrderSummary cart={cart} promoCode={promoCode} setPromoCode={setPromoCode} promoApplied={promoApplied} setPromoApplied={setPromoApplied} />
             </div>
           </div>
         </div>
