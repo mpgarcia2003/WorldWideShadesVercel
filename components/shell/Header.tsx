@@ -55,7 +55,7 @@ export function Header() {
       </nav>
 
       {NAV_ITEMS.map((item) => item.megaMenu ? (
-        <MegaMenuPanel key={item.label} item={item} isOpen={activeMenu === item.label} onMouseEnter={() => openMenu(item.label)} onMouseLeave={closeMenu} />
+        <MegaMenuPanel key={item.label} item={item} isOpen={activeMenu === item.label} onMouseEnter={() => openMenu(item.label)} onMouseLeave={closeMenu} onLinkClick={() => setActiveMenu(null)} />
       ) : null)}
 
       <MobileDrawer open={mobileOpen} onClose={() => setMobileOpen(false)} />
@@ -74,7 +74,7 @@ function DesktopNavItem({ item, isOpen, onOpen, onClose }: { item: NavItem; isOp
   );
 }
 
-function MegaMenuPanel({ item, isOpen, onMouseEnter, onMouseLeave }: { item: NavItem; isOpen: boolean; onMouseEnter: () => void; onMouseLeave: () => void }) {
+function MegaMenuPanel({ item, isOpen, onMouseEnter, onMouseLeave, onLinkClick }: { item: NavItem; isOpen: boolean; onMouseEnter: () => void; onMouseLeave: () => void; onLinkClick: () => void }) {
   if (!item.megaMenu || !isOpen) return null;
   const { groups, featured } = item.megaMenu;
   return (
@@ -87,7 +87,7 @@ function MegaMenuPanel({ item, isOpen, onMouseEnter, onMouseLeave }: { item: Nav
                 <h3 className="text-xs font-bold uppercase tracking-widest text-warm-gray mb-4">{group.label}</h3>
                 <ul className="space-y-3">
                   {group.links.map((link) => (
-                    <li key={link.href}><Link href={link.href} className="group block">
+                    <li key={link.href}><Link href={link.href} onClick={onLinkClick} className="group block">
                       <span className="text-sm font-medium text-dark group-hover:text-gold transition-colors">{link.label}</span>
                       {link.description && <span className="block text-xs text-warm-gray mt-0.5">{link.description}</span>}
                     </Link></li>
@@ -98,7 +98,7 @@ function MegaMenuPanel({ item, isOpen, onMouseEnter, onMouseLeave }: { item: Nav
           </div>
           {featured && (
             <div className="col-span-4">
-              <Link href={featured.href} className="block rounded-xl overflow-hidden bg-cream group hover:shadow-lg transition-shadow">
+              <Link href={featured.href} onClick={onLinkClick} className="block rounded-xl overflow-hidden bg-cream group hover:shadow-lg transition-shadow">
                 <div className="aspect-[16/9] bg-dark-muted relative overflow-hidden">
                   <div className="absolute inset-0 gold-gradient opacity-80 group-hover:opacity-90 transition-opacity" />
                   <div className="absolute inset-0 flex items-center justify-center"><span className="text-white text-lg font-bold">{featured.title}</span></div>
