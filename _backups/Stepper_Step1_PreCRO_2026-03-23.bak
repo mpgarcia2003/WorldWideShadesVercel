@@ -1,0 +1,52 @@
+// BACKUP: 2026-03-23 — Pre-CRO Step 1 Redesign
+// WHAT WAS CHANGED: Step 1 (Window Shape) was redesigned for conversion optimization.
+// OLD BEHAVIOR: Standard rectangle shown as "Most Popular" card, with ALL specialty shapes
+//   visible by default in a grid below a divider. Equal visual weight given to specialty shapes.
+// NEW BEHAVIOR: Progressive disclosure CRO funnel — dominant Standard card takes up viewport,
+//   specialty shapes hidden behind collapsible accordion, price anchoring added.
+// TO REVERT: Replace the index === 0 block in Stepper.tsx with the old code below,
+//   and remove the showSpecialtyShapes state variable.
+// ═══════════════════════════════════════════════════════════════════════════════════
+// The original index === 0 block was:
+//
+// {index === 0 && (
+//     <div className="pt-2 space-y-4">
+//         <p className="text-[11px] text-slate-500 text-center font-normal">{t('step.1.desc')}</p>
+//         {(() => {
+//           const stdKey = 'Standard';
+//           return (
+//             <button key={stdKey} onClick={() => { updateConfig('shape', stdKey as ShapeType); trackEvent('shape_select', { shape_name: stdKey }); setTimeout(() => onAutoAdvance(0), 400); }}
+//               className={`group w-full flex items-center gap-4 p-4 rounded-xl border-2 transition-all duration-300 relative ${config.shape === stdKey ? 'border-[#c8a165] bg-[#faf8f4] shadow-md' : 'border-gray-100 hover:border-gray-200 bg-white'}`}>
+//               <div className="absolute -top-2.5 left-3 px-2 py-0.5 rounded-md text-[8px] font-bold uppercase tracking-wider text-white" style={{ background: 'linear-gradient(135deg, #c8a165, #b8914f)' }}>Most Popular</div>
+//               <div className="relative w-14 h-14 p-2 rounded-lg bg-[#f5f3ec] shrink-0">
+//                 <img src={SHAPE_CONFIGS[stdKey as ShapeType].mask} className={`w-full h-full object-contain ${config.shape === stdKey ? 'opacity-100' : 'opacity-80'}`} />
+//               </div>
+//               <div className="text-left">
+//                 <span className="text-[11px] font-black uppercase tracking-widest text-slate-800">{getShapeLabel(stdKey)}</span>
+//                 <p className="text-[9px] font-normal text-slate-500 mt-0.5">Standard windows, most common shape</p>
+//                 <StartingAt shape="Standard" />
+//               </div>
+//             </button>
+//           );
+//         })()}
+//         <div className="flex items-center gap-3 px-1">
+//           <div className="flex-1 h-px bg-gray-200" />
+//           <span className="text-[8px] font-bold uppercase tracking-[0.2em] text-slate-400">Specialty Shapes</span>
+//           <div className="flex-1 h-px bg-gray-200" />
+//         </div>
+//         <p className="text-[9px] text-slate-500 text-center font-normal -mt-2">We make shapes other companies can't — triangles, trapezoids, pentagons & more</p>
+//         <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
+//             {Object.keys(SHAPE_CONFIGS).filter(k => k !== 'Standard').map((shapeKey) => (
+//               <button key={shapeKey} onClick={() => { updateConfig('shape', shapeKey as ShapeType); trackEvent('shape_select', { shape_name: shapeKey }); setTimeout(() => onAutoAdvance(0), 400); }}
+//                 className={`group flex flex-col items-center justify-center p-2 rounded-xl border-2 transition-all duration-300 min-h-[100px] ${config.shape === shapeKey ? 'border-[#c8a165] bg-[#faf8f4]' : 'border-gray-100 hover:border-gray-200 bg-white'}`}>
+//                 <div className="relative w-12 h-12 mb-1 p-1.5 rounded-lg bg-[#f5f3ec] transition-colors">
+//                   <img src={SHAPE_CONFIGS[shapeKey as ShapeType].mask} className={`w-full h-full object-contain transition-opacity ${config.shape === shapeKey ? 'opacity-100' : 'opacity-80'}`} />
+//                 </div>
+//                 <span className="text-[8px] font-black text-center leading-tight uppercase tracking-wider text-slate-700 group-hover:text-slate-900">{getShapeLabel(shapeKey)}</span>
+//                 <StartingAt shape={shapeKey} />
+//               </button>
+//             ))}
+//         </div>
+//     </div>
+// )}
+// Also: showSpecialtyShapes state was NOT present in old version.

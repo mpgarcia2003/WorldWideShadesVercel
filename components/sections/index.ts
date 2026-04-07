@@ -1,0 +1,16 @@
+export { HeroSection } from "./HeroSection";
+export { TrustBar } from "./TrustBar";
+export { ValueProps } from "./ValueProps";
+export { UseCases } from "./UseCases";
+export { FabricShowcase } from "./FabricShowcase";
+export { HowItWorks } from "./HowItWorks";
+export { Accessories } from "./Accessories";
+export { Testimonials } from "./Testimonials";
+export { FAQSection } from "./FAQSection";
+export { FinalCTA } from "./FinalCTA";
+export { LandingPageTemplate } from "./LandingPageTemplate";
+export { BuilderShowcase } from "./BuilderShowcase";
+export { MotorizedSpotlight } from "./MotorizedSpotlight";
+export { SwatchesCTA } from "./SwatchesCTA";
+export { PressBar } from "./PressBar";
+export { CustomerGallery } from "./CustomerGallery";
