@@ -284,17 +284,36 @@ const SwatchPath: React.FC<{
 // ─── MAIN BUILDER COMPONENT ──────────────────────────────
 const Builder: React.FC<BuilderProps> = ({ addToCart, addToSwatches, swatches }) => {
   const { t } = useLanguage();
-  const [path, setPath] = useState<null | 'build' | 'swatch'>(null);
+  const [path, setPath] = useState<null | 'build' | 'swatch'>(() => {
+    try {
+      if (typeof window !== 'undefined' && localStorage.getItem('wws_editing_item')) return 'build';
+    } catch {}
+    return null;
+  });
   const [imageSrc, setImageSrc] = useState(DEFAULT_ROOM_IMAGE);
   const [selection, setSelection] = useState<WindowSelection | null>(null);
   const [analysis, setAnalysis] = useState<RoomAnalysis | undefined>(undefined);
-  const [openStep, setOpenStep] = useState<number | null>(0);
+  const [openStep, setOpenStep] = useState<number | null>(() => {
+    try {
+      if (typeof window !== 'undefined' && localStorage.getItem('wws_editing_item')) return STEPS.length - 1;
+    } catch {}
+    return 0;
+  });
   const [isConsultationOpen, setIsConsultationOpen] = useState(false);
   const [fabrics, setFabrics] = useState<Fabric[]>([]);
   const [isLoadingFabrics, setIsLoadingFabrics] = useState(false);
 
   // Progressive accordion state
-  const [completedSteps, setCompletedSteps] = useState<Set<number>>(new Set());
+  const [completedSteps, setCompletedSteps] = useState<Set<number>>(() => {
+    try {
+      if (typeof window !== 'undefined' && localStorage.getItem('wws_editing_item')) {
+        const all = new Set<number>();
+        for (let i = 0; i < STEPS.length - 1; i++) all.add(i);
+        return all;
+      }
+    } catch {}
+    return new Set();
+  });
 
   // WWS AI Analytics refs
   const prevShapeRef = useRef<string>('Standard');
@@ -351,20 +370,6 @@ const Builder: React.FC<BuilderProps> = ({ addToCart, addToSwatches, swatches })
   useEffect(() => {
     if (path === 'build') { builderHooks.onBuilderOpened(); builderHooks.onShapeSelected('Standard'); }
   }, [path]);
-
-  // === Edit from cart: mark all steps completed so user sees full config ===
-  useEffect(() => {
-    try {
-      const editingId = localStorage.getItem('wws_editing_item');
-      if (editingId && config.shape) {
-        setPath('build'); // Skip landing page, go straight to stepper
-        const allSteps = new Set<number>();
-        for (let i = 0; i < STEPS.length - 1; i++) allSteps.add(i);
-        setCompletedSteps(allSteps);
-        setOpenStep(STEPS.length - 1); // Open last step (review/confirm)
-      }
-    } catch {}
-  }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   useEffect(() => {
     if (config.shape !== prevShapeRef.current) {
