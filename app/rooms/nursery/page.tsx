@@ -312,7 +312,7 @@ export default function NurseryShadesPage() {
               {
                 icon: <ShieldOff className="w-6 h-6 text-gold" />,
                 title: "Curtains That Don't Work",
-                body: "Amazon blackout curtains leave gaps around every edge. "Blackout" in name only — and you know it.",
+                body: "Amazon blackout curtains leave gaps around every edge. \"Blackout\" in name only — and you know it.",
               },
               {
                 icon: <AlertTriangle className="w-6 h-6 text-gold" />,

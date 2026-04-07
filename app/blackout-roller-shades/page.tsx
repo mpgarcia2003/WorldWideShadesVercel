@@ -307,7 +307,7 @@ export default function BlackoutRollerShadesPage() {
                 {[
                   {
                     icon: <AlertTriangle className="w-5 h-5 text-red-400 shrink-0 mt-0.5" />,
-                    title: "Light gaps ruin "blackout"",
+                    title: "Light gaps ruin \"blackout\"",
                     body: "Stock shades never fit right — they're sized for standard windows, not yours.",
                   },
                   {
