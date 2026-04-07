@@ -367,6 +367,18 @@ const Builder: React.FC<BuilderProps> = ({ addToCart, addToSwatches, swatches })
   });
 
   // === WWS AI Analytics hooks ===
+  // Clear edit flag on mount so normal visits aren't affected
+  // Move the ID to wws_editing_active for addToCart to check
+  useEffect(() => {
+    try {
+      const editingId = localStorage.getItem('wws_editing_item');
+      if (editingId) {
+        localStorage.setItem('wws_editing_active', editingId);
+        localStorage.removeItem('wws_editing_item');
+      }
+    } catch {}
+  }, []);
+
   useEffect(() => {
     if (path === 'build') { builderHooks.onBuilderOpened(); builderHooks.onShapeSelected('Standard'); }
   }, [path]);

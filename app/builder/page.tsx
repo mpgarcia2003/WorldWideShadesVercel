@@ -67,13 +67,13 @@ export default function BuilderPage() {
   useEffect(() => { persistSwatches(swatches); }, [swatches]);
 
   const addToCart = (item: CartItem) => {
-    const editingId = localStorage.getItem('wws_editing_item');
+    const editingId = localStorage.getItem('wws_editing_active');
     if (editingId) {
       // Replace existing item instead of adding new
       setCart(prev => prev.map(existing =>
         existing.id === editingId ? { ...item, id: editingId } : existing
       ));
-      localStorage.removeItem('wws_editing_item');
+      localStorage.removeItem('wws_editing_active');
     } else {
       setCart(prev => [...prev, item]);
     }
