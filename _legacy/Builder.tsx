@@ -340,17 +340,19 @@ const Builder: React.FC<BuilderProps> = ({ addToCart, addToSwatches, swatches })
   const [visualizerSnapshot, setVisualizerSnapshot] = useState<string | undefined>(undefined);
 
   const [config, setConfig] = useState<ShadeConfig>(() => {
+    const isEditing = typeof window !== 'undefined' && localStorage.getItem('wws_editing_item');
     // Try to restore from localStorage for returning users
     try {
       const saved = localStorage.getItem('wws_builder_config');
       if (saved) {
         const parsed = JSON.parse(saved);
-        // Only restore measurements and basic selections, not transient state
         return {
-          step: 1, shape: parsed.shape || 'Standard', shadeType: parsed.shadeType || '', material: null, mountType: parsed.mountType || 'Inside Mount',
-          width: parsed.width || 0, widthFraction: parsed.widthFraction || '0', height: parsed.height || 0, heightFraction: parsed.heightFraction || '0', customDims: parsed.customDims || {},
+          step: 1, shape: parsed.shape || 'Standard', shadeType: isEditing ? (parsed.shadeType || '') : '', material: null, mountType: parsed.mountType || 'Inside Mount',
+          width: isEditing ? (parsed.width || 0) : 0, widthFraction: isEditing ? (parsed.widthFraction || '0') : '0',
+          height: isEditing ? (parsed.height || 0) : 0, heightFraction: isEditing ? (parsed.heightFraction || '0') : '0',
+          customDims: isEditing ? (parsed.customDims || {}) : {},
           controlType: parsed.controlType || 'Metal Chain', motorPower: parsed.motorPower || 'Rechargeable', controlPosition: parsed.controlPosition || 'Right',
-          rollType: parsed.rollType || 'Standard', bottomBar: parsed.bottomBar || 'Fabric Wrapped', quantity: parsed.quantity || 1, motorizedController: false,
+          rollType: parsed.rollType || 'Standard', bottomBar: parsed.bottomBar || 'Fabric Wrapped', quantity: isEditing ? (parsed.quantity || 1) : 1, motorizedController: false,
           motorizedHub: false, motorizedCharger: false, sunSensor: false, zipCode: '', installer: null, measureService: true,
           installService: true, isMeasurementOnly: false, valanceType: parsed.valanceType || 'standard', sideChannelType: parsed.sideChannelType || 'none'
         };
