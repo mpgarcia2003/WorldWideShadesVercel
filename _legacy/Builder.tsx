@@ -352,6 +352,19 @@ const Builder: React.FC<BuilderProps> = ({ addToCart, addToSwatches, swatches })
     if (path === 'build') { builderHooks.onBuilderOpened(); builderHooks.onShapeSelected('Standard'); }
   }, [path]);
 
+  // === Edit from cart: mark all steps completed so user sees full config ===
+  useEffect(() => {
+    try {
+      const editingId = localStorage.getItem('wws_editing_item');
+      if (editingId && config.shape) {
+        const allSteps = new Set<number>();
+        for (let i = 0; i < STEPS.length - 1; i++) allSteps.add(i);
+        setCompletedSteps(allSteps);
+        setOpenStep(STEPS.length - 1); // Open last step (review/confirm)
+      }
+    } catch {}
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
+
   useEffect(() => {
     if (config.shape !== prevShapeRef.current) {
       builderHooks.onShapeSelected(config.shape);
