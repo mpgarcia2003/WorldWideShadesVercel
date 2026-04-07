@@ -386,7 +386,7 @@ const Builder: React.FC<BuilderProps> = ({ addToCart, addToSwatches, swatches })
 
   useEffect(() => {
     if (prevStepRef.current !== null && openStep !== null && openStep < prevStepRef.current) {
-      builderHooks.onStepBackward(prevStepRef.current, openStep, STEPS.map(s => s.label));
+      builderHooks.onStepBackward(prevStepRef.current, openStep, STEPS);
     }
     prevStepRef.current = openStep;
   }, [openStep]);
@@ -583,7 +583,7 @@ const Builder: React.FC<BuilderProps> = ({ addToCart, addToSwatches, swatches })
           shape: config.shape, shadeType: config.shadeType, fabricName: config.material?.name,
           fabricId: config.material?.id, width: w, height: h, mountType: config.mountType,
           controlType: config.controlType, valanceType: config.valanceType, price: priceBreakdown.product,
-          currentStep: openStep !== null ? STEPS[openStep]?.label : 'unknown',
+          currentStep: openStep !== null ? STEPS[openStep] : 'unknown',
         });
       }
     };
