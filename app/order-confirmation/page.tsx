@@ -677,7 +677,7 @@ export default function ThankYouPage() {
                 title: "Download Your Measurement Guide",
                 body: "Keep for your records, or measure your next room before your shades even arrive.",
                 cta: "Download PDF →",
-                href: "#",
+                href: "/guides/WWS-Window-Measuring-Guide.pdf",
               },
               {
                 icon: Palette,
@@ -705,12 +705,40 @@ export default function ThankYouPage() {
                   <a
                     href={card.href}
                     className="mt-auto font-sans text-sm font-semibold text-gold hover:underline"
+                    {...(card.href.endsWith('.pdf') ? { target: '_blank' } : {})}
                   >
                     {card.cta}
                   </a>
                 </div>
               )
             })}
+          </div>
+        </div>
+
+          {/* Downloadable PDF Guides */}
+          <div className="mt-10">
+            <p className="font-sans text-xs font-bold tracking-widest text-gold uppercase mb-4 text-center">Downloadable Guides</p>
+            <div className="grid sm:grid-cols-2 md:grid-cols-4 gap-4">
+              {[
+                { title: "Measuring Guide", desc: "How to measure your windows", href: "/guides/WWS-Window-Measuring-Guide.pdf" },
+                { title: "Installation Guide", desc: "Step-by-step shade installation", href: "/guides/WWS-Roller-Shades-Installation-Guide_1.pdf" },
+                { title: "Remote Programming", desc: "Somfy Situo RTS II remote setup", href: "/guides/WWS-Somfy_Remote_Programming_Guide.pdf" },
+                { title: "Motor Programming", desc: "Complete Somfy motor reference", href: "/guides/WWS-Somfy_Motors_Programming_Guide.pdf" },
+              ].map((guide) => (
+                <a
+                  key={guide.title}
+                  href={guide.href}
+                  target="_blank"
+                  className="bg-dark rounded-lg border border-white/10 p-5 hover:border-gold/40 transition-colors duration-200 flex items-start gap-3"
+                >
+                  <Download className="w-5 h-5 text-gold shrink-0 mt-0.5" />
+                  <div>
+                    <p className="font-sans font-bold text-white text-sm">{guide.title}</p>
+                    <p className="font-sans text-xs text-warm-gray mt-1">{guide.desc}</p>
+                  </div>
+                </a>
+              ))}
+            </div>
           </div>
         </div>
       </section>
