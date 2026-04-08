@@ -17,7 +17,14 @@ interface OrderItem {
   mount_type: string;
   control_type: string;
   motor_power: string;
+  roll_type: string;
+  bottom_bar: string;
   valance_type: string;
+  side_channel_type: string;
+  motorized_controller: boolean;
+  motorized_hub: boolean;
+  motorized_charger: boolean;
+  sun_sensor: boolean;
   quantity: number;
   unit_price: number;
   total_price: number;
@@ -40,6 +47,7 @@ interface Order {
   tax: number;
   shipping: number;
   total: number;
+  promo_code: string;
   stripe_payment_intent_id: string;
   shipping_first_name: string;
   shipping_last_name: string;
@@ -371,6 +379,8 @@ export default function AdminOrdersPage() {
                     </div>
                     <div style={{ fontSize: "0.75rem", color: "#999", marginTop: "0.25rem" }}>
                       {order.order_items?.length || 0} item{(order.order_items?.length || 0) !== 1 ? "s" : ""}
+                      {Number(order.discount) > 0 && <span style={{ color: "#16a34a", fontWeight: 600 }}> · -{fmt(Number(order.discount))} off</span>}
+                      {order.promo_code && <span style={{ color: "#92400e", fontWeight: 600 }}> · Code: {order.promo_code}</span>}
                       {order.tracking_number && <span> · Tracking: {order.tracking_number}</span>}
                     </div>
                   </div>
@@ -450,13 +460,19 @@ export default function AdminOrdersPage() {
                       <span>{item.shade_type}</span>
                       <span>{fmt(Number(item.total_price))}</span>
                     </div>
-                    <div style={{ color: "#666", marginTop: "0.25rem", lineHeight: 1.5 }}>
-                      {item.fabric_name && <span>{item.fabric_name} · </span>}
-                      {item.width}&quot; × {item.height}&quot;
-                      {item.mount_type && <span> · {item.mount_type}</span>}
-                      {item.control_type && <span> · {item.control_type}</span>}
-                      {item.motor_power && <span> ({item.motor_power})</span>}
-                      <span> · Qty {item.quantity}</span>
+                    <div style={{ color: "#666", marginTop: "0.5rem", lineHeight: 1.8 }}>
+                      {item.fabric_name && <div><span style={{ fontWeight: 600, color: "#999", fontSize: "0.6875rem", textTransform: "uppercase", letterSpacing: "0.05em" }}>Fabric:</span> {item.fabric_name}</div>}
+                      <div><span style={{ fontWeight: 600, color: "#999", fontSize: "0.6875rem", textTransform: "uppercase", letterSpacing: "0.05em" }}>Size:</span> {item.width}{item.width_fraction && item.width_fraction !== '0' ? ` ${item.width_fraction}` : ''}&quot; W × {item.height}{item.height_fraction && item.height_fraction !== '0' ? ` ${item.height_fraction}` : ''}&quot; H</div>
+                      {item.shape && item.shape !== 'Standard' && <div><span style={{ fontWeight: 600, color: "#999", fontSize: "0.6875rem", textTransform: "uppercase", letterSpacing: "0.05em" }}>Shape:</span> {item.shape}</div>}
+                      {item.mount_type && <div><span style={{ fontWeight: 600, color: "#999", fontSize: "0.6875rem", textTransform: "uppercase", letterSpacing: "0.05em" }}>Mount:</span> {item.mount_type}</div>}
+                      {item.control_type && <div><span style={{ fontWeight: 600, color: "#999", fontSize: "0.6875rem", textTransform: "uppercase", letterSpacing: "0.05em" }}>Control:</span> {item.control_type}{item.motor_power ? ` (${item.motor_power})` : ''}</div>}
+                      {item.roll_type && <div><span style={{ fontWeight: 600, color: "#999", fontSize: "0.6875rem", textTransform: "uppercase", letterSpacing: "0.05em" }}>Roll Type:</span> {item.roll_type}</div>}
+                      {item.valance_type && item.valance_type !== 'None' && item.valance_type !== 'standard' && <div><span style={{ fontWeight: 600, color: "#999", fontSize: "0.6875rem", textTransform: "uppercase", letterSpacing: "0.05em" }}>Valance:</span> {item.valance_type}</div>}
+                      {item.side_channel_type && item.side_channel_type !== 'none' && <div><span style={{ fontWeight: 600, color: "#999", fontSize: "0.6875rem", textTransform: "uppercase", letterSpacing: "0.05em" }}>Side Channels:</span> Yes</div>}
+                      {(item.motorized_controller || item.motorized_hub || item.motorized_charger || item.sun_sensor) && (
+                        <div><span style={{ fontWeight: 600, color: "#999", fontSize: "0.6875rem", textTransform: "uppercase", letterSpacing: "0.05em" }}>Accessories:</span> {[item.motorized_controller && 'Remote', item.motorized_hub && 'Smart Hub', item.motorized_charger && 'Charger', item.sun_sensor && 'Sun Sensor'].filter(Boolean).join(', ')}</div>
+                      )}
+                      <div><span style={{ fontWeight: 600, color: "#999", fontSize: "0.6875rem", textTransform: "uppercase", letterSpacing: "0.05em" }}>Qty:</span> {item.quantity}</div>
                     </div>
                   </div>
                 ))}
@@ -464,11 +480,16 @@ export default function AdminOrdersPage() {
 
               {/* Order total */}
               <div style={{ marginBottom: "1.5rem", padding: "1rem", background: "#f7f5f0", borderRadius: "0.5rem" }}>
+                {selectedOrder.promo_code && (
+                  <div style={{ display: "flex", justifyContent: "space-between", fontSize: "0.8125rem", marginBottom: "0.5rem", padding: "0.375rem 0.5rem", background: "#fef3c7", borderRadius: "0.25rem", border: "1px solid #fcd34d" }}>
+                    <span style={{ fontWeight: 600, color: "#92400e" }}>Promo Code</span><span style={{ fontWeight: 700, color: "#92400e" }}>{selectedOrder.promo_code}</span>
+                  </div>
+                )}
                 <div style={{ display: "flex", justifyContent: "space-between", fontSize: "0.8125rem", marginBottom: "0.25rem" }}>
                   <span>Subtotal</span><span>{fmt(Number(selectedOrder.subtotal))}</span>
                 </div>
                 {Number(selectedOrder.discount) > 0 && (
-                  <div style={{ display: "flex", justifyContent: "space-between", fontSize: "0.8125rem", marginBottom: "0.25rem", color: "#22c55e" }}>
+                  <div style={{ display: "flex", justifyContent: "space-between", fontSize: "0.8125rem", marginBottom: "0.25rem", color: "#16a34a", fontWeight: 600 }}>
                     <span>Discount</span><span>-{fmt(Number(selectedOrder.discount))}</span>
                   </div>
                 )}
