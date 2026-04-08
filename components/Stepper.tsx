@@ -89,7 +89,6 @@ const MeasurementInputs: React.FC<{
         </div>
       </div>
     )}
-    </div>
     
     {/* Measurement inputs — side by side for standard shapes */}
     <div className={shapeData.inputs.length === 2 ? 'grid grid-cols-2 gap-2' : 'space-y-2'}>
@@ -122,7 +121,6 @@ const MeasurementInputs: React.FC<{
         })}
     </div>
     <p className="text-center text-[11px] text-[#888] font-medium mt-1">Example: 36" W × 60" H</p>
-    <p className="text-center text-[12px] text-[#888] font-medium mt-2">Example: 36" W × 60" H</p>
   </div>
   );
 };
