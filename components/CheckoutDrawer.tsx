@@ -5,7 +5,7 @@ import { getFabricUrl, SHAPE_CONFIGS, VALANCE_OPTIONS, SIDE_CHANNEL_OPTIONS, isS
 import { saveOrder, saveSharedCart } from '../utils/storage';
 import { sendOrderConfirmation, sendAdminNotification, shareCartByEmail, sendQuoteRequest, notifyAdminShopifyCheckout } from '../utils/email';
 import { useLanguage } from '../LanguageContext';
-import { createShopifyCheckout, redirectToShopifyCheckout } from '../utils/shopify';
+// Shopify checkout removed — now using /checkout with Stripe
 import { trackEvent } from '../utils/analytics';
 
 // Declare Stripe types globally since we are loading via script tag
