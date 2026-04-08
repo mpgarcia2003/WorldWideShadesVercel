@@ -120,6 +120,9 @@ export async function POST(req: NextRequest) {
       shipping_zip: body.shipping_zip,
       estimated_delivery: body.estimated_delivery,
       notes: body.notes,
+      sale_savings: body.sale_savings || 0,
+      retail_total: body.retail_total || 0,
+      sale_percent: body.sale_percent || 0,
     })
     .select()
     .single();

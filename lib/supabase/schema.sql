@@ -49,6 +49,9 @@ CREATE TABLE IF NOT EXISTS orders (
   tracking_url TEXT,
   estimated_delivery TEXT,
   notes TEXT,
+  sale_savings NUMERIC(10,2) DEFAULT 0,
+  retail_total NUMERIC(10,2) DEFAULT 0,
+  sale_percent NUMERIC(5,2) DEFAULT 0,
   created_at TIMESTAMPTZ DEFAULT now(),
   updated_at TIMESTAMPTZ DEFAULT now()
 );

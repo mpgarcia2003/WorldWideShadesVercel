@@ -97,6 +97,21 @@ function StripePaymentForm({
 
   async function handleSubmit() {
     if (!stripe || !elements) return;
+
+    // Validate required customer fields
+    const missing = [];
+    if (!orderData.email?.trim()) missing.push("Email");
+    if (!orderData.shipping_first_name?.trim()) missing.push("First name");
+    if (!orderData.shipping_last_name?.trim()) missing.push("Last name");
+    if (!orderData.shipping_address1?.trim()) missing.push("Address");
+    if (!orderData.shipping_city?.trim()) missing.push("City");
+    if (!orderData.shipping_state?.trim()) missing.push("State");
+    if (!orderData.shipping_zip?.trim()) missing.push("ZIP code");
+    if (missing.length > 0) {
+      setErrorMessage(`Please fill in: ${missing.join(", ")}`);
+      return;
+    }
+
     setIsProcessing(true);
     setErrorMessage("");
 
@@ -544,6 +559,9 @@ export default function CheckoutPage() {
   const subtotal = cart.reduce((sum, item) => sum + item.totalPrice, 0);
   const discount = promoApplied ? 50 : 0;
   const adjustedTotal = subtotal - discount;
+  const _salePercent = SALE_CONFIG.discountPercent;
+  const _retailTotal = isSaleActive() ? cart.reduce((sum, item) => sum + (item.totalPrice / (1 - _salePercent / 100)), 0) : subtotal;
+  const _saleSavings = _retailTotal - subtotal;
 
   function handleUseBillingChange(checked: boolean) {
     setUseBillingAddress(checked);
@@ -700,6 +718,9 @@ export default function CheckoutPage() {
                   phone,
                   subtotal,
                   discount,
+                  sale_savings: _saleSavings,
+                  retail_total: _retailTotal,
+                  sale_percent: isSaleActive() ? _salePercent : 0,
                   tax: 0,
                   shipping: 0,
                   total: adjustedTotal,

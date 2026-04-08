@@ -47,6 +47,9 @@ interface Order {
   tax: number;
   shipping: number;
   total: number;
+  sale_savings: number;
+  retail_total: number;
+  sale_percent: number;
   promo_code: string;
   stripe_payment_intent_id: string;
   shipping_first_name: string;
@@ -290,6 +293,10 @@ export default function AdminOrdersPage() {
           <span style={{ fontSize: "0.75rem", color: "#666", borderLeft: "1px solid #333", paddingLeft: "1rem" }}>
             Order Management
           </span>
+          <div style={{ display: "flex", gap: "0.25rem", marginLeft: "1rem" }}>
+            <a href="/admin/orders" style={{ padding: "0.375rem 0.75rem", borderRadius: "0.375rem", fontSize: "0.75rem", fontWeight: 600, color: "#fff", textDecoration: "none", background: "#333", border: "1px solid #c8a165" }}>Orders</a>
+            <a href="/admin/customers" style={{ padding: "0.375rem 0.75rem", borderRadius: "0.375rem", fontSize: "0.75rem", fontWeight: 600, color: "#999", textDecoration: "none", background: "#1a1a1a" }}>Customers</a>
+          </div>
         </div>
         <div style={{ display: "flex", alignItems: "center", gap: "1rem" }}>
           <a href="/" style={{ color: "#c8a165", fontSize: "0.8125rem", textDecoration: "none" }}>← Back to Site</a>
@@ -393,7 +400,8 @@ export default function AdminOrdersPage() {
                     </div>
                     <div style={{ fontSize: "0.75rem", color: "#999", marginTop: "0.25rem" }}>
                       {order.order_items?.length || 0} item{(order.order_items?.length || 0) !== 1 ? "s" : ""}
-                      {Number(order.discount) > 0 && <span style={{ color: "#16a34a", fontWeight: 600 }}> · -{fmt(Number(order.discount))} off</span>}
+                      {Number(order.discount) > 0 && <span style={{ color: "#16a34a", fontWeight: 600 }}> · -{fmt(Number(order.discount))} promo</span>}
+                      {Number(order.sale_savings) > 0 && <span style={{ color: "#16a34a", fontWeight: 600 }}> · Saved {fmt(Number(order.sale_savings))}</span>}
                       {order.promo_code && <span style={{ color: "#92400e", fontWeight: 600 }}> · Code: {order.promo_code}</span>}
                       {order.tracking_number && <span> · Tracking: {order.tracking_number}</span>}
                     </div>
@@ -532,12 +540,22 @@ export default function AdminOrdersPage() {
                     <span style={{ fontWeight: 600, color: "#92400e" }}>Promo Code</span><span style={{ fontWeight: 700, color: "#92400e" }}>{selectedOrder.promo_code}</span>
                   </div>
                 )}
+                {Number(selectedOrder.retail_total) > 0 && (
+                  <div style={{ display: "flex", justifyContent: "space-between", fontSize: "0.8125rem", marginBottom: "0.25rem", color: "#999" }}>
+                    <span>Retail Price</span><span style={{ textDecoration: "line-through" }}>{fmt(Number(selectedOrder.retail_total))}</span>
+                  </div>
+                )}
                 <div style={{ display: "flex", justifyContent: "space-between", fontSize: "0.8125rem", marginBottom: "0.25rem" }}>
                   <span>Subtotal</span><span>{fmt(Number(selectedOrder.subtotal))}</span>
                 </div>
+                {Number(selectedOrder.sale_savings) > 0 && (
+                  <div style={{ display: "flex", justifyContent: "space-between", fontSize: "0.8125rem", marginBottom: "0.25rem", color: "#16a34a", fontWeight: 600 }}>
+                    <span>Sale Discount{Number(selectedOrder.sale_percent) > 0 ? ` (${selectedOrder.sale_percent}% off)` : ''}</span><span>-{fmt(Number(selectedOrder.sale_savings))}</span>
+                  </div>
+                )}
                 {Number(selectedOrder.discount) > 0 && (
                   <div style={{ display: "flex", justifyContent: "space-between", fontSize: "0.8125rem", marginBottom: "0.25rem", color: "#16a34a", fontWeight: 600 }}>
-                    <span>Discount</span><span>-{fmt(Number(selectedOrder.discount))}</span>
+                    <span>Promo Discount</span><span>-{fmt(Number(selectedOrder.discount))}</span>
                   </div>
                 )}
                 <div style={{ display: "flex", justifyContent: "space-between", fontSize: "0.8125rem", marginBottom: "0.25rem" }}>
@@ -546,6 +564,12 @@ export default function AdminOrdersPage() {
                 <div style={{ display: "flex", justifyContent: "space-between", fontSize: "0.8125rem", marginBottom: "0.5rem" }}>
                   <span>Shipping</span><span>{Number(selectedOrder.shipping) === 0 ? "FREE" : fmt(Number(selectedOrder.shipping))}</span>
                 </div>
+                {(Number(selectedOrder.sale_savings) > 0 || Number(selectedOrder.discount) > 0) && (
+                  <div style={{ display: "flex", justifyContent: "space-between", fontSize: "0.8125rem", marginBottom: "0.5rem", padding: "0.375rem 0.5rem", background: "#dcfce7", borderRadius: "0.25rem", border: "1px solid #86efac" }}>
+                    <span style={{ fontWeight: 700, color: "#16a34a" }}>✨ Customer Saved</span>
+                    <span style={{ fontWeight: 700, color: "#16a34a" }}>{fmt(Number(selectedOrder.sale_savings || 0) + Number(selectedOrder.discount || 0))}</span>
+                  </div>
+                )}
                 <div style={{ display: "flex", justifyContent: "space-between", fontWeight: 800, fontSize: "1.125rem", borderTop: "1px solid #ddd", paddingTop: "0.5rem" }}>
                   <span>Total</span><span>{fmt(Number(selectedOrder.total))}</span>
                 </div>
