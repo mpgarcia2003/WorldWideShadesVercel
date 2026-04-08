@@ -865,13 +865,13 @@ export default function ThankYouPage() {
               <p className="font-sans text-xs text-warm-gray mt-1">Mon–Fri 9am–6pm EST</p>
             </a>
             <a
-              href="mailto:support@worldwideshades.com"
+              href="mailto:Hello@WorldWideShades.com"
               className="bg-dark-soft border border-white/10 rounded-lg p-6 text-center hover:border-gold/40 transition-colors duration-200"
             >
               <Mail className="w-7 h-7 text-gold mx-auto mb-3" />
               <p className="font-serif font-bold text-white">Email</p>
               <p className="font-sans text-sm text-gold mt-1 break-all">
-                support@worldwideshades.com
+                Hello@WorldWideShades.com
               </p>
               <p className="font-sans text-xs text-warm-gray mt-1">Reply within 2 hours</p>
             </a>
@@ -884,41 +884,6 @@ export default function ThankYouPage() {
               <p className="font-sans text-sm text-gold mt-1">Start Live Chat →</p>
               <p className="font-sans text-xs text-warm-gray mt-1">Avg wait &lt; 1 min</p>
             </a>
-          </div>
-
-          {/* Footer columns */}
-          <div className="border-t border-white/10 pt-12">
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-8 mb-12">
-              {footerColumns.map((col) => (
-                <div key={col.heading}>
-                  <p className="font-sans text-xs font-bold uppercase tracking-widest text-gold mb-4">
-                    {col.heading}
-                  </p>
-                  <ul className="space-y-2.5">
-                    {col.links.map((link) => (
-                      <li key={link.label}>
-                        <a
-                          href={link.href}
-                          className="font-sans text-sm text-warm-gray hover:text-white transition-colors duration-200"
-                        >
-                          {link.label}
-                        </a>
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-              ))}
-            </div>
-
-            {/* Bottom bar */}
-            <div className="border-t border-white/10 pt-6 flex flex-col sm:flex-row items-center justify-between gap-4">
-              <a href="/" className="font-serif text-lg font-bold text-white tracking-tight">
-                World Wide <span className="text-gold">Shades</span>
-              </a>
-              <p className="font-sans text-xs text-warm-gray">
-                © {new Date().getFullYear()} World Wide Shades LLC · Made in Brooklyn, NY · Factory-Direct Custom Shades
-              </p>
-            </div>
           </div>
         </div>
       </section>

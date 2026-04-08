@@ -136,9 +136,6 @@ function StripePaymentForm({
         </svg>
         Your payment info is encrypted and secure
       </div>
-      <div style={{ marginTop: "1rem" }}>
-        <AffirmCallout total={total} />
-      </div>
 
       {/* Place Order — desktop */}
       <div className="desktop-place-order" style={{ marginTop: "1.5rem" }}>

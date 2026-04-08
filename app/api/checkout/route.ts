@@ -23,9 +23,7 @@ export async function POST(req: NextRequest) {
         order_source: "worldwideshades.com",
         ...(metadata || {}),
       },
-      automatic_payment_methods: {
-        enabled: true,
-      },
+      payment_method_types: ["card"],
     });
 
     return NextResponse.json({
