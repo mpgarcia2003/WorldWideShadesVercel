@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { SHAPE_CONFIGS, VALANCE_OPTIONS, SIDE_CHANNEL_OPTIONS, isSaleActive, SALE_CONFIG } from "../../constants";
+import { SHAPE_CONFIGS, VALANCE_OPTIONS, SIDE_CHANNEL_OPTIONS, isSaleActive, SALE_CONFIG, getFabricUrl } from "../../constants";
 import type { CartItem, ShapeType } from "../../types";
 
 // ---------------------------------------------------------------------------
@@ -147,31 +147,47 @@ function CartItemCard({ item }: { item: CartItem }) {
     item.config.sunSensor && "Sun Sensor",
   ].filter(Boolean);
 
+  // Roll type: Standard Roll or Reverse Roll
+  const rollLabel = item.config.rollType === "Reverse" ? "Reverse Roll" : "Standard Roll";
+  // Valance type: separate from roll
+  const valanceLabel = valance?.id === "cassette" ? "Cassette Valance" : valance?.id === "fascia" ? "Metal Fascia" : null;
+
   const specs: [string, string][] = [
-    ["Fabric", item.config.material?.name || "—"],
+    ["Fabric", item.config.material?.name || "\u2014"],
     ["Dimensions", getDimDisplay(item)],
-    ["Mount", item.config.mountType || "—"],
-    ["Control", isMotorized ? `Motorized (${item.config.motorPower || "Rechargeable"})` : item.config.controlType || "—"],
-    ["Roll", item.config.rollType || "Standard"],
+    ["Mount", item.config.mountType || "\u2014"],
+    ["Control", isMotorized ? `Motorized (${item.config.motorPower || "Rechargeable"})` : item.config.controlType || "\u2014"],
+    ["Roll Type", rollLabel],
   ];
 
-  if (hasValance) specs.push(["Valance", valance?.id === "cassette" ? "Cassette Valance" : valance?.id === "fascia" ? "Fascia Valance" : valance?.id || "—"]);
+  if (valanceLabel) specs.push(["Valance", valanceLabel]);
   if (hasSideChannels) specs.push(["Side Channels", "Yes"]);
-  if (motorAddons.length > 0) specs.push(["Motor Add-ons", motorAddons.join(", ")]);
+  if (motorAddons.length > 0) specs.push(["Accessories", motorAddons.join(", ")]);
+
+  // Fabric swatch image
+  const swatchUrl = item.config.material?.cloudinaryId ? getFabricUrl(item.config.material.cloudinaryId, "thumb") : null;
 
   return (
     <div style={{ backgroundColor: "#fff", border: "1px solid #e5ddd0", borderRadius: "0.5rem", padding: "1rem", marginBottom: "0.75rem" }}>
-      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: "0.75rem" }}>
-        <div>
-          <p style={{ fontWeight: 700, fontSize: "0.9375rem", color: "#0c0c0c", margin: "0 0 0.15rem" }}>
-            Custom {item.config.shadeType || "Roller"} Shade
-            {item.config.shape !== "Standard" && ` — ${item.config.shape}`}
+      <div style={{ display: "flex", gap: "0.75rem", marginBottom: "0.75rem" }}>
+        {/* Fabric swatch thumbnail */}
+        {swatchUrl && (
+          <div style={{ width: "56px", height: "56px", borderRadius: "0.375rem", border: "1px solid #e5ddd0", overflow: "hidden", flexShrink: 0 }}>
+            <img src={swatchUrl} alt={item.config.material?.name || "Fabric"} style={{ width: "100%", height: "100%", objectFit: "cover" }} />
+          </div>
+        )}
+        <div style={{ flex: 1, display: "flex", justifyContent: "space-between", alignItems: "flex-start" }}>
+          <div>
+            <p style={{ fontWeight: 700, fontSize: "0.9375rem", color: "#0c0c0c", margin: "0 0 0.15rem" }}>
+              Custom {item.config.shadeType || "Roller"} Shade
+              {item.config.shape !== "Standard" && ` \u2014 ${item.config.shape}`}
+            </p>
+            <p style={{ fontSize: "0.75rem", color: "#9ca3af", margin: 0 }}>Qty: {item.config.quantity || 1}</p>
+          </div>
+          <p style={{ fontWeight: 700, fontSize: "0.9375rem", color: "#0c0c0c", whiteSpace: "nowrap", marginLeft: "0.5rem" }}>
+            {fmt(item.totalPrice)}
           </p>
-          <p style={{ fontSize: "0.75rem", color: "#9ca3af", margin: 0 }}>Qty: {item.config.quantity || 1}</p>
         </div>
-        <p style={{ fontWeight: 700, fontSize: "0.9375rem", color: "#0c0c0c", whiteSpace: "nowrap", marginLeft: "0.5rem" }}>
-          {fmt(item.totalPrice)}
-        </p>
       </div>
 
       <div style={{ display: "grid", gridTemplateColumns: "auto 1fr", gap: "0.25rem 0.75rem", fontSize: "0.75rem" }}>
@@ -184,7 +200,7 @@ function CartItemCard({ item }: { item: CartItem }) {
       </div>
 
       <a href="/cart" style={{ display: "inline-block", marginTop: "0.75rem", fontSize: "0.75rem", color: "#c8a165", fontWeight: 600, textDecoration: "none" }}>
-        ✏ Edit in Cart
+        \u270f Edit in Cart
       </a>
     </div>
   );
@@ -210,6 +226,12 @@ function OrderSummary({
   const discount = promoApplied ? 50 : 0;
   const adjustedTotal = subtotal - discount;
 
+  // Calculate savings from sale discount
+  const saleActive = isSaleActive();
+  const salePercent = SALE_CONFIG.discountPercent;
+  const retailTotal = saleActive ? cart.reduce((sum, item) => sum + (item.totalPrice / (1 - salePercent / 100)), 0) : subtotal;
+  const saleSavings = retailTotal - subtotal;
+
   return (
     <div style={{ backgroundColor: "#fdf9f5", border: "1px solid #e5ddd0", borderRadius: "0.75rem", overflow: "hidden" }}>
       <div style={{ padding: "1.25rem 1.5rem", borderBottom: "1px solid #e5ddd0" }}>
@@ -234,7 +256,19 @@ function OrderSummary({
         {cart.length > 0 && (
           <>
             <div style={{ fontSize: "0.875rem", color: "#374151", marginTop: "0.5rem" }}>
+              {saleActive && retailTotal > subtotal && (
+                <div style={{ display: "flex", justifyContent: "space-between", marginBottom: "0.5rem" }}>
+                  <span>Retail Price</span>
+                  <span style={{ textDecoration: "line-through", color: "#9ca3af" }}>{fmt(retailTotal)}</span>
+                </div>
+              )}
               <PricingRow label={`Subtotal (${cart.reduce((s, i) => s + (i.config.quantity || 1), 0)} item${cart.length > 1 ? "s" : ""})`} value={fmt(subtotal)} />
+              {saleActive && saleSavings > 0 && (
+                <div style={{ display: "flex", justifyContent: "space-between", marginBottom: "0.5rem" }}>
+                  <span style={{ color: "#16a34a", fontWeight: 600 }}>{salePercent}% Sale Savings</span>
+                  <span style={{ color: "#16a34a", fontWeight: 600 }}>-{fmt(saleSavings)}</span>
+                </div>
+              )}
               <div style={{ display: "flex", justifyContent: "space-between", marginBottom: "0.5rem" }}>
                 <span>Shipping</span>
                 <span>
@@ -279,9 +313,9 @@ function OrderSummary({
               </span>
             </div>
 
-            {isSaleActive() && (
-              <p style={{ textAlign: "right", fontSize: "0.75rem", color: "#c8a165", fontWeight: 600, marginTop: "0.25rem" }}>
-                {SALE_CONFIG.discountPercent}% off applied at builder
+            {isSaleActive() && saleSavings > 0 && (
+              <p style={{ textAlign: "right", fontSize: "0.8125rem", color: "#16a34a", fontWeight: 700, marginTop: "0.25rem" }}>
+                You save {fmt(saleSavings + (promoApplied ? 50 : 0))}!
               </p>
             )}
           </>
