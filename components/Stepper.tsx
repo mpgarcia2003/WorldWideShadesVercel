@@ -1084,8 +1084,54 @@ const Stepper: React.FC<StepperProps> = ({
                     </div>
 
                     <div className="space-y-3">
+                        {/* SECTION 1: Roll Type */}
                         <div className="flex items-center gap-2 text-slate-400 font-black uppercase tracking-[0.15em] text-[11px] px-1">
-                            <Layout size={14} /> <span>Valance Style</span>
+                            <Layout size={14} /> <span>Roll Type</span>
+                        </div>
+                        <p className="text-[11px] text-[#94a3b8] px-1 -mt-1">Choose how your fabric rolls — both options are included free</p>
+
+                        <div className="grid grid-cols-1 gap-2">
+                          {VALANCE_OPTIONS.filter(opt => opt.id === 'standard' || opt.id === 'reverse').map(opt => {
+                              const isRollSelected = config.valanceType === opt.id || (opt.id === 'standard' && config.valanceType !== 'reverse' && config.valanceType !== 'standard' && !config.valanceType);
+                              const isActiveRoll = config.valanceType === opt.id || 
+                                (config.valanceType === 'cassette' || config.valanceType === 'fascia') && (config.rollType === (opt.id === 'standard' ? 'Standard' : 'Reverse'));
+                              return (
+                                  <button 
+                                      key={opt.id} 
+                                      onClick={() => {
+                                        // If a cover is selected, keep it and update rollType
+                                        if (config.valanceType === 'cassette' || config.valanceType === 'fascia') {
+                                          updateConfig('rollType', opt.id === 'reverse' ? 'Reverse' : 'Standard');
+                                        } else {
+                                          updateConfig('valanceType', opt.id as any);
+                                          updateConfig('rollType', opt.id === 'reverse' ? 'Reverse' : 'Standard');
+                                        }
+                                      }} 
+                                      className={`w-full p-4 border-2 transition-all duration-300 relative ${
+                                          isActiveRoll 
+                                          ? 'border-[#c8a165] bg-[#fdfbf7] ring-2 ring-[#c8a165] shadow-lg scale-[1.01] rounded-xl' 
+                                          : 'border-gray-200 hover:border-gray-300 bg-white rounded-xl shadow-sm'
+                                      }`}
+                                      style={isActiveRoll ? { boxShadow: '0 0 0 2px #c8a165, 0 6px 20px rgba(200,161,101,0.2)' } : {}}
+                                  >
+                                      <div className="flex items-center justify-between">
+                                          <div className="text-left">
+                                              <div className="text-[13px] font-semibold text-[#1a1a1a] leading-tight mb-0.5" style={{ fontFamily: "'Playfair Display', Georgia, serif" }}>{opt.label}</div>
+                                              <div className="text-[11px] text-[#777] font-medium leading-tight">{opt.desc}</div>
+                                          </div>
+                                          <div className="text-[10px] font-bold uppercase tracking-widest shrink-0 ml-3">
+                                              <span className="text-green-600">Included</span>
+                                          </div>
+                                      </div>
+                                  </button>
+                              );
+                          })}
+                        </div>
+
+                        {/* SECTION 2: Valance Cover (optional upgrade) */}
+                        <div className="flex items-center gap-2 text-slate-400 font-black uppercase tracking-[0.15em] text-[11px] px-1 mt-6">
+                            <Layout size={14} /> <span>Valance Cover</span>
+                            <span className="text-[9px] font-medium normal-case tracking-normal text-[#94a3b8]">(optional upgrade)</span>
                         </div>
                         
                         <div className="w-full rounded-xl overflow-hidden border border-gray-200 mb-2 shadow-sm bg-white">
@@ -1097,7 +1143,31 @@ const Stepper: React.FC<StepperProps> = ({
                         </div>
 
                         <div className="grid grid-cols-1 gap-2">
-                          {VALANCE_OPTIONS.map(opt => {
+                          {/* No Cover option */}
+                          <button 
+                              onClick={() => {
+                                const roll = config.rollType === 'Reverse' ? 'reverse' : 'standard';
+                                updateConfig('valanceType', roll as any);
+                              }} 
+                              className={`w-full p-4 border-2 transition-all duration-300 relative ${
+                                  (config.valanceType === 'standard' || config.valanceType === 'reverse')
+                                  ? 'border-[#c8a165] bg-[#fdfbf7] ring-2 ring-[#c8a165] shadow-lg scale-[1.01] rounded-xl' 
+                                  : 'border-gray-200 hover:border-gray-300 bg-white rounded-xl shadow-sm'
+                              }`}
+                              style={(config.valanceType === 'standard' || config.valanceType === 'reverse') ? { boxShadow: '0 0 0 2px #c8a165, 0 6px 20px rgba(200,161,101,0.2)' } : {}}
+                          >
+                              <div className="flex items-center justify-between">
+                                  <div className="text-left">
+                                      <div className="text-[13px] font-semibold text-[#1a1a1a] leading-tight mb-0.5" style={{ fontFamily: "'Playfair Display', Georgia, serif" }}>No Cover</div>
+                                      <div className="text-[11px] text-[#777] font-medium leading-tight">Keep the clean, minimal look</div>
+                                  </div>
+                                  <div className="text-[10px] font-bold uppercase tracking-widest shrink-0 ml-3">
+                                      <span className="text-green-600">Included</span>
+                                  </div>
+                              </div>
+                          </button>
+
+                          {VALANCE_OPTIONS.filter(opt => opt.id === 'cassette' || opt.id === 'fascia').map(opt => {
                               const isSelected = config.valanceType === opt.id;
                               return (
                                   <button 
@@ -1121,7 +1191,7 @@ const Stepper: React.FC<StepperProps> = ({
                                               <div className="text-[11px] text-[#777] font-medium leading-tight">{opt.desc}</div>
                                           </div>
                                           <div className="text-[10px] font-bold uppercase tracking-widest shrink-0 ml-3" style={{ color: '#c8a165' }}>
-                                              {opt.pricePerInch === 0 ? <span className="text-green-600">Included</span> : <><span className="line-through text-[#ccc] font-normal">${applyMarkup(opt.pricePerInch).toFixed(2)}</span> +${opt.pricePerInch.toFixed(2)}/in</>}
+                                              <span className="line-through text-[#ccc] font-normal">${applyMarkup(opt.pricePerInch).toFixed(2)}</span> +${opt.pricePerInch.toFixed(2)}/in
                                           </div>
                                       </div>
                                   </button>
