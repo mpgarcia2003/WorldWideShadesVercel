@@ -63,70 +63,36 @@ const MeasurementInputs: React.FC<{
       </p>
     </div>
     
-    <div className="bg-slate-50 p-2 rounded-lg flex flex-col items-center gap-2 border border-slate-200 mb-3">
-        <button
-          type="button"
-          onClick={() => setShowGuide(!showGuide)}
-          className="self-end text-[10px] font-semibold text-[#c8a165] hover:text-[#a8844d] underline underline-offset-2 cursor-pointer transition-colors flex items-center gap-1"
-        >
-          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
-          {showGuide ? 'Hide guide' : 'How to measure (30 sec guide)'}
-        </button>
-
-        {/* Inline Measuring Guide */}
-        {showGuide && (
-          <div className="w-full bg-white rounded-xl p-4 border border-[#e8e5de] text-left space-y-4" style={{ animation: 'fadeUp 0.3s ease forwards' }}>
-            <div>
-              <h4 className="text-[13px] font-semibold text-[#1a1a1a] mb-1" style={{ fontFamily: "'Playfair Display', Georgia, serif" }}>What you'll need</h4>
-              <p className="text-[11px] text-[#777]">Steel tape measure, pencil & notepad, step stool if needed</p>
-            </div>
-
-            <div>
-              <h4 className="text-[13px] font-semibold text-[#1a1a1a] mb-1.5" style={{ fontFamily: "'Playfair Display', Georgia, serif" }}>Inside Mount <span className="text-[9px] font-bold text-[#c8a165] uppercase">(most common)</span></h4>
-              <div className="space-y-1.5">
-                <div className="flex items-start gap-2">
-                  <span className="text-[10px] font-bold text-white bg-[#c8a165] w-4 h-4 rounded-full flex items-center justify-center shrink-0 mt-0.5">1</span>
-                  <p className="text-[11px] text-[#555]"><span className="font-semibold">Width:</span> Measure inside of frame at top, middle & bottom. Use the <span className="font-semibold text-[#1a1a1a]">narrowest</span> measurement.</p>
-                </div>
-                <div className="flex items-start gap-2">
-                  <span className="text-[10px] font-bold text-white bg-[#c8a165] w-4 h-4 rounded-full flex items-center justify-center shrink-0 mt-0.5">2</span>
-                  <p className="text-[11px] text-[#555]"><span className="font-semibold">Height:</span> Measure inside of frame at left, center & right. Use the <span className="font-semibold text-[#1a1a1a]">tallest</span> measurement.</p>
-                </div>
-                <div className="flex items-start gap-2">
-                  <span className="text-[10px] font-bold text-white bg-[#c8a165] w-4 h-4 rounded-full flex items-center justify-center shrink-0 mt-0.5">3</span>
-                  <p className="text-[11px] text-[#555]">Measure to the nearest <span className="font-semibold">1/8 inch</span>. Use the fraction dropdown.</p>
-                </div>
-              </div>
-            </div>
-
-            <div>
-              <h4 className="text-[13px] font-semibold text-[#1a1a1a] mb-1.5" style={{ fontFamily: "'Playfair Display', Georgia, serif" }}>Outside Mount</h4>
-              <div className="space-y-1.5">
-                <div className="flex items-start gap-2">
-                  <span className="text-[10px] font-bold text-white bg-[#888] w-4 h-4 rounded-full flex items-center justify-center shrink-0 mt-0.5">1</span>
-                  <p className="text-[11px] text-[#555]"><span className="font-semibold">Width:</span> Measure the total width of your window opening. <span className="font-semibold text-[#1a1a1a]">We’ll add the overlap automatically.</span></p>
-                </div>
-                <div className="flex items-start gap-2">
-                  <span className="text-[10px] font-bold text-white bg-[#888] w-4 h-4 rounded-full flex items-center justify-center shrink-0 mt-0.5">2</span>
-                  <p className="text-[11px] text-[#555]"><span className="font-semibold">Height:</span> From where you want the top of the shade down to the sill. Use the <span className="font-semibold text-[#1a1a1a]">tallest</span> of 3 measurements.</p>
-                </div>
-              </div>
-            </div>
-
-            <div className="bg-[#f5f0e6] rounded-lg p-2.5 border border-[#e8dcc8]">
-              <p className="text-[10px] font-semibold text-[#8b6d3f]">PRO TIP: Enter your exact window size — our factory handles all deductions for a perfect fit.</p>
-            </div>
-
-            <div className="text-center">
-              <a href="tel:+18446742716" className="text-[10px] font-medium text-[#999] hover:text-[#c8a165] transition-colors">Need help? Call (844) 674-2716</a>
-            </div>
-          </div>
-        )}
-
-        <img src={shapeData.diagram} className="max-h-48 object-contain" alt="Shape Diagram" />
+    {/* Compact diagram + guide toggle */}
+    <div className="flex items-center gap-3 bg-slate-50 p-2 rounded-lg border border-slate-200 mb-2">
+        <img src={shapeData.diagram} className="h-16 w-16 object-contain shrink-0" alt="Shape Diagram" />
+        <div className="flex-1">
+          <p className="text-[10px] font-semibold text-slate-600">Measure your window opening</p>
+          <button
+            type="button"
+            onClick={() => setShowGuide(!showGuide)}
+            className="text-[10px] font-semibold text-[#c8a165] hover:text-[#a8844d] underline underline-offset-2 cursor-pointer transition-colors flex items-center gap-1 mt-0.5"
+          >
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+            {showGuide ? 'Hide guide' : 'How to measure (30 sec guide)'}
+          </button>
+        </div>
+    </div>
+    {showGuide && (
+      <div className="w-full bg-white rounded-xl p-3 border border-[#e8e5de] text-left space-y-3 mb-2" style={{ animation: 'fadeUp 0.3s ease forwards' }}>
+        <div>
+          <h4 className="text-[12px] font-semibold text-[#1a1a1a] mb-1" style={{ fontFamily: "'Playfair Display', Georgia, serif" }}>Inside Mount <span className="text-[9px] font-bold text-[#c8a165] uppercase">(most common)</span></h4>
+          <p className="text-[10px] text-[#555]"><b>Width:</b> Narrowest of 3 measurements. <b>Height:</b> Tallest of 3. Measure to 1/8".</p>
+        </div>
+        <div className="bg-[#f5f0e6] rounded-lg p-2 border border-[#e8dcc8]">
+          <p className="text-[10px] font-semibold text-[#8b6d3f]">PRO TIP: Enter exact window size — factory handles deductions.</p>
+        </div>
+      </div>
+    )}
     </div>
     
-    <div className="space-y-2">
+    {/* Measurement inputs — side by side for standard shapes */}
+    <div className={shapeData.inputs.length === 2 ? 'grid grid-cols-2 gap-2' : 'space-y-2'}>
         {shapeData.inputs.map((input: any) => {
             const currentVal = (input.key === 'width' || input.key === 'height') 
                 ? config[input.key as 'width' | 'height'] 
@@ -137,16 +103,16 @@ const MeasurementInputs: React.FC<{
             return (
                 <div key={input.key} className="bg-white border border-gray-100 rounded-lg p-2 shadow-sm">
                     <label className="text-[8px] font-black uppercase text-slate-400 block mb-1 tracking-widest">{input.label}</label>
-                    <div className="flex gap-2">
+                    <div className="flex gap-1.5">
                         <div className="flex-1 relative">
-                            <input type="number" value={currentVal || ''} onChange={e => handleMeasurementChange(input.key, Number(e.target.value))} className="w-full border border-gray-200 p-1 rounded-md focus:ring-1 focus:ring-[#c8a165] outline-none text-base font-bold" placeholder={`Enter ${input.label.toLowerCase()} (inches)`}/>
+                            <input type="number" value={currentVal || ''} onChange={e => handleMeasurementChange(input.key, Number(e.target.value))} className="w-full border border-gray-200 p-1.5 rounded-md focus:ring-1 focus:ring-[#c8a165] outline-none text-base font-bold" placeholder="Inches"/>
                             {currentVal > 0 ? (
-                              <span className="absolute right-14 top-1/2 -translate-y-1/2 text-green-500 pointer-events-none"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M20 6L9 17l-5-5"/></svg></span>
+                              <span className="absolute right-10 top-1/2 -translate-y-1/2 text-green-500 pointer-events-none"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M20 6L9 17l-5-5"/></svg></span>
                             ) : null}
                             <span className="absolute right-2 top-1/2 -translate-y-1/2 text-[8px] font-bold text-gray-400 pointer-events-none">IN</span>
                         </div>
-                        <div className="w-20">
-                            <select value={currentFrac} onChange={e => handleFractionChange(input.key, e.target.value)} className="w-full border border-gray-200 p-1 rounded-md focus:ring-1 focus:ring-[#c8a165] outline-none text-base bg-gray-50 font-medium">
+                        <div className="w-16">
+                            <select value={currentFrac} onChange={e => handleFractionChange(input.key, e.target.value)} className="w-full border border-gray-200 p-1.5 rounded-md focus:ring-1 focus:ring-[#c8a165] outline-none text-sm bg-gray-50 font-medium">
                                 {FRACTIONS.map(f => <option key={f} value={f}>{f === '0' ? t('common.none') : f}</option>)}
                             </select>
                         </div>
@@ -155,6 +121,7 @@ const MeasurementInputs: React.FC<{
             );
         })}
     </div>
+    <p className="text-center text-[11px] text-[#888] font-medium mt-1">Example: 36" W × 60" H</p>
     <p className="text-center text-[12px] text-[#888] font-medium mt-2">Example: 36" W × 60" H</p>
   </div>
   );
@@ -1310,13 +1277,13 @@ const Stepper: React.FC<StepperProps> = ({
                 </div>
               )}
 
-              {/* CONTINUE BUTTON — hidden on Step 0, sticky for Step 1 (measurements) */}
+              {/* CONTINUE BUTTON — hidden on Step 0, sticky on ALL steps */}
               {index !== 0 && (() => {
                 const hasMeasurements = config.width > 0 && config.height > 0;
                 const isMeasureStep = index === 1;
                 const isDisabled = isMeasureStep && !hasMeasurements;
                 return (
-                <div className={isMeasureStep ? 'sticky bottom-0 z-10 bg-white pt-3 pb-1 -mx-2 px-2 shadow-[0_-8px_16px_rgba(255,255,255,0.9)]' : ''}>
+                <div className='sticky bottom-0 z-10 bg-white pt-3 pb-1 -mx-2 px-2 shadow-[0_-8px_16px_rgba(255,255,255,0.9)]'>
                 <button
                   onClick={() => !isDisabled && onConfirmStep(index)}
                   disabled={isDisabled}
