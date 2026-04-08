@@ -1128,12 +1128,12 @@ const Stepper: React.FC<StepperProps> = ({
                                   <button 
                                       key={opt.id} 
                                       onClick={() => {
-                                        // If a cover is selected, keep it and update rollType
                                         if (config.valanceType === 'cassette' || config.valanceType === 'fascia') {
-                                          updateConfig('rollType', opt.id === 'reverse' ? 'Reverse' : 'Standard');
+                                          // Keep the cover, just change roll direction
+                                          setConfig({ ...config, rollType: opt.id === 'reverse' ? 'Reverse' : 'Standard' });
                                         } else {
-                                          updateConfig('valanceType', opt.id as any);
-                                          updateConfig('rollType', opt.id === 'reverse' ? 'Reverse' : 'Standard');
+                                          // No cover selected — set both valanceType and rollType in one call
+                                          setConfig({ ...config, valanceType: opt.id as any, rollType: opt.id === 'reverse' ? 'Reverse' : 'Standard' });
                                         }
                                       }} 
                                       className={`w-full p-4 border-2 transition-all duration-300 relative ${
