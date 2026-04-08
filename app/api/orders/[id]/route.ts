@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createAdminClient } from "@/lib/supabase/client";
+import { sendStatusUpdate } from "@/lib/email/send";
 import Stripe from "stripe";
 
 export const dynamic = 'force-dynamic';
@@ -117,7 +118,12 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id
     return NextResponse.json({ error: error.message }, { status: 500 });
   }
 
-  return NextResponse.json({ order: data });
+  // Send status update email to customer (non-blocking)
+  if (body.status && ["in_production", "quality_check", "shipped", "delivered"].includes(body.status)) {
+    sendStatusUpdate(data, body.status, data.tracking_number, data.tracking_url).catch(console.error);
+  }
+
+  return NextResponse.json({ order: data, customer_stats: null });
 }
 
 // DELETE /api/orders/[id] — cancel + refund order

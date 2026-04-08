@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createAdminClient } from "@/lib/supabase/client";
+import { sendOrderConfirmation, sendNewOrderAlert } from "@/lib/email/send";
 
 export const dynamic = 'force-dynamic';
 
@@ -169,6 +170,11 @@ export async function POST(req: NextRequest) {
     status: "received",
     notes: "Order placed",
   });
+
+  // Send emails (non-blocking)
+  const orderItems = body.items || [];
+  sendOrderConfirmation(order, orderItems).catch(console.error);
+  sendNewOrderAlert(order, orderItems).catch(console.error);
 
   return NextResponse.json({ order, order_number: orderNumber }, { status: 201 });
 }
