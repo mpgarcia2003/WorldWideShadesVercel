@@ -281,7 +281,7 @@ function OrderSummary({
 
             {isSaleActive() && (
               <p style={{ textAlign: "right", fontSize: "0.75rem", color: "#c8a165", fontWeight: 600, marginTop: "0.25rem" }}>
-                {SALE_CONFIG.percentage}% off applied at builder
+                {SALE_CONFIG.discountPercent}% off applied at builder
               </p>
             )}
           </>
