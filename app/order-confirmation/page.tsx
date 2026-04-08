@@ -268,21 +268,6 @@ export default function ThankYouPage() {
         </div>
       )}
 
-      {/* ─── HEADER ───────────────────────────────────────────── */}
-      <header className="bg-white border-b border-cream-dark sticky top-0 z-50">
-        <div className="container-site flex items-center justify-between px-4 py-4">
-          <a href="/" className="font-serif text-xl font-bold text-dark tracking-tight">
-            World Wide <span className="text-gold">Shades</span>
-          </a>
-          <a
-            href="tel:+18446742716"
-            className="font-sans text-sm font-semibold text-dark hover:text-gold transition-colors duration-200 flex items-center gap-2"
-          >
-            <Phone className="w-4 h-4" />
-            (844) 674-2716
-          </a>
-        </div>
-      </header>
 
       {/* ─── SECTION 1: CELEBRATION HERO ──────────────────────── */}
       <section className="bg-dark section-padding relative overflow-hidden">
