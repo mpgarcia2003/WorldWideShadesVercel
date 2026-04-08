@@ -84,10 +84,12 @@ function StripePaymentForm({
   total,
   isProcessing,
   setIsProcessing,
+  orderData,
 }: {
   total: number;
   isProcessing: boolean;
   setIsProcessing: (v: boolean) => void;
+  orderData: any;
 }) {
   const stripe = useStripe();
   const elements = useElements();
@@ -110,6 +112,19 @@ function StripePaymentForm({
       setErrorMessage(error.message || "Payment failed. Please try again.");
       setIsProcessing(false);
     } else if (paymentIntent && paymentIntent.status === "succeeded") {
+      // Save order to Supabase
+      try {
+        await fetch("/api/orders", {
+          method: "POST",
+          headers: { "Content-Type": "application/json", "x-admin-password": "wws-admin-2026" },
+          body: JSON.stringify({
+            ...orderData,
+            stripe_payment_intent_id: paymentIntent.id,
+          }),
+        });
+      } catch (e) {
+        console.error("Failed to save order:", e);
+      }
       // Clear cart and redirect
       localStorage.removeItem("wws_cart_v1");
       window.location.href = "/order-confirmation";
@@ -680,7 +695,43 @@ export default function CheckoutPage() {
             {/* Stripe Payment — card, Apple Pay, Google Pay */}
             {clientSecret ? (
               <Elements stripe={stripePromise} options={{ clientSecret, appearance: { theme: "stripe", variables: { colorPrimary: "#c8a165", fontFamily: "'DM Sans', sans-serif" } } }}>
-                <StripePaymentForm total={adjustedTotal} isProcessing={isProcessing} setIsProcessing={setIsProcessing} />
+                <StripePaymentForm total={adjustedTotal} isProcessing={isProcessing} setIsProcessing={setIsProcessing} orderData={{
+                  email,
+                  phone,
+                  subtotal,
+                  discount,
+                  tax: 0,
+                  shipping: 0,
+                  total: adjustedTotal,
+                  promo_code: promoApplied ? promoCode : undefined,
+                  shipping_first_name: firstName,
+                  shipping_last_name: lastName,
+                  shipping_address1: address1,
+                  shipping_address2: address2,
+                  shipping_city: city,
+                  shipping_state: state,
+                  shipping_zip: zip,
+                  estimated_delivery: getEstimatedDelivery(),
+                  items: cart.map((item) => ({
+                    shade_type: item.config.fabricType === 'blackout' ? 'Custom Blackout Roller Shade' : item.config.fabricType === 'light_filtering' ? 'Custom Light Filtering Roller Shade' : 'Custom Roller Shade',
+                    shape: item.config.shape || 'Standard',
+                    fabric_name: item.config.fabricName || '',
+                    fabric_id: item.config.fabricId || '',
+                    width: item.config.width,
+                    width_fraction: item.config.widthFraction || '0',
+                    height: item.config.height,
+                    height_fraction: item.config.heightFraction || '0',
+                    custom_dims: item.config.customDims || null,
+                    mount_type: item.config.mountType || 'Inside Mount',
+                    control_type: item.config.controlType || 'Manual',
+                    motor_power: item.config.motorPower || null,
+                    roll_type: item.config.rollType || 'Standard',
+                    valance_type: item.config.valanceType || 'None',
+                    quantity: item.config.quantity || 1,
+                    unit_price: item.totalPrice / (item.config.quantity || 1),
+                    total_price: item.totalPrice,
+                  })),
+                }} />
               </Elements>
             ) : stripeError ? (
               <div className="section-card">
