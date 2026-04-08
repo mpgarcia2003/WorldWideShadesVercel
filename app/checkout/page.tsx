@@ -1,8 +1,12 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
+import { loadStripe } from "@stripe/stripe-js";
+import { Elements, PaymentElement, useStripe, useElements } from "@stripe/react-stripe-js";
 import { SHAPE_CONFIGS, VALANCE_OPTIONS, SIDE_CHANNEL_OPTIONS, isSaleActive, SALE_CONFIG, getFabricUrl } from "../../constants";
 import type { CartItem, ShapeType } from "../../types";
+
+const stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY!);
 
 // ---------------------------------------------------------------------------
 // Helpers
@@ -73,32 +77,85 @@ function CheckoutHeader() {
   );
 }
 
-function MockPaymentElement() {
+// ---------------------------------------------------------------------------
+// Stripe Payment Form (rendered inside <Elements> provider)
+// ---------------------------------------------------------------------------
+function StripePaymentForm({
+  total,
+  isProcessing,
+  setIsProcessing,
+}: {
+  total: number;
+  isProcessing: boolean;
+  setIsProcessing: (v: boolean) => void;
+}) {
+  const stripe = useStripe();
+  const elements = useElements();
+  const [errorMessage, setErrorMessage] = useState("");
+
+  async function handleSubmit() {
+    if (!stripe || !elements) return;
+    setIsProcessing(true);
+    setErrorMessage("");
+
+    const { error, paymentIntent } = await stripe.confirmPayment({
+      elements,
+      confirmParams: {
+        return_url: `${window.location.origin}/order-confirmation`,
+      },
+      redirect: "if_required",
+    });
+
+    if (error) {
+      setErrorMessage(error.message || "Payment failed. Please try again.");
+      setIsProcessing(false);
+    } else if (paymentIntent && paymentIntent.status === "succeeded") {
+      // Clear cart and redirect
+      localStorage.removeItem("wws_cart_v1");
+      window.location.href = "/order-confirmation";
+    } else {
+      setIsProcessing(false);
+    }
+  }
+
   return (
-    <div style={{ border: "1px solid #e2e8f0", borderRadius: "0.5rem", backgroundColor: "#f8fafc", padding: "1rem" }}>
-      <div style={{ marginBottom: "0.75rem" }}>
-        <label style={{ display: "block", fontSize: "0.75rem", fontWeight: 500, color: "#6b7280", marginBottom: "0.35rem" }}>Card number</label>
-        <div style={{ display: "flex", alignItems: "center", gap: "0.5rem", backgroundColor: "#fff", border: "1px solid #d1d5db", borderRadius: "0.375rem", padding: "0.625rem 0.75rem" }}>
-          <svg xmlns="http://www.w3.org/2000/svg" width="22" height="16" viewBox="0 0 38 24" fill="none" aria-hidden="true">
-            <rect width="38" height="24" rx="4" fill="#E8E8E8" />
-            <rect x="1" y="7" width="36" height="5" fill="#C0C0C0" />
-          </svg>
-          <span style={{ color: "#9ca3af", fontSize: "0.875rem", letterSpacing: "0.15em" }}>1234 1234 1234 1234</span>
-        </div>
+    <div className="section-card">
+      <h2 className="section-heading">Payment</h2>
+      <PaymentElement
+        options={{
+          layout: "tabs",
+          defaultValues: { billingDetails: { address: { country: "US" } } },
+        }}
+      />
+      {errorMessage && (
+        <p style={{ color: "#dc2626", fontSize: "0.875rem", marginTop: "0.75rem" }}>{errorMessage}</p>
+      )}
+      <div style={{ display: "flex", alignItems: "center", gap: "0.5rem", marginTop: "0.875rem", fontSize: "0.8125rem", color: "#6b7280" }}>
+        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#16a34a" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+          <rect x="3" y="11" width="18" height="11" rx="2" ry="2" /><path d="M7 11V7a5 5 0 0 1 10 0v4" />
+        </svg>
+        Your payment info is encrypted and secure
       </div>
-      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "0.75rem" }}>
-        <div>
-          <label style={{ display: "block", fontSize: "0.75rem", fontWeight: 500, color: "#6b7280", marginBottom: "0.35rem" }}>Expiration date</label>
-          <div style={{ backgroundColor: "#fff", border: "1px solid #d1d5db", borderRadius: "0.375rem", padding: "0.625rem 0.75rem", color: "#9ca3af", fontSize: "0.875rem" }}>MM / YY</div>
-        </div>
-        <div>
-          <label style={{ display: "block", fontSize: "0.75rem", fontWeight: 500, color: "#6b7280", marginBottom: "0.35rem" }}>Security code</label>
-          <div style={{ backgroundColor: "#fff", border: "1px solid #d1d5db", borderRadius: "0.375rem", padding: "0.625rem 0.75rem", color: "#9ca3af", fontSize: "0.875rem" }}>CVC</div>
-        </div>
+      <div style={{ marginTop: "1rem" }}>
+        <AffirmCallout total={total} />
       </div>
-      <p style={{ marginTop: "0.75rem", fontSize: "0.7rem", color: "#9ca3af", textAlign: "center" }}>
-        Powered by <span style={{ fontWeight: 600, color: "#635bff" }}>stripe</span> — live payment form coming soon
-      </p>
+
+      {/* Place Order — desktop */}
+      <div className="desktop-place-order" style={{ marginTop: "1.5rem" }}>
+        <button
+          className="place-order-btn"
+          onClick={handleSubmit}
+          disabled={isProcessing || !stripe}
+          aria-busy={isProcessing}
+        >
+          {isProcessing ? (<><SpinnerIcon /> Processing…</>) : (`Place Order — ${fmt(total)}`)}
+        </button>
+        <p style={{ textAlign: "center", fontSize: "0.75rem", color: "#9ca3af", marginTop: "0.75rem", lineHeight: 1.5 }}>
+          By placing this order, you agree to our{" "}
+          <a href="/terms" style={{ color: "#c8a165", textDecoration: "none" }}>Terms of Service</a>{" "}and{" "}
+          <a href="/privacy" style={{ color: "#c8a165", textDecoration: "none" }}>Privacy Policy</a>.
+        </p>
+      </div>
     </div>
   );
 }
@@ -439,6 +496,8 @@ export default function CheckoutPage() {
   const [promoCode, setPromoCode] = useState("");
   const [promoApplied, setPromoApplied] = useState(false);
   const [isProcessing, setIsProcessing] = useState(false);
+  const [clientSecret, setClientSecret] = useState<string | null>(null);
+  const [stripeError, setStripeError] = useState("");
 
   // Load cart from localStorage
   useEffect(() => {
@@ -449,16 +508,35 @@ export default function CheckoutPage() {
     setLoaded(true);
   }, []);
 
+  // Create PaymentIntent when cart is loaded
+  useEffect(() => {
+    if (!loaded || cart.length === 0) return;
+    const total = cart.reduce((sum, item) => sum + item.totalPrice, 0);
+    const discount = promoApplied ? 50 : 0;
+    const amountInCents = Math.round((total - discount) * 100);
+    if (amountInCents < 50) return;
+
+    setStripeError("");
+    fetch("/api/checkout", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        amount: amountInCents,
+        email: email || undefined,
+        metadata: { items: cart.length.toString() },
+      }),
+    })
+      .then((res) => res.json())
+      .then((data) => {
+        if (data.clientSecret) setClientSecret(data.clientSecret);
+        else setStripeError(data.error || "Could not initialize payment.");
+      })
+      .catch(() => setStripeError("Could not connect to payment server."));
+  }, [loaded, cart, promoApplied]); // re-create if promo changes
+
   const subtotal = cart.reduce((sum, item) => sum + item.totalPrice, 0);
   const discount = promoApplied ? 50 : 0;
   const adjustedTotal = subtotal - discount;
-
-  function handlePlaceOrder() {
-    if (cart.length === 0) return;
-    setIsProcessing(true);
-    // TODO: Create Stripe PaymentIntent via /api/checkout, confirm payment, then redirect to /order-confirmation
-    setTimeout(() => setIsProcessing(false), 2800);
-  }
 
   function handleUseBillingChange(checked: boolean) {
     setUseBillingAddress(checked);
@@ -528,32 +606,6 @@ export default function CheckoutPage() {
 
           {/* LEFT COLUMN */}
           <div>
-            {/* Express Checkout */}
-            <div className="section-card">
-              <h2 className="section-heading">Express Checkout</h2>
-              <div style={{ display: "flex", gap: "0.75rem" }}>
-                <button className="express-btn" aria-label="Pay with Apple Pay">
-                  <svg viewBox="0 0 165 40" height="18" fill="white" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-                    <path d="M150.7 0H14.3C6.4 0 0 6.4 0 14.3v11.4C0 33.6 6.4 40 14.3 40h136.4c7.9 0 14.3-6.4 14.3-14.3V14.3C165 6.4 158.6 0 150.7 0z" fill="#000"/>
-                    <path d="M43.2 13.1c1.2-1.5 2-3.5 1.8-5.5-1.7.1-3.8 1.2-5 2.6-1.1 1.3-2.1 3.3-1.8 5.3 1.9.1 3.8-1 5-2.4zm1.8 2.6c-2.8-.2-5.1 1.6-6.4 1.6s-3.3-1.5-5.5-1.5c-2.8 0-5.4 1.6-6.9 4.2-2.9 5.1-.8 12.6 2.1 16.7 1.4 2 3.1 4.3 5.3 4.2 2.1-.1 2.9-1.4 5.5-1.4 2.5 0 3.2 1.4 5.4 1.3 2.3-.1 3.7-2.1 5.1-4.1 1.6-2.3 2.2-4.6 2.3-4.7-.1 0-4.4-1.7-4.4-6.7 0-4.2 3.4-6.2 3.6-6.3-2-2.9-5.1-3.3-6.1-3.3zm23.3-5.7v30.6h4.5V30h6.2c5.7 0 9.7-3.9 9.7-9.5s-3.9-9.5-9.6-9.5h-10.8zm4.5 3.8h5.2c3.9 0 6.1 2.1 6.1 5.7s-2.2 5.7-6.2 5.7h-5.1V13.8zm24 27.2c2.8 0 5.4-1.4 6.6-3.7h.1v3.4h4.2V24.9c0-4.2-3.3-6.9-8.5-6.9-4.8 0-8.3 2.7-8.4 6.5h4.1c.3-1.8 2-2.9 4.2-2.9 2.7 0 4.2 1.3 4.2 3.6v1.6l-5.6.3c-5.2.3-8 2.4-8 6.1.1 3.8 2.9 6.3 7.1 6.3v-.5zm1.2-3.4c-2.4 0-3.9-1.1-3.9-2.9 0-1.8 1.5-2.9 4.2-3.1l5-.3v1.6c0 2.7-2.3 4.7-5.3 4.7zm16.5 11.2c4.4 0 6.5-1.7 8.3-6.8l7.9-22.3h-4.6l-5.3 17.2h-.1l-5.3-17.2h-4.7l7.6 21.3-.4 1.3c-.7 2.2-1.8 3-3.8 3-.4 0-1 0-1.3-.1v3.5c.3.1 1.3.1 1.7.1z" fill="#fff"/>
-                  </svg>
-                </button>
-                <button className="express-btn" aria-label="Pay with Google Pay">
-                  <svg viewBox="0 0 165 40" height="18" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-                    <path d="M150.7 0H14.3C6.4 0 0 6.4 0 14.3v11.4C0 33.6 6.4 40 14.3 40h136.4c7.9 0 14.3-6.4 14.3-14.3V14.3C165 6.4 158.6 0 150.7 0z" fill="#000"/>
-                    <path d="M67.8 20.5v7.7h-2.4V9.6h6.4c1.6 0 3 .5 4.1 1.6 1.2 1 1.7 2.3 1.7 3.8s-.6 2.8-1.7 3.8c-1.1 1.1-2.5 1.6-4.1 1.6h-4zm0-8.5v6.2h4.1c1 0 1.8-.3 2.4-1 .7-.7 1-1.4 1-2.1 0-.8-.3-1.5-1-2.1-.6-.7-1.4-1-2.4-1h-4.1z" fill="#fff"/>
-                    <path d="M84.1 14.8c1.8 0 3.2.5 4.2 1.5 1 1 1.5 2.3 1.5 4v8h-2.3v-1.8h-.1c-1 1.5-2.3 2.2-3.9 2.2-1.4 0-2.5-.4-3.5-1.2-1-.8-1.4-1.9-1.4-3.1 0-1.3.5-2.4 1.5-3.1 1-.8 2.4-1.2 4.1-1.2 1.5 0 2.7.3 3.6.8v-.6c0-.9-.4-1.7-1.1-2.3-.7-.6-1.5-.9-2.4-.9-1.4 0-2.5.6-3.3 1.8l-2.1-1.3c1.2-1.7 2.9-2.6 5.2-2.6v-.1zm-3.2 9.4c0 .7.3 1.2.9 1.7.6.4 1.2.7 2 .7 1 0 2-.4 2.8-1.2.8-.8 1.3-1.7 1.3-2.7-.8-.6-1.8-.9-3.2-.9-1 0-1.8.3-2.5.7-.9.5-1.3 1.1-1.3 1.7z" fill="#fff"/>
-                    <path d="M100.1 15.2l-8.1 18.6h-2.4l3-6.6-5.3-12h2.5l3.9 9.4h.1l3.8-9.4h2.5z" fill="#fff"/>
-                    <path d="M54.4 20.2c0-.7-.1-1.4-.2-2.1H43.6v4h6.1c-.3 1.4-1 2.6-2.2 3.4v2.8h3.6c2.1-1.9 3.3-4.7 3.3-8.1z" fill="#4285F4"/>
-                    <path d="M43.6 28.8c3 0 5.5-1 7.3-2.6l-3.6-2.8c-1 .7-2.2 1-3.8 1-2.9 0-5.4-2-6.3-4.6h-3.7v2.9c1.9 3.7 5.7 6.1 9.9 6.1h.2z" fill="#34A853"/>
-                    <path d="M37.3 19.8c-.5-1.4-.5-2.9 0-4.3v-2.9h-3.7c-1.6 3.1-1.6 6.9 0 10l3.7-2.8z" fill="#FBBC04"/>
-                    <path d="M43.6 10.9c1.6 0 3.1.6 4.3 1.7l3.2-3.2c-2-1.9-4.6-2.9-7.5-2.9-4.3 0-8.1 2.4-9.9 6.1l3.7 2.9c.8-2.6 3.3-4.6 6.2-4.6z" fill="#EA4335"/>
-                  </svg>
-                </button>
-              </div>
-              <div className="divider-text">— or continue below —</div>
-            </div>
-
             {/* Contact Information */}
             <div className="section-card">
               <h2 className="section-heading">Contact Information</h2>
@@ -614,7 +666,6 @@ export default function CheckoutPage() {
                   Use as billing address
                 </label>
               </div>
-
               {showBillingAddress && (
                 <div style={{ marginTop: "1rem", paddingTop: "1rem", borderTop: "1px solid #f0ebe3" }}>
                   <h3 style={{ fontSize: "0.9375rem", fontWeight: 600, color: "#0c0c0c", marginBottom: "0.875rem" }}>Billing Address</h3>
@@ -634,30 +685,20 @@ export default function CheckoutPage() {
               )}
             </div>
 
-            {/* Payment Method */}
-            <div className="section-card">
-              <h2 className="section-heading">Payment Method</h2>
-              <MockPaymentElement />
-              <div style={{ display: "flex", alignItems: "center", gap: "0.5rem", marginTop: "0.875rem", fontSize: "0.8125rem", color: "#6b7280" }}>
-                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#16a34a" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-                  <rect x="3" y="11" width="18" height="11" rx="2" ry="2" /><path d="M7 11V7a5 5 0 0 1 10 0v4" />
-                </svg>
-                Your payment info is encrypted and secure
+            {/* Stripe Payment — card, Apple Pay, Google Pay */}
+            {clientSecret ? (
+              <Elements stripe={stripePromise} options={{ clientSecret, appearance: { theme: "stripe", variables: { colorPrimary: "#c8a165", fontFamily: "'DM Sans', sans-serif" } } }}>
+                <StripePaymentForm total={adjustedTotal} isProcessing={isProcessing} setIsProcessing={setIsProcessing} />
+              </Elements>
+            ) : stripeError ? (
+              <div className="section-card">
+                <p style={{ color: "#dc2626", fontSize: "0.875rem" }}>{stripeError}</p>
               </div>
-              <div style={{ display: "flex", gap: "0.5rem", alignItems: "center", marginTop: "0.625rem", flexWrap: "wrap" }}>
-                {["Visa", "Mastercard", "Amex", "Discover"].map((brand) => (
-                  <span key={brand} style={{ padding: "0.2rem 0.5rem", border: "1px solid #e5ddd0", borderRadius: "0.25rem", fontSize: "0.7rem", fontWeight: 700, color: "#374151", backgroundColor: "#fff", letterSpacing: "0.02em" }}>{brand}</span>
-                ))}
+            ) : cart.length > 0 ? (
+              <div className="section-card" style={{ textAlign: "center", padding: "2rem" }}>
+                <SpinnerIcon /> <span style={{ marginLeft: "0.5rem", color: "#6b7280" }}>Loading payment...</span>
               </div>
-              <div style={{ marginTop: "1rem" }}>
-                <AffirmCallout total={adjustedTotal} />
-              </div>
-            </div>
-
-            {/* Place Order (desktop) */}
-            <div className="desktop-place-order">
-              <PlaceOrderSection total={adjustedTotal} isProcessing={isProcessing} onPlaceOrder={handlePlaceOrder} />
-            </div>
+            ) : null}
           </div>
 
           {/* RIGHT COLUMN (desktop only) */}
@@ -669,12 +710,14 @@ export default function CheckoutPage() {
         </div>
       </main>
 
-      {/* Mobile sticky CTA */}
-      <div className="mobile-sticky-cta">
-        <button className="place-order-btn" onClick={handlePlaceOrder} disabled={isProcessing || cart.length === 0} aria-busy={isProcessing}>
-          {isProcessing ? (<span style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: "0.5rem" }}><SpinnerIcon /> Processing…</span>) : (`Place Order — ${fmt(adjustedTotal)}`)}
-        </button>
-      </div>
+      {/* Mobile sticky CTA — scrolls to payment section */}
+      {cart.length > 0 && !clientSecret && (
+        <div className="mobile-sticky-cta">
+          <div style={{ textAlign: "center", padding: "0.5rem", color: "#6b7280", fontSize: "0.875rem" }}>
+            <SpinnerIcon /> Loading payment...
+          </div>
+        </div>
+      )}
     </div>
   );
 }
