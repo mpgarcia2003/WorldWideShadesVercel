@@ -1,6 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createAdminClient } from "@/lib/supabase/client";
 
+export const dynamic = 'force-dynamic';
+
 // POST /api/orders/lookup — public order lookup by order# + email
 export async function POST(req: NextRequest) {
   const { order_number, email } = await req.json();

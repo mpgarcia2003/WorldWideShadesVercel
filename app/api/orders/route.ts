@@ -1,6 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createAdminClient } from "@/lib/supabase/client";
 
+export const dynamic = 'force-dynamic';
+
 function verifyAdmin(req: NextRequest) {
   const auth = req.headers.get("x-admin-password");
   if (auth !== process.env.ADMIN_PASSWORD) {
