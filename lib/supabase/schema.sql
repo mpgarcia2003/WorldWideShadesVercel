@@ -1,7 +1,7 @@
 -- ============================================================================
 -- World Wide Shades — Supabase Schema
 -- Run this in Supabase SQL Editor to create all tables
--- Project: jfpdxwdggvxxgntuasqu
+-- Project: tptisikpbmqvllfhjdch
 -- ============================================================================
 
 -- Customers table (linked to Supabase Auth)
@@ -130,3 +130,9 @@ CREATE POLICY "Users can view own order items" ON order_items
 -- Status history visible if parent order is visible  
 CREATE POLICY "Users can view own order status history" ON order_status_history
   FOR SELECT USING (order_id IN (SELECT id FROM orders WHERE customer_id IN (SELECT id FROM customers WHERE auth_id = auth.uid())));
+
+-- Service role bypass (for admin API routes)
+CREATE POLICY "Service role full access customers" ON customers FOR ALL USING (auth.role() = 'service_role');
+CREATE POLICY "Service role full access orders" ON orders FOR ALL USING (auth.role() = 'service_role');
+CREATE POLICY "Service role full access order_items" ON order_items FOR ALL USING (auth.role() = 'service_role');
+CREATE POLICY "Service role full access order_status_history" ON order_status_history FOR ALL USING (auth.role() = 'service_role');
