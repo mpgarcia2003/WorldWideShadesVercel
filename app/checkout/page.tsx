@@ -257,7 +257,7 @@ function CartItemCard({ item }: { item: CartItem }) {
       </div>
 
       <a href="/cart" style={{ display: "inline-block", marginTop: "0.75rem", fontSize: "0.75rem", color: "#c8a165", fontWeight: 600, textDecoration: "none" }}>
-        \u270f Edit in Cart
+        ✏ Edit in Cart
       </a>
     </div>
   );

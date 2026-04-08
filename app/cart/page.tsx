@@ -192,7 +192,7 @@ export default function CartPage() {
                       {c.sideChannelType && c.sideChannelType !== "none" && (
                         <div>
                           <span className="text-warm-gray">Side Channels:</span>{" "}
-                          <span className="text-dark font-medium">{c.sideChannelType}</span>
+                          <span className="text-dark font-medium">Yes</span>
                         </div>
                       )}
                       {isMotorized && c.motorizedHub && (
