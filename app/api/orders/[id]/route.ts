@@ -76,11 +76,33 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id
     "status", "tracking_number", "tracking_url", "estimated_delivery",
     "notes", "shipping_first_name", "shipping_last_name", "shipping_address1",
     "shipping_address2", "shipping_city", "shipping_state", "shipping_zip",
+    "email", "phone", "cost", "shipping_cost",
   ];
 
   for (const field of allowedFields) {
     if (body[field] !== undefined) {
       updateData[field] = body[field];
+    }
+  }
+
+  // Update order items if provided
+  if (body.items) {
+    for (const item of body.items) {
+      if (item.id) {
+        const itemUpdate: any = {};
+        const itemFields = [
+          "shade_type", "fabric_name", "fabric_id", "width", "width_fraction",
+          "height", "height_fraction", "mount_type", "control_type", "motor_power",
+          "roll_type", "valance_type", "side_channel_type", "bottom_bar",
+          "quantity", "unit_price", "total_price",
+        ];
+        for (const f of itemFields) {
+          if (item[f] !== undefined) itemUpdate[f] = item[f];
+        }
+        if (Object.keys(itemUpdate).length > 0) {
+          await supabase.from("order_items").update(itemUpdate).eq("id", item.id);
+        }
+      }
     }
   }
 

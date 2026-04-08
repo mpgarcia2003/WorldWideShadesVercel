@@ -51,6 +51,8 @@ interface Order {
   retail_total: number;
   sale_percent: number;
   promo_code: string;
+  cost: number;
+  shipping_cost: number;
   stripe_payment_intent_id: string;
   shipping_first_name: string;
   shipping_last_name: string;
@@ -123,6 +125,11 @@ export default function AdminOrdersPage() {
   const [trackingNumber, setTrackingNumber] = useState("");
   const [trackingUrl, setTrackingUrl] = useState("");
 
+  // Edit mode
+  const [editMode, setEditMode] = useState(false);
+  const [editData, setEditData] = useState<any>({});
+  const [editItems, setEditItems] = useState<any[]>([]);
+
   const adminHeaders = {
     "Content-Type": "application/json",
     "x-admin-password": password,
@@ -176,6 +183,51 @@ export default function AdminOrdersPage() {
       }
     } catch {
       console.error("Failed to fetch order detail");
+    }
+  }
+
+
+  /* ─── Save Edits ──────────────────────────────────────────── */
+  async function saveEdits(orderId: string) {
+    setUpdating(true);
+    setActionMessage("");
+    try {
+      const res = await fetch(`/api/orders/${orderId}`, {
+        method: "PATCH",
+        headers: adminHeaders,
+        body: JSON.stringify({ ...editData, items: editItems }),
+      });
+      const data = await res.json();
+      if (data.order) {
+        setSelectedOrder(data.order);
+        setOrders((prev) => prev.map((o) => (o.id === orderId ? data.order : o)));
+        setActionMessage("Changes saved successfully");
+        setEditMode(false);
+      } else {
+        setActionMessage(`Error: ${data.error}`);
+      }
+    } catch {
+      setActionMessage("Failed to save changes");
+    }
+    setUpdating(false);
+  }
+
+
+  /* ─── Quick Field Update (no edit mode needed) ──────────── */
+  async function updateField(orderId: string, field: string, value: any) {
+    try {
+      const res = await fetch(`/api/orders/${orderId}`, {
+        method: "PATCH",
+        headers: adminHeaders,
+        body: JSON.stringify({ [field]: value }),
+      });
+      const data = await res.json();
+      if (data.order) {
+        setSelectedOrder(data.order);
+        setOrders((prev) => prev.map((o) => (o.id === orderId ? data.order : o)));
+      }
+    } catch {
+      console.error("Failed to update field");
     }
   }
 
@@ -247,12 +299,14 @@ export default function AdminOrdersPage() {
   }
 
   /* ─── Stats ─────────────────────────────────────────────── */
+  const activeOrders = orders.filter((o) => o.status !== "cancelled");
   const stats = {
     total: orders.length,
     received: orders.filter((o) => o.status === "received").length,
     production: orders.filter((o) => o.status === "in_production").length,
     shipped: orders.filter((o) => o.status === "shipped").length,
-    revenue: orders.filter((o) => o.status !== "cancelled").reduce((s, o) => s + Number(o.total), 0),
+    revenue: activeOrders.reduce((s, o) => s + Number(o.total), 0),
+    expenses: activeOrders.reduce((s, o) => s + Number(o.cost || 0) + Number(o.shipping_cost || 0), 0),
   };
 
   /* ─── Login Screen ──────────────────────────────────────── */
@@ -308,13 +362,14 @@ export default function AdminOrdersPage() {
 
       <div style={{ padding: "1.5rem 2rem", maxWidth: "1400px", margin: "0 auto" }}>
         {/* Stats row */}
-        <div style={{ display: "grid", gridTemplateColumns: "repeat(5, 1fr)", gap: "1rem", marginBottom: "1.5rem" }}>
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(6, 1fr)", gap: "1rem", marginBottom: "1.5rem" }}>
           {[
             { label: "Total Orders", value: stats.total, color: "#0c0c0c" },
-            { label: "Received", value: stats.received, color: "#3b82f6" },
+            { label: "Revenue", value: fmt(stats.revenue), color: "#22c55e" },
+            { label: "Expenses", value: fmt(stats.expenses), color: "#ef4444" },
+            { label: "Net Profit", value: fmt(stats.revenue - stats.expenses), color: stats.revenue - stats.expenses >= 0 ? "#22c55e" : "#ef4444" },
             { label: "In Production", value: stats.production, color: "#f59e0b" },
             { label: "Shipped", value: stats.shipped, color: "#06b6d4" },
-            { label: "Revenue", value: fmt(stats.revenue), color: "#22c55e" },
           ].map((s) => (
             <div key={s.label} style={{ background: "#fff", borderRadius: "0.75rem", padding: "1.25rem", border: "1px solid #ede9e0" }}>
               <p style={{ fontSize: "0.6875rem", fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.08em", color: "#999", marginBottom: "0.25rem" }}>{s.label}</p>
@@ -429,7 +484,35 @@ export default function AdminOrdersPage() {
                   <h2 style={{ fontSize: "1.25rem", fontWeight: 700, margin: "0 0 0.25rem" }}>{selectedOrder.order_number}</h2>
                   <p style={{ fontSize: "0.8125rem", color: "#999", margin: 0 }}>{fmtDate(selectedOrder.created_at)}</p>
                 </div>
-                <button onClick={() => setSelectedOrder(null)} style={{ background: "none", border: "none", fontSize: "1.25rem", cursor: "pointer", color: "#999" }}>✕</button>
+                <div style={{ display: "flex", gap: "0.375rem" }}>
+                  <button onClick={() => {
+                    if (editMode) { setEditMode(false); } else {
+                      setEditMode(true);
+                      setEditData({
+                        email: selectedOrder.email || "",
+                        phone: selectedOrder.phone || "",
+                        shipping_first_name: selectedOrder.shipping_first_name || "",
+                        shipping_last_name: selectedOrder.shipping_last_name || "",
+                        shipping_address1: selectedOrder.shipping_address1 || "",
+                        shipping_address2: selectedOrder.shipping_address2 || "",
+                        shipping_city: selectedOrder.shipping_city || "",
+                        shipping_state: selectedOrder.shipping_state || "",
+                        shipping_zip: selectedOrder.shipping_zip || "",
+                        cost: selectedOrder.cost || 0,
+                        shipping_cost: selectedOrder.shipping_cost || 0,
+                      });
+                      setEditItems((selectedOrder.order_items || []).map((i: any) => ({ ...i })));
+                    }
+                  }} style={{ padding: "0.25rem 0.625rem", borderRadius: "0.375rem", fontSize: "0.75rem", fontWeight: 600, cursor: "pointer", background: editMode ? "#fef2f2" : "#f7f5f0", color: editMode ? "#dc2626" : "#c8a165", border: `1px solid ${editMode ? "#fca5a5" : "#c8a165"}` }}>
+                    {editMode ? "Cancel Edit" : "✏️ Edit"}
+                  </button>
+                  {editMode && (
+                    <button onClick={() => saveEdits(selectedOrder.id)} disabled={updating} style={{ padding: "0.25rem 0.625rem", borderRadius: "0.375rem", fontSize: "0.75rem", fontWeight: 600, cursor: "pointer", background: "#22c55e", color: "#fff", border: "none", opacity: updating ? 0.5 : 1 }}>
+                      Save Changes
+                    </button>
+                  )}
+                  <button onClick={() => { setSelectedOrder(null); setEditMode(false); }} style={{ background: "none", border: "none", fontSize: "1.25rem", cursor: "pointer", color: "#999" }}>✕</button>
+                </div>
               </div>
 
               {/* Action message */}
@@ -509,8 +592,31 @@ export default function AdminOrdersPage() {
               {/* Line items */}
               <div style={{ marginBottom: "1.5rem" }}>
                 <label style={{ fontSize: "0.6875rem", fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.08em", color: "#999", display: "block", marginBottom: "0.5rem" }}>Items ({selectedOrder.order_items?.length || 0})</label>
-                {selectedOrder.order_items?.map((item) => (
-                  <div key={item.id} style={{ padding: "0.75rem", background: "#f7f5f0", borderRadius: "0.5rem", marginBottom: "0.5rem", fontSize: "0.8125rem" }}>
+                {(editMode ? editItems : selectedOrder.order_items)?.map((item: any, idx: number) => (
+                  <div key={item.id} style={{ padding: "0.75rem", background: editMode ? "#fff" : "#f7f5f0", borderRadius: "0.5rem", marginBottom: "0.5rem", fontSize: "0.8125rem", border: editMode ? "1px solid #ddd" : "none" }}>
+                    {editMode ? (
+                      <div style={{ display: "flex", flexDirection: "column", gap: "0.375rem" }}>
+                        <div style={{ display: "grid", gridTemplateColumns: "1fr auto", gap: "0.375rem" }}>
+                          <input value={item.fabric_name || ""} onChange={(e) => { const n = [...editItems]; n[idx] = {...n[idx], fabric_name: e.target.value}; setEditItems(n); }} placeholder="Fabric name" style={{ padding: "0.375rem", borderRadius: "0.25rem", border: "1px solid #ddd", fontSize: "0.8125rem" }} />
+                          <input type="number" value={item.total_price || 0} onChange={(e) => { const n = [...editItems]; n[idx] = {...n[idx], total_price: Number(e.target.value)}; setEditItems(n); }} style={{ padding: "0.375rem", borderRadius: "0.25rem", border: "1px solid #ddd", fontSize: "0.8125rem", width: "100px" }} />
+                        </div>
+                        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr 1fr", gap: "0.375rem" }}>
+                          <input value={item.width || ""} onChange={(e) => { const n = [...editItems]; n[idx] = {...n[idx], width: Number(e.target.value)}; setEditItems(n); }} placeholder="Width" style={{ padding: "0.375rem", borderRadius: "0.25rem", border: "1px solid #ddd", fontSize: "0.75rem" }} />
+                          <input value={item.width_fraction || ""} onChange={(e) => { const n = [...editItems]; n[idx] = {...n[idx], width_fraction: e.target.value}; setEditItems(n); }} placeholder="W frac" style={{ padding: "0.375rem", borderRadius: "0.25rem", border: "1px solid #ddd", fontSize: "0.75rem" }} />
+                          <input value={item.height || ""} onChange={(e) => { const n = [...editItems]; n[idx] = {...n[idx], height: Number(e.target.value)}; setEditItems(n); }} placeholder="Height" style={{ padding: "0.375rem", borderRadius: "0.25rem", border: "1px solid #ddd", fontSize: "0.75rem" }} />
+                          <input value={item.height_fraction || ""} onChange={(e) => { const n = [...editItems]; n[idx] = {...n[idx], height_fraction: e.target.value}; setEditItems(n); }} placeholder="H frac" style={{ padding: "0.375rem", borderRadius: "0.25rem", border: "1px solid #ddd", fontSize: "0.75rem" }} />
+                        </div>
+                        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "0.375rem" }}>
+                          <select value={item.mount_type || ""} onChange={(e) => { const n = [...editItems]; n[idx] = {...n[idx], mount_type: e.target.value}; setEditItems(n); }} style={{ padding: "0.375rem", borderRadius: "0.25rem", border: "1px solid #ddd", fontSize: "0.75rem" }}>
+                            <option value="Inside Mount">Inside Mount</option><option value="Outside Mount">Outside Mount</option>
+                          </select>
+                          <select value={item.control_type || ""} onChange={(e) => { const n = [...editItems]; n[idx] = {...n[idx], control_type: e.target.value}; setEditItems(n); }} style={{ padding: "0.375rem", borderRadius: "0.25rem", border: "1px solid #ddd", fontSize: "0.75rem" }}>
+                            <option value="Manual">Manual</option><option value="Motorized">Motorized</option>
+                          </select>
+                        </div>
+                      </div>
+                    ) : (
+                    <>
                     <div style={{ display: "flex", justifyContent: "space-between", fontWeight: 600 }}>
                       <span>{item.shade_type}</span>
                       <span>{fmt(Number(item.total_price))}</span>
@@ -529,6 +635,8 @@ export default function AdminOrdersPage() {
                       )}
                       <div><span style={{ fontWeight: 600, color: "#999", fontSize: "0.6875rem", textTransform: "uppercase", letterSpacing: "0.05em" }}>Qty:</span> {item.quantity}</div>
                     </div>
+                    </>
+                    )}
                   </div>
                 ))}
               </div>
@@ -573,6 +681,29 @@ export default function AdminOrdersPage() {
                 <div style={{ display: "flex", justifyContent: "space-between", fontWeight: 800, fontSize: "1.125rem", borderTop: "1px solid #ddd", paddingTop: "0.5rem" }}>
                   <span>Total</span><span>{fmt(Number(selectedOrder.total))}</span>
                 </div>
+              </div>
+
+              {/* Cost / Expenses */}
+              <div style={{ marginBottom: "1.5rem" }}>
+                <label style={{ fontSize: "0.6875rem", fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.08em", color: "#999", display: "block", marginBottom: "0.5rem" }}>Expenses (Internal)</label>
+                <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "0.5rem" }}>
+                  <div>
+                    <label style={{ fontSize: "0.625rem", fontWeight: 600, color: "#999", display: "block", marginBottom: "0.25rem" }}>Production Cost</label>
+                    <input type="number" step="0.01" value={editMode ? editData.cost || 0 : selectedOrder.cost || 0} onChange={(e) => editMode ? setEditData({...editData, cost: Number(e.target.value)}) : updateField(selectedOrder.id, "cost", Number(e.target.value))} placeholder="0.00" style={{ width: "100%", padding: "0.5rem", borderRadius: "0.375rem", border: "1px solid #ddd", fontSize: "0.8125rem", boxSizing: "border-box" }} />
+                  </div>
+                  <div>
+                    <label style={{ fontSize: "0.625rem", fontWeight: 600, color: "#999", display: "block", marginBottom: "0.25rem" }}>Shipping Cost</label>
+                    <input type="number" step="0.01" value={editMode ? editData.shipping_cost || 0 : selectedOrder.shipping_cost || 0} onChange={(e) => editMode ? setEditData({...editData, shipping_cost: Number(e.target.value)}) : updateField(selectedOrder.id, "shipping_cost", Number(e.target.value))} placeholder="0.00" style={{ width: "100%", padding: "0.5rem", borderRadius: "0.375rem", border: "1px solid #ddd", fontSize: "0.8125rem", boxSizing: "border-box" }} />
+                  </div>
+                </div>
+                {(Number(selectedOrder.cost) > 0 || Number(selectedOrder.shipping_cost) > 0) && (
+                  <div style={{ marginTop: "0.5rem", padding: "0.5rem", background: "#fef2f2", borderRadius: "0.375rem", border: "1px solid #fecaca", display: "flex", justifyContent: "space-between", fontSize: "0.8125rem" }}>
+                    <span style={{ fontWeight: 600, color: "#dc2626" }}>Profit on this order</span>
+                    <span style={{ fontWeight: 700, color: Number(selectedOrder.total) - Number(selectedOrder.cost || 0) - Number(selectedOrder.shipping_cost || 0) >= 0 ? "#16a34a" : "#dc2626" }}>
+                      {fmt(Number(selectedOrder.total) - Number(selectedOrder.cost || 0) - Number(selectedOrder.shipping_cost || 0))}
+                    </span>
+                  </div>
+                )}
               </div>
 
               {/* Tracking */}
