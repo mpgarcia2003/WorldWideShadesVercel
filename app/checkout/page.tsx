@@ -378,11 +378,6 @@ function OrderSummary({
           </>
         )}
 
-        {/* Swatches upsell */}
-        <div style={{ marginTop: "1.25rem", padding: "0.75rem", backgroundColor: "#fff", border: "1px dashed #d1c4a8", borderRadius: "0.5rem", fontSize: "0.8125rem", color: "#6b7280" }}>
-          <p style={{ fontWeight: 600, color: "#0c0c0c", marginBottom: "0.2rem" }}>Not 100% sure about your fabric?</p>
-          <p>We&apos;ll ship swatches free. <a href="/swatches" style={{ color: "#c8a165", fontWeight: 600, textDecoration: "none" }}>Get Swatches →</a></p>
-        </div>
 
         {/* Trust box */}
         <div style={{ marginTop: "1rem", padding: "0.875rem", backgroundColor: "#fff", border: "1px solid #e5ddd0", borderRadius: "0.5rem", fontSize: "0.75rem", color: "#374151" }}>
