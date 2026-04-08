@@ -166,7 +166,7 @@ export default function CartPage() {
                       <div>
                         <span className="text-warm-gray">Control:</span>{" "}
                         <span className="text-dark font-medium">
-                          {isMotorized ? `Motorized (${c.motorPower || "Rechargeable"})` : c.controlType}
+                          {isMotorized ? `Motorized (${c.motorPower || "Rechargeable"})` : `${c.controlType || "Manual"} \u2014 ${c.controlPosition || "Right"} Side`}
                         </span>
                       </div>
                       <div>

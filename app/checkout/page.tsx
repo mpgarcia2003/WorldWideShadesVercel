@@ -156,7 +156,7 @@ function CartItemCard({ item }: { item: CartItem }) {
     ["Fabric", item.config.material?.name || "\u2014"],
     ["Dimensions", getDimDisplay(item)],
     ["Mount", item.config.mountType || "\u2014"],
-    ["Control", isMotorized ? `Motorized (${item.config.motorPower || "Rechargeable"})` : item.config.controlType || "\u2014"],
+    ["Control", isMotorized ? `Motorized (${item.config.motorPower || "Rechargeable"})` : `${item.config.controlType || "Manual"} \u2014 ${item.config.controlPosition || "Right"} Side`],
     ["Roll Type", rollLabel],
   ];
 

@@ -338,7 +338,7 @@ const Stepper: React.FC<StepperProps> = ({
       case 2: return config.shadeType ? t(`shadeType.${config.shadeType === 'Light Filtering' ? 'lightFiltering' : config.shadeType === 'Blackout' ? 'blackout' : 'all'}`) : t('step.summary.allFabrics');
       case 3: return activeFabricName || t('fabric.selectMaterial');
       case 4: return t(config.mountType === 'Inside Mount' ? 'mount.inside' : 'mount.outside');
-      case 5: return t(config.controlType === 'Metal Chain' ? 'control.chain' : 'control.motorized');
+      case 5: return config.controlType === 'Metal Chain' ? `${t('control.chain')} \u2014 ${config.controlPosition || 'Right'} Side` : t('control.motorized');
       case 6: {
           const valanceLabel = t(`valance.${config.valanceType}`) || t('step.summary.noValance');
           const sideChannelLabel = config.sideChannelType === 'standard' ? ' + Channels' : '';
@@ -948,7 +948,27 @@ const Stepper: React.FC<StepperProps> = ({
                             </p>
                         </button>
 
-                        {/* Motorized */}
+                        {/* CHAIN SIDE — only shows after selecting Manual */}
+                        {config.controlType === 'Metal Chain' && (
+                          <div className="ml-2 pl-4 border-l-2 border-[#c8a165]/30 space-y-2 animate-in fade-in slide-in-from-bottom-1 duration-300">
+                            <p className="text-[11px] font-semibold text-[#555] uppercase tracking-wider">Chain Side</p>
+                            <div className="grid grid-cols-2 gap-2">
+                              {['Right', 'Left'].map(side => (
+                                <button
+                                  key={side}
+                                  onClick={() => updateConfig('controlPosition', side)}
+                                  className={`p-3 border-2 rounded-xl text-center transition-all ${
+                                    (config.controlPosition || 'Right') === side
+                                      ? 'border-[#c8a165] bg-[#faf8f4] shadow-sm'
+                                      : 'border-gray-100 hover:border-gray-200 bg-white'
+                                  }`}
+                                >
+                                  <span className="text-[13px] font-semibold text-[#1a1a1a]" style={{ fontFamily: "'Playfair Display', Georgia, serif" }}>{side}</span>
+                                </button>
+                              ))}
+                            </div>
+                          </div>
+                        )}
                         <button onClick={() => { updateConfig('controlType', 'Motorized'); trackEvent('control_type_select', { control_type: 'Motorized' }); }} className={`p-4 border-2 rounded-xl text-left transition-all relative ${
                           config.controlType === 'Motorized' ? 'border-[#c8a165] bg-[#faf8f4] shadow-md' : 'border-[#e8e5de] hover:border-[#d4b07a] bg-white shadow-sm'
                         }`}>
@@ -1084,6 +1104,15 @@ const Stepper: React.FC<StepperProps> = ({
                     </div>
 
                     <div className="space-y-3">
+                        {/* Visual guide image — shown first */}
+                        <div className="w-full rounded-xl overflow-hidden border border-gray-200 mb-2 shadow-sm bg-white">
+                           <img 
+                              src="https://res.cloudinary.com/dcmlcfynd/image/upload/v1767829241/Cassettand_valances_eybsoy.jpg" 
+                              alt="Roll and Valance Styles" 
+                              className="w-full h-auto object-cover"
+                           />
+                        </div>
+
                         {/* SECTION 1: Roll Type */}
                         <div className="flex items-center gap-2 text-slate-400 font-black uppercase tracking-[0.15em] text-[11px] px-1">
                             <Layout size={14} /> <span>Roll Type</span>
@@ -1132,14 +1161,6 @@ const Stepper: React.FC<StepperProps> = ({
                         <div className="flex items-center gap-2 text-slate-400 font-black uppercase tracking-[0.15em] text-[11px] px-1 mt-6">
                             <Layout size={14} /> <span>Valance Cover</span>
                             <span className="text-[9px] font-medium normal-case tracking-normal text-[#94a3b8]">(optional upgrade)</span>
-                        </div>
-                        
-                        <div className="w-full rounded-xl overflow-hidden border border-gray-200 mb-2 shadow-sm bg-white">
-                           <img 
-                              src="https://res.cloudinary.com/dcmlcfynd/image/upload/v1767829241/Cassettand_valances_eybsoy.jpg" 
-                              alt="Valance Styles" 
-                              className="w-full h-auto object-cover"
-                           />
                         </div>
 
                         <div className="grid grid-cols-1 gap-2">
