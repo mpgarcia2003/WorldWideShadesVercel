@@ -63,7 +63,8 @@ export const FOOTER_LINKS = {
     { label: "Installation Guide", href: "/installation-guide" },
     { label: "FAQ", href: "/faq" },
     { label: "Contact Us", href: "/contact" },
-    { label: "Track Your Order", href: "/account/tracking" },
+    { label: "Track Your Order", href: "/track-order" },
+    { label: "My Account", href: "/account" },
   ]},
   company: { title: "Company", links: [
     { label: "About Us", href: "/about" },

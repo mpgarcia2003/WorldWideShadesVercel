@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useRef } from "react";
 import Link from "next/link";
-import { Menu, X, ChevronDown, ShoppingBag, Phone } from "lucide-react";
+import { Menu, X, ChevronDown, ShoppingBag, Phone, User } from "lucide-react";
 import { NAV_ITEMS, type NavItem } from "@/data/navigation";
 import { SITE } from "@/lib/constants";
 import { cn } from "@/lib/utils";
@@ -48,6 +48,7 @@ export function Header() {
           </a>
           <Link href="/builder" className="hidden sm:inline-flex items-center px-4 py-2 text-sm font-semibold text-white bg-gold hover:bg-gold-dark rounded-lg transition-colors">Design Your Shade</Link>
           <Link href="/cart" className="relative p-2 text-dark hover:text-gold transition-colors" aria-label="Cart"><ShoppingBag className="w-5 h-5" /></Link>
+          <Link href="/account" className="hidden sm:block relative p-2 text-dark hover:text-gold transition-colors" aria-label="Account"><User className="w-5 h-5" /></Link>
           <button className="lg:hidden p-2 text-dark" onClick={() => setMobileOpen(!mobileOpen)} aria-label={mobileOpen ? "Close menu" : "Open menu"}>
             {mobileOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
           </button>
@@ -153,7 +154,9 @@ function MobileDrawer({ open, onClose }: { open: boolean; onClose: () => void })
               </li>
             ))}
           </ul>
-          <div className="mt-8 pt-6 border-t border-cream-dark">
+          <div className="mt-8 pt-6 border-t border-cream-dark space-y-3">
+            <Link href="/account" onClick={onClose} className="flex items-center gap-2 text-sm font-medium text-dark hover:text-gold transition-colors"><User className="w-4 h-4" />My Account</Link>
+            <Link href="/track-order" onClick={onClose} className="flex items-center gap-2 text-sm font-medium text-dark hover:text-gold transition-colors"><ShoppingBag className="w-4 h-4" />Track Order</Link>
             <a href={`tel:${SITE.phone}`} className="flex items-center gap-2 text-sm text-warm-gray hover:text-gold transition-colors"><Phone className="w-4 h-4" /><span>{SITE.phone}</span></a>
           </div>
         </div>
