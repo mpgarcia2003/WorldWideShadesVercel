@@ -83,7 +83,7 @@ body {
   .container-site { padding-left: 2rem; padding-right: 2rem; }
 }
 
-.container-narrow { max-width: var(--container-narrow); }
+.container-narrow { max-width: var(--container-narrow); margin-left: auto; margin-right: auto; }
 
 .gold-gradient {
   background: linear-gradient(135deg, var(--color-gold) 0%, var(--color-gold-dark) 100%);
