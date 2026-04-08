@@ -713,10 +713,10 @@ export default function CheckoutPage() {
                   shipping_zip: zip,
                   estimated_delivery: getEstimatedDelivery(),
                   items: cart.map((item) => ({
-                    shade_type: item.config.fabricType === 'blackout' ? 'Custom Blackout Roller Shade' : item.config.fabricType === 'light_filtering' ? 'Custom Light Filtering Roller Shade' : 'Custom Roller Shade',
+                    shade_type: `Custom ${item.config.shadeType || 'Roller'} Shade`,
                     shape: item.config.shape || 'Standard',
-                    fabric_name: item.config.fabricName || '',
-                    fabric_id: item.config.fabricId || '',
+                    fabric_name: item.config.material?.name || '',
+                    fabric_id: item.config.material?.id || '',
                     width: item.config.width,
                     width_fraction: item.config.widthFraction || '0',
                     height: item.config.height,
