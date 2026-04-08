@@ -29,7 +29,26 @@ export async function GET(req: NextRequest, { params }: { params: Promise<{ id: 
     return NextResponse.json({ error: error.message }, { status: 404 });
   }
 
-  return NextResponse.json({ order: data });
+  // Get customer purchase history by email
+  let customerStats = null;
+  if (data.email) {
+    const { data: customerOrders } = await supabase
+      .from("orders")
+      .select("id, order_number, total, status, created_at")
+      .eq("email", data.email)
+      .order("created_at", { ascending: false });
+
+    if (customerOrders) {
+      customerStats = {
+        total_orders: customerOrders.length,
+        total_spent: customerOrders.filter(o => o.status !== "cancelled").reduce((s, o) => s + Number(o.total), 0),
+        last_order_date: customerOrders[0]?.created_at || null,
+        orders: customerOrders,
+      };
+    }
+  }
+
+  return NextResponse.json({ order: data, customer_stats: customerStats });
 }
 
 // PATCH /api/orders/[id] — update order (status, tracking, notes, etc.)

@@ -56,6 +56,7 @@ interface Order {
   shipping_city: string;
   shipping_state: string;
   shipping_zip: string;
+  phone: string;
   tracking_number: string;
   tracking_url: string;
   estimated_delivery: string;
@@ -111,6 +112,7 @@ export default function AdminOrdersPage() {
 
   // Detail panel
   const [selectedOrder, setSelectedOrder] = useState<Order | null>(null);
+  const [customerStats, setCustomerStats] = useState<any>(null);
   const [updating, setUpdating] = useState(false);
   const [actionMessage, setActionMessage] = useState("");
 
@@ -156,6 +158,23 @@ export default function AdminOrdersPage() {
   }, [authed, page, statusFilter, search, password]);
 
   useEffect(() => { fetchOrders(); }, [fetchOrders]);
+
+  /* ─── Fetch Order Detail ─────────────────────────────────── */
+  async function fetchOrderDetail(orderId: string) {
+    try {
+      const res = await fetch(`/api/orders/${orderId}`, { headers: adminHeaders });
+      const data = await res.json();
+      if (data.order) {
+        setSelectedOrder(data.order);
+        setCustomerStats(data.customer_stats || null);
+        setTrackingNumber(data.order.tracking_number || "");
+        setTrackingUrl(data.order.tracking_url || "");
+        setActionMessage("");
+      }
+    } catch {
+      console.error("Failed to fetch order detail");
+    }
+  }
 
   /* ─── Update Status ─────────────────────────────────────── */
   async function updateStatus(orderId: string, newStatus: OrderStatus, notes?: string) {
@@ -345,12 +364,7 @@ export default function AdminOrdersPage() {
                 {orders.map((order) => (
                   <div
                     key={order.id}
-                    onClick={() => {
-                      setSelectedOrder(order);
-                      setTrackingNumber(order.tracking_number || "");
-                      setTrackingUrl(order.tracking_url || "");
-                      setActionMessage("");
-                    }}
+                    onClick={() => fetchOrderDetail(order.id)}
                     style={{
                       background: selectedOrder?.id === order.id ? "#fdf9f5" : "#fff",
                       borderRadius: "0.5rem",
@@ -444,11 +458,44 @@ export default function AdminOrdersPage() {
               {/* Customer info */}
               <div style={{ marginBottom: "1.5rem" }}>
                 <label style={{ fontSize: "0.6875rem", fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.08em", color: "#999", display: "block", marginBottom: "0.5rem" }}>Customer</label>
-                <p style={{ fontSize: "0.875rem", margin: "0 0 0.25rem", fontWeight: 600 }}>{selectedOrder.shipping_first_name} {selectedOrder.shipping_last_name}</p>
-                <p style={{ fontSize: "0.8125rem", margin: "0 0 0.125rem", color: "#666" }}>{selectedOrder.email}</p>
-                <p style={{ fontSize: "0.8125rem", margin: 0, color: "#666" }}>
-                  {[selectedOrder.shipping_address1, selectedOrder.shipping_address2, selectedOrder.shipping_city, selectedOrder.shipping_state, selectedOrder.shipping_zip].filter(Boolean).join(", ")}
-                </p>
+                <div style={{ background: "#f7f5f0", borderRadius: "0.5rem", padding: "0.75rem" }}>
+                  <p style={{ fontSize: "0.9375rem", margin: "0 0 0.375rem", fontWeight: 700 }}>{selectedOrder.shipping_first_name} {selectedOrder.shipping_last_name}</p>
+                  <div style={{ fontSize: "0.8125rem", color: "#666", lineHeight: 1.8 }}>
+                    <div>✉️ {selectedOrder.email}</div>
+                    {selectedOrder.phone && <div>📞 {selectedOrder.phone}</div>}
+                    <div>📍 {[selectedOrder.shipping_address1, selectedOrder.shipping_address2].filter(Boolean).join(", ")}</div>
+                    <div style={{ paddingLeft: "1.5rem" }}>{[selectedOrder.shipping_city, selectedOrder.shipping_state, selectedOrder.shipping_zip].filter(Boolean).join(", ")}</div>
+                  </div>
+                </div>
+                {customerStats && (
+                  <div style={{ marginTop: "0.5rem", display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: "0.5rem" }}>
+                    <div style={{ background: "#fff", border: "1px solid #ede9e0", borderRadius: "0.375rem", padding: "0.5rem 0.75rem", textAlign: "center" }}>
+                      <p style={{ fontSize: "1.125rem", fontWeight: 800, color: "#0c0c0c", margin: 0 }}>{customerStats.total_orders}</p>
+                      <p style={{ fontSize: "0.625rem", fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.08em", color: "#999", margin: 0 }}>Orders</p>
+                    </div>
+                    <div style={{ background: "#fff", border: "1px solid #ede9e0", borderRadius: "0.375rem", padding: "0.5rem 0.75rem", textAlign: "center" }}>
+                      <p style={{ fontSize: "1.125rem", fontWeight: 800, color: "#22c55e", margin: 0 }}>{fmt(customerStats.total_spent)}</p>
+                      <p style={{ fontSize: "0.625rem", fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.08em", color: "#999", margin: 0 }}>Lifetime</p>
+                    </div>
+                    <div style={{ background: "#fff", border: "1px solid #ede9e0", borderRadius: "0.375rem", padding: "0.5rem 0.75rem", textAlign: "center" }}>
+                      <p style={{ fontSize: "0.75rem", fontWeight: 700, color: "#0c0c0c", margin: 0 }}>{customerStats.last_order_date ? fmtDate(customerStats.last_order_date).split(",")[0] : "—"}</p>
+                      <p style={{ fontSize: "0.625rem", fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.08em", color: "#999", margin: 0 }}>Last Order</p>
+                    </div>
+                  </div>
+                )}
+                {customerStats && customerStats.total_orders > 1 && (
+                  <details style={{ marginTop: "0.5rem", fontSize: "0.75rem" }}>
+                    <summary style={{ cursor: "pointer", color: "#c8a165", fontWeight: 600 }}>View all {customerStats.total_orders} orders</summary>
+                    <div style={{ marginTop: "0.375rem", display: "flex", flexDirection: "column", gap: "0.25rem" }}>
+                      {customerStats.orders.map((o: any) => (
+                        <div key={o.id} style={{ display: "flex", justifyContent: "space-between", padding: "0.25rem 0", borderBottom: "1px solid #f0f0f0" }}>
+                          <span style={{ fontWeight: 600 }}>{o.order_number}</span>
+                          <span style={{ color: "#666" }}>{fmt(Number(o.total))} · {fmtDate(o.created_at).split(",")[0]}</span>
+                        </div>
+                      ))}
+                    </div>
+                  </details>
+                )}
               </div>
 
               {/* Line items */}
