@@ -63,20 +63,17 @@ const MeasurementInputs: React.FC<{
       </p>
     </div>
     
-    {/* Compact diagram + guide toggle */}
-    <div className="flex items-center gap-3 bg-slate-50 p-2 rounded-lg border border-slate-200 mb-2">
-        <img src={shapeData.diagram} className="h-16 w-16 object-contain shrink-0" alt="Shape Diagram" />
-        <div className="flex-1">
-          <p className="text-[10px] font-semibold text-slate-600">Measure your window opening</p>
-          <button
-            type="button"
-            onClick={() => setShowGuide(!showGuide)}
-            className="text-[10px] font-semibold text-[#c8a165] hover:text-[#a8844d] underline underline-offset-2 cursor-pointer transition-colors flex items-center gap-1 mt-0.5"
-          >
-            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
-            {showGuide ? 'Hide guide' : 'How to measure (30 sec guide)'}
-          </button>
-        </div>
+    {/* Diagram + guide toggle */}
+    <div className="bg-slate-50 p-2 rounded-lg flex flex-col items-center gap-2 border border-slate-200 mb-2">
+        <button
+          type="button"
+          onClick={() => setShowGuide(!showGuide)}
+          className="self-end text-[10px] font-semibold text-[#c8a165] hover:text-[#a8844d] underline underline-offset-2 cursor-pointer transition-colors flex items-center gap-1"
+        >
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+          {showGuide ? 'Hide guide' : 'How to measure (30 sec guide)'}
+        </button>
+        <img src={shapeData.diagram} className="max-h-36 object-contain" alt="Shape Diagram" />
     </div>
     {showGuide && (
       <div className="w-full bg-white rounded-xl p-3 border border-[#e8e5de] text-left space-y-3 mb-2" style={{ animation: 'fadeUp 0.3s ease forwards' }}>
