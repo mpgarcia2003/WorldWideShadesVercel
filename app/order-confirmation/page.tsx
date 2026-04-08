@@ -713,7 +713,6 @@ export default function ThankYouPage() {
               )
             })}
           </div>
-        </div>
 
           {/* Downloadable PDF Guides */}
           <div className="mt-10">
