@@ -5,6 +5,7 @@ import { STEPS, FRACTIONS, getInstallerForZip, SHAPE_CONFIGS, VALANCE_OPTIONS, S
 import FabricSuggestions from './FabricSuggestions';
 import { useLanguage } from '../LanguageContext';
 import { trackEvent } from '../utils/analytics';
+import { trackShapeSelected, trackMeasurementsEntered, trackFabricSelected, trackMountSelected, trackControlSelected, trackBuilderComplete, trackSelectItem, trackPhoneClick } from '../lib/gtm/events';
 
 interface StepperProps {
   openStep: number | null;
@@ -314,6 +315,25 @@ const Stepper: React.FC<StepperProps> = ({
   const shapeData = SHAPE_CONFIGS[config.shape as ShapeType] || SHAPE_CONFIGS.Standard;
 
   const isLastStep = openStep === STEPS.length - 1;
+
+  // GTM: Fire step-specific tracking events
+  const handleStepConfirmWithTracking = (stepIndex: number) => {
+    switch (stepIndex) {
+      case 0: trackShapeSelected(config.shape || 'Standard'); break;
+      case 1: trackMeasurementsEntered(config.width, config.height, config.widthFraction, config.heightFraction); break;
+      case 2: // shade type selected (Blackout/Light Filtering) — tracked at selection
+        break;
+      case 3: // fabric selected — tracked via onSelectFabric
+        break;
+      case 4: trackMountSelected(config.mountType || 'Inside Mount'); break;
+      case 5: trackControlSelected(config.controlType || 'Manual', config.motorPower); break;
+      default: break;
+    }
+    if (isLastStep) {
+      trackBuilderComplete(config, 0); // price calculated elsewhere
+    }
+    onConfirmStep(stepIndex);
+  };
 
   return (
     <div className="flex flex-col gap-2 pb-24 relative">
@@ -749,7 +769,7 @@ const Stepper: React.FC<StepperProps> = ({
                     <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
                         {/* BLACKOUT — first, Most Popular */}
                         <button 
-                          onClick={() => { updateConfig('shadeType', 'Blackout'); setTimeout(() => onConfirmStep(2), 400); }} 
+                          onClick={() => { updateConfig('shadeType', 'Blackout'); setTimeout(() => handleStepConfirmWithTracking(2), 400); }} 
                           className={`p-4 border-2 rounded-xl transition-all flex flex-col items-center justify-center gap-2 text-center group relative ${
                               config.shadeType === 'Blackout' 
                               ? 'border-[#c8a165] bg-[#faf8f4] shadow-md' 
@@ -776,7 +796,7 @@ const Stepper: React.FC<StepperProps> = ({
 
                         {/* LIGHT FILTERING — second */}
                         <button 
-                          onClick={() => { updateConfig('shadeType', 'Light Filtering'); setTimeout(() => onConfirmStep(2), 400); }} 
+                          onClick={() => { updateConfig('shadeType', 'Light Filtering'); setTimeout(() => handleStepConfirmWithTracking(2), 400); }} 
                           className={`p-4 border-2 rounded-xl transition-all flex flex-col items-center justify-center gap-2 text-center group relative ${
                               config.shadeType === 'Light Filtering' 
                               ? 'border-[#c8a165] bg-[#faf8f4] shadow-md' 
@@ -800,7 +820,7 @@ const Stepper: React.FC<StepperProps> = ({
 
                         {/* ALL FABRICS — third */}
                         <button 
-                          onClick={() => { updateConfig('shadeType', 'All'); setTimeout(() => onConfirmStep(2), 400); }} 
+                          onClick={() => { updateConfig('shadeType', 'All'); setTimeout(() => handleStepConfirmWithTracking(2), 400); }} 
                           className={`p-4 border-2 rounded-xl transition-all flex flex-col items-center justify-center gap-2 text-center group relative ${
                               config.shadeType === 'All' 
                               ? 'border-[#c8a165] bg-[#faf8f4] shadow-md' 
@@ -824,7 +844,7 @@ const Stepper: React.FC<StepperProps> = ({
                 </div>
               )}
 
-              {index === 3 && <div className="pt-2"><FabricSuggestions loading={loadingFabrics} fabrics={fabrics} onSelect={(f) => { onSelectFabric(f); setTimeout(() => onAutoAdvance(3), 400); }} selectedId={config.material?.id} width={config.width} height={config.height} widthFraction={config.widthFraction} heightFraction={config.heightFraction} onAddSwatch={onAddSwatch} requestedSwatches={requestedSwatches} analysis={analysis} config={config} /></div>}
+              {index === 3 && <div className="pt-2"><FabricSuggestions loading={loadingFabrics} fabrics={fabrics} onSelect={(f) => { onSelectFabric(f); trackFabricSelected(f.name, f.category, f.priceGroup); setTimeout(() => onAutoAdvance(3), 400); }} selectedId={config.material?.id} width={config.width} height={config.height} widthFraction={config.widthFraction} heightFraction={config.heightFraction} onAddSwatch={onAddSwatch} requestedSwatches={requestedSwatches} analysis={analysis} config={config} /></div>}
 
               {index === 4 && (
                 <div className="space-y-3 pt-2">
@@ -845,7 +865,7 @@ const Stepper: React.FC<StepperProps> = ({
                     <div className="grid grid-cols-2 gap-2">
                         {/* Inside Mount */}
                         <button
-                          onClick={() => { updateConfig('mountType', 'Inside Mount'); setTimeout(() => onConfirmStep(4), 400); }}
+                          onClick={() => { updateConfig('mountType', 'Inside Mount'); setTimeout(() => handleStepConfirmWithTracking(4), 400); }}
                           className={`p-4 border-2 rounded-xl transition-all text-center relative ${
                             config.mountType === 'Inside Mount' ? 'border-[#c8a165] bg-[#faf8f4] shadow-sm' : 'border-gray-200 hover:border-gray-300 bg-white'
                           }`}
@@ -863,7 +883,7 @@ const Stepper: React.FC<StepperProps> = ({
 
                         {/* Outside Mount */}
                         <button
-                          onClick={() => { updateConfig('mountType', 'Outside Mount'); setTimeout(() => onConfirmStep(4), 400); }}
+                          onClick={() => { updateConfig('mountType', 'Outside Mount'); setTimeout(() => handleStepConfirmWithTracking(4), 400); }}
                           className={`p-4 border-2 rounded-xl transition-all text-center relative ${
                             config.mountType === 'Outside Mount' ? 'border-[#c8a165] bg-[#faf8f4] shadow-sm' : 'border-gray-200 hover:border-gray-300 bg-white'
                           }`}
@@ -1280,7 +1300,7 @@ const Stepper: React.FC<StepperProps> = ({
                 return (
                 <div className='sticky bottom-0 z-10 bg-white pt-3 pb-1 -mx-2 px-2 shadow-[0_-8px_16px_rgba(255,255,255,0.9)]'>
                 <button
-                  onClick={() => !isDisabled && onConfirmStep(index)}
+                  onClick={() => !isDisabled && handleStepConfirmWithTracking(index)}
                   disabled={isDisabled}
                   className={`w-full mt-2 py-3.5 px-4 rounded-xl text-white font-medium text-[14px] tracking-wide transition-all duration-500 flex items-center justify-center gap-2 group/btn ${isLastStep ? 'cta-glow' : ''} ${isDisabled ? 'opacity-40 cursor-not-allowed' : 'hover:shadow-xl active:scale-[0.98]'}`}
                   style={{ 

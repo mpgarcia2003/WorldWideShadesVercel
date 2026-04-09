@@ -78,6 +78,11 @@ export default function BuilderPage() {
       setCart(prev => [...prev, item]);
     }
     setIsCartOpen(true);
+
+    // GTM Enhanced Ecommerce: add_to_cart
+    const gtmItem = buildGTMItem(item.config, item.totalPrice);
+    trackAddToCart([gtmItem], item.totalPrice);
+
     trackEvent('add_to_cart', {
       currency: 'USD', value: item.totalPrice,
       items: [{ item_id: item.config.material?.id || 'custom-shade', item_name: item.config.material?.name || 'Custom Shade', price: item.unitPrice, quantity: item.config.quantity }],
