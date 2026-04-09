@@ -8,7 +8,7 @@ import { CartItem, Fabric } from "@/types";
 import { initAnalytics, trackEvent } from "@/utils/analytics";
 import { getSavedCart, persistCart, getSavedSwatches, persistSwatches, loadSharedCart } from "@/utils/storage";
 import { wwsTracker, builderHooks } from "@/services/analytics";
-import { trackBuilderStart } from "@/lib/gtm/events";
+import { trackBuilderStart, trackAddToCart, buildGTMItem } from "@/lib/gtm/events";
 
 export default function BuilderPage() {
   const containerRef = useRef<HTMLDivElement>(null);

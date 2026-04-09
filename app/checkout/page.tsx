@@ -5,6 +5,7 @@ import { loadStripe } from "@stripe/stripe-js";
 import { Elements, PaymentElement, useStripe, useElements } from "@stripe/react-stripe-js";
 import { SHAPE_CONFIGS, VALANCE_OPTIONS, SIDE_CHANNEL_OPTIONS, isSaleActive, SALE_CONFIG, getFabricUrl } from "../../constants";
 import type { CartItem, ShapeType } from "../../types";
+import { trackBeginCheckout, trackAddPaymentInfo, trackPurchase, trackPhoneClick, buildGTMItem } from "../../lib/gtm/events";
 
 const stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY!);
 
@@ -115,6 +116,12 @@ function StripePaymentForm({
     setIsProcessing(true);
     setErrorMessage("");
 
+    // Track payment info entered
+    trackAddPaymentInfo(
+      orderData.items?.map((i: any) => ({ item_id: i.fabric_id || "shade", item_name: i.shade_type, item_category: i.shade_type, price: i.total_price, quantity: i.quantity || 1 })) || [],
+      total
+    );
+
     const { error, paymentIntent } = await stripe.confirmPayment({
       elements,
       confirmParams: {
@@ -127,6 +134,14 @@ function StripePaymentForm({
       setErrorMessage(error.message || "Payment failed. Please try again.");
       setIsProcessing(false);
     } else if (paymentIntent && paymentIntent.status === "succeeded") {
+      // Track purchase — THE primary conversion
+      trackPurchase(
+        paymentIntent.id,
+        total,
+        orderData.items?.map((i: any) => ({ item_id: i.fabric_id || "shade", item_name: i.shade_type, item_category: i.shade_type, price: i.total_price, quantity: i.quantity || 1 })) || [],
+        { tax: 0, shipping: 0, coupon: orderData.promo_code || "", discount: orderData.discount || 0 }
+      );
+
       // Save order to Supabase
       try {
         await fetch("/api/orders", {
@@ -529,6 +544,14 @@ export default function CheckoutPage() {
     } catch {}
     setLoaded(true);
   }, []);
+
+  // Fire begin_checkout when cart loads
+  useEffect(() => {
+    if (!loaded || cart.length === 0) return;
+    const total = cart.reduce((sum, item) => sum + item.totalPrice, 0);
+    const gtmItems = cart.map((item) => buildGTMItem(item.config, item.totalPrice));
+    trackBeginCheckout(gtmItems, total);
+  }, [loaded, cart.length]);
 
   // Create PaymentIntent when cart is loaded
   useEffect(() => {
