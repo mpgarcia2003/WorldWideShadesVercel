@@ -18,7 +18,7 @@ export async function POST(req: NextRequest) {
 
   const { data, error } = await supabase
     .from("orders")
-    .select("id, order_number, status, total, estimated_delivery, tracking_number, tracking_url, created_at, order_items(shade_type, fabric_name, width, height, quantity, unit_price, total_price), order_status_history(status, notes, created_at)")
+    .select("id, order_number, status, subtotal, discount, sale_savings, total, estimated_delivery, tracking_number, tracking_url, created_at, order_items(shade_type, fabric_name, width, width_fraction, height, height_fraction, mount_type, control_type, motor_power, roll_type, valance_type, quantity, unit_price, total_price), order_status_history(status, notes, created_at)")
     .eq("order_number", order_number.toUpperCase())
     .eq("email", email.toLowerCase())
     .single();
