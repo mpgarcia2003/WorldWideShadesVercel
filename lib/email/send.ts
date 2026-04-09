@@ -5,7 +5,7 @@ const resend = new Resend(process.env.RESEND_API_KEY);
 // Use verified domain or fallback to test sender
 const FROM_EMAIL = "hello@worldwideshades.com";
 const FROM_NAME = "World Wide Shades";
-const ADMIN_EMAIL = "Hello@WorldWideShades.com";
+const ADMIN_EMAIL = "hello@worldwideshades.com";
 
 function formatCurrency(n: number) {
   return "$" + n.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ",");
