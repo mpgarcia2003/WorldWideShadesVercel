@@ -16,11 +16,11 @@ export const GTM_EVENTS = {
 
   // ── Custom Builder Funnel (analysis + remarketing only) ──
   BUILDER_START: "builder_start",
-  SHAPE_SELECTED: "shape_selected",
-  MEASUREMENTS_ENTERED: "measurements_entered",
-  FABRIC_SELECTED: "fabric_selected",
-  MOUNT_SELECTED: "mount_selected",
-  CONTROL_SELECTED: "control_selected",
+  SHAPE_SELECTED: "shape_select",
+  MEASUREMENTS_ENTERED: "dimensions_entered",
+  FABRIC_SELECTED: "fabric_select",
+  MOUNT_SELECTED: "mount_select",
+  CONTROL_SELECTED: "control_type_select",
   BUILDER_COMPLETE: "builder_complete",
 
   // ── Other ──
