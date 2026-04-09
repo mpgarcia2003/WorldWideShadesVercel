@@ -23,7 +23,7 @@ export const metadata: Metadata = {
   robots: { index: true, follow: true },
 };
 
-const GTM_ID = "GTM-5THC3H88";
+const GTM_ID = "GTM-KG4QRBT8";
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
