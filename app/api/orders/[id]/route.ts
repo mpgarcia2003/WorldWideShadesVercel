@@ -118,9 +118,13 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id
     return NextResponse.json({ error: error.message }, { status: 500 });
   }
 
-  // Send status update email to customer (non-blocking)
+  // Send status update email to customer
   if (body.status && ["in_production", "quality_check", "shipped", "delivered"].includes(body.status)) {
-    sendStatusUpdate(data, body.status, data.tracking_number, data.tracking_url).catch(console.error);
+    try {
+      await sendStatusUpdate(data, body.status, data.tracking_number, data.tracking_url);
+    } catch (emailErr) {
+      console.error("Status email error:", emailErr);
+    }
   }
 
   return NextResponse.json({ order: data, customer_stats: null });

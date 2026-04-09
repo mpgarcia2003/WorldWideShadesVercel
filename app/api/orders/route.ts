@@ -171,10 +171,16 @@ export async function POST(req: NextRequest) {
     notes: "Order placed",
   });
 
-  // Send emails (non-blocking)
+  // Send emails (await to ensure they complete before function exits)
   const orderItems = body.items || [];
-  sendOrderConfirmation(order, orderItems).catch(console.error);
-  sendNewOrderAlert(order, orderItems).catch(console.error);
+  try {
+    await Promise.all([
+      sendOrderConfirmation(order, orderItems),
+      sendNewOrderAlert(order, orderItems),
+    ]);
+  } catch (emailErr) {
+    console.error("Email send error:", emailErr);
+  }
 
   return NextResponse.json({ order, order_number: orderNumber }, { status: 201 });
 }
