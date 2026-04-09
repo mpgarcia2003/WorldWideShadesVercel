@@ -3,7 +3,7 @@ import { Resend } from "resend";
 const resend = new Resend(process.env.RESEND_API_KEY);
 
 // Use verified domain or fallback to test sender
-const FROM_EMAIL = "Hello@WorldWideShades.com";
+const FROM_EMAIL = "hello@worldwideshades.com";
 const FROM_NAME = "World Wide Shades";
 const ADMIN_EMAIL = "Hello@WorldWideShades.com";
 
