@@ -122,3 +122,21 @@ body {
   outline: 2px solid var(--color-gold);
   outline-offset: 2px;
 }
+
+/* ── Blog Article Styles ── */
+.scroll-mt-24 {
+  scroll-margin-top: 6rem;
+}
+
+article h2 + p:first-of-type {
+  margin-top: 0;
+}
+
+@media print {
+  aside, .cta-banner, .related, footer {
+    display: none !important;
+  }
+  article {
+    max-width: 100%;
+  }
+}

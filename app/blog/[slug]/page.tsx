@@ -1,11 +1,9 @@
 import type { Metadata } from "next";
-import Link from "next/link";
-import { ArrowLeft } from "lucide-react";
 import { JsonLd } from "@/components/shared/JsonLd";
-import { breadcrumbJsonLd } from "@/lib/seo/jsonld";
-import { FinalCTA } from "@/components/sections/FinalCTA";
+import { breadcrumbJsonLd, faqJsonLd } from "@/lib/seo/jsonld";
 import { SITE } from "@/lib/constants";
 import { getAllPosts, getPostBySlug } from "@/lib/blog";
+import { BlogArticle } from "@/components/blog/BlogArticle";
 
 export async function generateStaticParams() {
   const posts = getAllPosts();
@@ -20,37 +18,68 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
     title: post.title,
     description: post.excerpt,
     alternates: { canonical: `https://${SITE.domain}/blog/${slug}` },
-    openGraph: { title: post.title, description: post.excerpt, type: "article", publishedTime: post.date, images: post.image ? [{ url: post.image }] : [] },
+    openGraph: {
+      title: post.title,
+      description: post.excerpt,
+      type: "article",
+      publishedTime: post.date,
+      authors: [post.author],
+      images: post.image ? [{ url: `https://${SITE.domain}${post.image}`, width: 1200, height: 675 }] : [],
+    },
+    twitter: { card: "summary_large_image" },
   };
 }
 
-function renderMarkdown(content: string): string {
-  // Simple markdown to HTML — handles headers, bold, italic, links, lists, paragraphs
-  return content
-    .split("\n\n")
-    .map((block) => {
-      block = block.trim();
-      if (!block) return "";
-      // Headers
-      if (block.startsWith("### ")) return `<h3>${inline(block.slice(4))}</h3>`;
-      if (block.startsWith("## ")) return `<h2>${inline(block.slice(3))}</h2>`;
-      if (block.startsWith("# ")) return `<h1>${inline(block.slice(2))}</h1>`;
-      // Unordered list
-      if (block.match(/^[-*] /m)) {
-        const items = block.split("\n").filter(l => l.match(/^[-*] /)).map(l => `<li>${inline(l.replace(/^[-*] /, ""))}</li>`).join("");
-        return `<ul>${items}</ul>`;
-      }
-      // Paragraph
-      return `<p>${inline(block.replace(/\n/g, " "))}</p>`;
-    })
-    .join("\n");
+function articleJsonLd(post: { title: string; excerpt: string; date: string; image: string; author: string; slug: string }) {
+  return {
+    "@context": "https://schema.org",
+    "@type": "Article",
+    headline: post.title,
+    description: post.excerpt,
+    image: post.image ? `https://${SITE.domain}${post.image}` : undefined,
+    datePublished: post.date,
+    dateModified: post.date,
+    author: { "@type": "Organization", name: post.author, url: `https://${SITE.domain}` },
+    publisher: {
+      "@type": "Organization",
+      name: SITE.name,
+      url: `https://${SITE.domain}`,
+      logo: { "@type": "ImageObject", url: `https://${SITE.domain}/images/logo.png` },
+    },
+    mainEntityOfPage: { "@type": "WebPage", "@id": `https://${SITE.domain}/blog/${post.slug}` },
+  };
 }
 
-function inline(text: string): string {
-  return text
-    .replace(/\*\*(.+?)\*\*/g, "<strong>$1</strong>")
-    .replace(/\*(.+?)\*/g, "<em>$1</em>")
-    .replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2" class="text-gold hover:text-gold-dark underline">$1</a>');
+function parseFAQs(content: string): { question: string; answer: string }[] {
+  const faqs: { question: string; answer: string }[] = [];
+  const lines = content.split("\n");
+  let inFaq = false;
+  let currentQ = "";
+  let currentA: string[] = [];
+
+  for (const line of lines) {
+    if (line.startsWith("### ") && !line.toLowerCase().includes("table of contents")) {
+      if (currentQ && currentA.length) {
+        faqs.push({ question: currentQ, answer: currentA.join(" ").trim() });
+      }
+      currentQ = line.slice(4).trim();
+      currentA = [];
+      inFaq = true;
+    } else if (inFaq && line.startsWith("## ")) {
+      if (currentQ && currentA.length) {
+        faqs.push({ question: currentQ, answer: currentA.join(" ").trim() });
+      }
+      inFaq = false;
+      currentQ = "";
+      currentA = [];
+    } else if (inFaq && line.trim()) {
+      currentA.push(line.trim());
+    }
+  }
+  if (currentQ && currentA.length) {
+    faqs.push({ question: currentQ, answer: currentA.join(" ").trim() });
+  }
+  return faqs;
 }
 
 export default async function BlogPostPage({ params }: { params: Promise<{ slug: string }> }) {
@@ -58,34 +87,18 @@ export default async function BlogPostPage({ params }: { params: Promise<{ slug:
   const post = getPostBySlug(slug);
   if (!post) return <div className="section-padding text-center"><h1 className="heading-display text-3xl text-dark">Post Not Found</h1></div>;
 
-  const html = renderMarkdown(post.content);
+  const faqs = parseFAQs(post.content);
+  const allPosts = getAllPosts();
+  const related = allPosts.filter((p) => p.slug !== slug).slice(0, 3);
 
   return (
     <>
-      <JsonLd data={breadcrumbJsonLd([{ name: "Home", path: "/" }, { name: "Blog", path: "/blog" }, { name: post.title, path: `/blog/${slug}` }])} />
-      <article className="section-padding bg-white">
-        <div className="container-site container-narrow">
-          <Link href="/blog" className="inline-flex items-center gap-1.5 text-sm text-warm-gray hover:text-gold transition-colors mb-8"><ArrowLeft className="w-4 h-4" />Back to Blog</Link>
-          <header className="mb-10">
-            <div className="flex items-center gap-3 mb-4">
-              <span className="text-xs font-bold uppercase tracking-widest text-gold">{post.category}</span>
-              <span className="text-xs text-warm-gray">{post.date}</span>
-            </div>
-            <h1 className="heading-display text-3xl lg:text-4xl xl:text-5xl text-dark mb-4">{post.title}</h1>
-            <p className="text-xl text-warm-gray">{post.excerpt}</p>
-          </header>
-          {post.image && (
-            <div className="aspect-[2/1] rounded-xl bg-dark-muted overflow-hidden mb-10">
-              <div className="w-full h-full bg-cover bg-center" style={{ backgroundImage: `url(${post.image})` }} />
-            </div>
-          )}
-          <div
-            className="prose prose-lg max-w-none prose-headings:font-serif prose-headings:text-dark prose-p:text-warm-gray prose-strong:text-dark prose-a:text-gold prose-li:text-warm-gray"
-            dangerouslySetInnerHTML={{ __html: html }}
-          />
-        </div>
-      </article>
-      <FinalCTA headline="Ready to Get Started?" subheadline="Design your custom shades in minutes. Free shipping. Free samples." ctaLabel="Start Designing" ctaHref="/builder" />
+      <JsonLd data={[
+        breadcrumbJsonLd([{ name: "Home", path: "/" }, { name: "Blog", path: "/blog" }, { name: post.title, path: `/blog/${slug}` }]),
+        articleJsonLd({ ...post, slug }),
+        ...(faqs.length > 0 ? [faqJsonLd(faqs)] : []),
+      ]} />
+      <BlogArticle post={post} slug={slug} related={related} />
     </>
   );
 }
