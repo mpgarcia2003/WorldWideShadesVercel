@@ -180,7 +180,7 @@ export const loadSharedCart = async (shareId: string): Promise<{ cart: CartItem[
 // --- SAVED QUOTES (Precision Email Modal) ---
 export const saveQuoteConfig = async (email: string, config: any, price: number): Promise<{ quoteId: string; discountCode: string } | null> => {
   const quoteId = `QUOTE-${Date.now()}-${Math.random().toString(36).substring(2, 8)}`;
-  const discountCode = `PRECISION${Math.random().toString(36).substring(2, 8).toUpperCase()}`;
+  const discountCode = 'COMEBACK10';
   const payload = {
     id: quoteId,
     email,

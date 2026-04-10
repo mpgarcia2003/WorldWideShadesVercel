@@ -7,6 +7,7 @@ export default function RecoverCartPage() {
   const params = useParams();
   const id = params?.id as string;
   const [status, setStatus] = useState<"loading" | "restored" | "error">("loading");
+  const [destination, setDestination] = useState<"checkout" | "builder">("checkout");
 
   useEffect(() => {
     if (!id) { setStatus("error"); return; }
@@ -17,22 +18,42 @@ export default function RecoverCartPage() {
         if (!res.ok) { setStatus("error"); return; }
         const data = await res.json();
 
-        if (data.cart_data && Array.isArray(data.cart_data) && data.cart_data.length > 0) {
-          // Restore cart to localStorage
-          localStorage.setItem("wws_cart_v1", JSON.stringify(data.cart_data));
-          // Mark lead as captured so popup doesn't show again
-          localStorage.setItem("wws_lead_captured", data.email || "");
-          setStatus("restored");
-          // Redirect to checkout if they had items, otherwise builder
-          setTimeout(() => {
-            window.location.href = "/checkout";
-          }, 1500);
+        // Mark lead as captured so popup doesn't show again
+        if (data.email) localStorage.setItem("wws_lead_captured", data.email);
+
+        const items = data.cart_data;
+        const isFromBuilder = data.page === "builder" || data.page === "builder_exit_intent";
+
+        if (items && Array.isArray(items) && items.length > 0) {
+          // Check if this is a builder config (has config.shape/shadeType but no config.material.id)
+          // vs a full cart item (has config.material object, proper totalPrice, etc.)
+          const firstItem = items[0];
+          const isBuilderConfig = firstItem.config && 
+            (firstItem.config.shape || firstItem.config.shadeType) && 
+            !firstItem.config?.material?.id && 
+            !firstItem.id;
+
+          if (isBuilderConfig || isFromBuilder) {
+            // Restore builder configuration so they continue where they left off
+            const builderConfig = firstItem.config || firstItem;
+            localStorage.setItem("wws_builder_config", JSON.stringify(builderConfig));
+            // Set editing flag so builder restores ALL fields (width, height, fabric, etc.)
+            localStorage.setItem("wws_editing_item", "recovery");
+            setDestination("builder");
+            setStatus("restored");
+            setTimeout(() => { window.location.href = "/builder"; }, 1500);
+          } else {
+            // Full cart items — restore to cart and go to checkout
+            localStorage.setItem("wws_cart_v1", JSON.stringify(items));
+            setDestination("checkout");
+            setStatus("restored");
+            setTimeout(() => { window.location.href = "/checkout"; }, 1500);
+          }
         } else {
           // No cart data — send to builder
+          setDestination("builder");
           setStatus("restored");
-          setTimeout(() => {
-            window.location.href = "/builder";
-          }, 1500);
+          setTimeout(() => { window.location.href = "/builder"; }, 1500);
         }
       } catch {
         setStatus("error");
@@ -56,8 +77,14 @@ export default function RecoverCartPage() {
         {status === "restored" && (
           <>
             <div style={{ fontSize: "2rem", marginBottom: "1rem" }}>✓</div>
-            <h1 style={{ fontFamily: "Georgia, serif", fontSize: "1.5rem", color: "#0c0c0c", marginBottom: "0.5rem" }}>Cart Restored!</h1>
-            <p style={{ color: "#6b7280", fontSize: "0.9375rem" }}>Redirecting you to checkout...</p>
+            <h1 style={{ fontFamily: "Georgia, serif", fontSize: "1.5rem", color: "#0c0c0c", marginBottom: "0.5rem" }}>
+              {destination === "builder" ? "Configuration Restored!" : "Cart Restored!"}
+            </h1>
+            <p style={{ color: "#6b7280", fontSize: "0.9375rem" }}>
+              {destination === "builder" 
+                ? "Redirecting you to the shade builder to continue where you left off..." 
+                : "Redirecting you to checkout..."}
+            </p>
           </>
         )}
         {status === "error" && (

@@ -375,8 +375,13 @@ const Builder: React.FC<BuilderProps> = ({ addToCart, addToSwatches, swatches })
     try {
       const editingId = localStorage.getItem('wws_editing_item');
       if (editingId) {
-        localStorage.setItem('wws_editing_active', editingId);
-        localStorage.removeItem('wws_editing_item');
+        if (editingId === 'recovery') {
+          // Recovery mode — just restore config, don't set editing_active
+          localStorage.removeItem('wws_editing_item');
+        } else {
+          localStorage.setItem('wws_editing_active', editingId);
+          localStorage.removeItem('wws_editing_item');
+        }
       }
     } catch {}
   }, []);

@@ -497,7 +497,7 @@ export const sendCustomerQuoteEmail = async (request: {
 
         <!-- Discount Code -->
         <div style="background:linear-gradient(135deg,#fef3c7,#fde68a);border:2px dashed #f59e0b;border-radius:16px;padding:20px;text-align:center;margin-bottom:20px;">
-          <div style="color:#92400e;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.1em;margin-bottom:6px;">Your Exclusive 15% Discount</div>
+          <div style="color:#92400e;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.1em;margin-bottom:6px;">Your Exclusive 10% Discount</div>
           <div style="background:#fff;border-radius:8px;padding:10px 20px;display:inline-block;">
             <span style="font-size:22px;font-weight:900;color:#0f172a;letter-spacing:0.08em;font-family:monospace;">${request.discountCode}</span>
           </div>
@@ -514,7 +514,7 @@ export const sendCustomerQuoteEmail = async (request: {
 
       <!-- Footer -->
       <div style="padding:20px 24px;border-top:1px solid #f1f5f9;text-align:center;">
-        <p style="color:#94a3b8;font-size:11px;margin:0;">Questions? Reply to this email or call us at (800) 555-0199</p>
+        <p style="color:#94a3b8;font-size:11px;margin:0;">Questions? Reply to this email or call us at (844) 674-2716</p>
         <p style="color:#cbd5e1;font-size:10px;margin:8px 0 0;">World Wide Shades — Custom window treatments, factory direct</p>
       </div>
     </div>
