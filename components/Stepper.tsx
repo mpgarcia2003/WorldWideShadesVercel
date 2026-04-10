@@ -1294,8 +1294,15 @@ const Stepper: React.FC<StepperProps> = ({
 
               {/* CONTINUE BUTTON — hidden on Step 0, sticky on ALL steps */}
               {index !== 0 && (() => {
-                const hasMeasurements = config.width > 0 && config.height > 0;
                 const isMeasureStep = index === 1;
+                const shapeData = SHAPE_CONFIGS[config.shape as keyof typeof SHAPE_CONFIGS];
+                const hasMeasurements = shapeData?.inputs
+                  ? shapeData.inputs.every((input: any) => {
+                      if (input.key === 'width') return config.width > 0;
+                      if (input.key === 'height') return config.height > 0;
+                      return (config.customDims?.[input.key] || 0) > 0;
+                    })
+                  : config.width > 0 && config.height > 0;
                 const isDisabled = isMeasureStep && !hasMeasurements;
                 return (
                 <div className='sticky bottom-0 z-10 bg-white pt-3 pb-1 -mx-2 px-2 shadow-[0_-8px_16px_rgba(255,255,255,0.9)]'>
