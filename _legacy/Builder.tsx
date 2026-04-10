@@ -706,7 +706,8 @@ const Builder: React.FC<BuilderProps> = ({ addToCart, addToSwatches, swatches })
     handleConfirmStep(stepIndex);
   };
 
-  // Exit intent detection
+  // Exit intent detection — DISABLED, handled by abandoned cart system
+  /*
   useEffect(() => {
     if (path !== 'build' || exitIntentShown) return;
     
@@ -721,6 +722,7 @@ const Builder: React.FC<BuilderProps> = ({ addToCart, addToSwatches, swatches })
     document.addEventListener('mouseleave', handleMouseLeave);
     return () => document.removeEventListener('mouseleave', handleMouseLeave);
   }, [path, exitIntentShown, completedSteps.size]);
+  */
 
   const handleSaveConfig = async () => {
     if (!exitEmail) return;
@@ -1366,8 +1368,8 @@ const Builder: React.FC<BuilderProps> = ({ addToCart, addToSwatches, swatches })
 
       <ConsultationModal isOpen={isConsultationOpen} onClose={() => setIsConsultationOpen(false)} />
 
-      {/* EXIT INTENT MODAL */}
-      {showExitIntent && (
+      {/* EXIT INTENT MODAL — DISABLED, handled by abandoned cart system */}
+      {false && (
         <div className="fixed inset-0 z-[100] flex items-center justify-center" style={{ animation: 'fadeUp 0.3s ease forwards' }}>
           <div className="absolute inset-0 bg-black/40 backdrop-blur-sm" onClick={() => setShowExitIntent(false)} />
           <div className="relative bg-white rounded-2xl p-8 max-w-sm w-full mx-4 shadow-2xl" style={{ animation: 'modalSpring 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards' }}>

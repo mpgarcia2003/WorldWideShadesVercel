@@ -18,13 +18,8 @@ export function ExitIntentPopup({ page }: ExitIntentPopupProps) {
   const [submitted, setSubmitted] = useState(false);
   const [loading, setLoading] = useState(false);
 
-  // Don't render on builder page — builder has its own exit intent
-  const [isBuilder, setIsBuilder] = useState(false);
-  useEffect(() => {
-    if (typeof window !== "undefined" && window.location.pathname.startsWith("/builder")) {
-      setIsBuilder(true);
-    }
-  }, []);
+  // Previously skipped builder page, now handles all pages
+  // Builder's old popup is disabled, this one handles everything
 
   const triggerPopup = useCallback(() => {
     // Don't show if already shown this session or lead already captured
@@ -37,8 +32,7 @@ export function ExitIntentPopup({ page }: ExitIntentPopupProps) {
 
   useEffect(() => {
     if (typeof window === "undefined") return;
-    // Don't show on builder page or if lead already captured
-    if (isBuilder) return;
+    // Don't show if lead already captured
     if (localStorage.getItem(LEAD_KEY)) return;
     if (sessionStorage.getItem(POPUP_KEY)) return;
 
@@ -72,6 +66,7 @@ export function ExitIntentPopup({ page }: ExitIntentPopupProps) {
     let cartData = null;
     let total = 0;
     let itemCount = 0;
+    const currentPage = typeof window !== 'undefined' ? window.location.pathname : '';
     try {
       const raw = localStorage.getItem("wws_cart_v1");
       if (raw) {
@@ -81,6 +76,18 @@ export function ExitIntentPopup({ page }: ExitIntentPopupProps) {
         total = cart.reduce((s: number, i: any) => s + (i.totalPrice || 0), 0);
       }
     } catch {}
+
+    // Also capture builder config if on builder page
+    if (currentPage.startsWith('/builder') && (!cartData || itemCount === 0)) {
+      try {
+        const builderRaw = localStorage.getItem('wws_builder_config');
+        if (builderRaw) {
+          const builderConfig = JSON.parse(builderRaw);
+          cartData = [{ config: builderConfig }];
+          itemCount = 1;
+        }
+      } catch {}
+    }
 
     try {
       await fetch("/api/abandoned-carts", {
