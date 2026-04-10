@@ -21,30 +21,50 @@ import {
   MapPin,
 } from "lucide-react"
 
-// ─── ORDER DATA ────────────────────────────────────────────────────────────────
-const order = {
-  number: "WWS-20260408-3847",
-  email: "customer@email.com",
-  date: "April 8, 2026",
-  estimatedDelivery: "April 14–18, 2026",
-  items: [
-    {
-      name: "Custom Blackout Roller Shade",
-      fabric: "Texstyle Milano — Charcoal",
-      dimensions: '48" W × 72" H',
-      mount: "Inside Mount",
-      control: "Motorized — Rechargeable",
-      room: "Master Bedroom",
-      qty: 1,
-      price: 487.0,
-    },
-  ],
-  motorized: 250.0,
-  valance: 192.0,
+// ─── ORDER DATA (loaded from localStorage) ────────────────────────────────────
+const defaultOrder = {
+  number: "WWS-00000000-0000",
+  email: "",
+  date: new Date().toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' }),
+  estimatedDelivery: "",
+  items: [] as any[],
+  subtotal: 0,
+  motorized: 0,
+  valance: 0,
   shipping: 0,
-  tax: 74.32,
-  total: 1003.32,
-  retailSavings: 847.0,
+  tax: 0,
+  total: 0,
+  discount: 0,
+  retailSavings: 0,
+}
+
+function loadOrder() {
+  if (typeof window === 'undefined') return defaultOrder;
+  try {
+    const raw = localStorage.getItem('wws_last_order');
+    if (!raw) return defaultOrder;
+    const data = JSON.parse(raw);
+    const deliveryStart = new Date();
+    deliveryStart.setDate(deliveryStart.getDate() + 7);
+    const deliveryEnd = new Date(deliveryStart);
+    deliveryEnd.setDate(deliveryEnd.getDate() + 4);
+    const opts: Intl.DateTimeFormatOptions = { month: 'long', day: 'numeric' };
+    return {
+      number: data.order_number || defaultOrder.number,
+      email: data.email || defaultOrder.email,
+      date: data.date || defaultOrder.date,
+      estimatedDelivery: `${deliveryStart.toLocaleDateString('en-US', opts)}–${deliveryEnd.toLocaleDateString('en-US', opts)}, ${deliveryEnd.getFullYear()}`,
+      items: data.items || [],
+      subtotal: data.subtotal || 0,
+      motorized: 0,
+      valance: 0,
+      shipping: data.shipping || 0,
+      tax: data.tax || 0,
+      total: data.total || 0,
+      discount: data.discount || 0,
+      retailSavings: 0,
+    };
+  } catch { return defaultOrder; }
 }
 
 // ─── CONFETTI PIECES (generated once) ─────────────────────────────────────────
@@ -173,10 +193,16 @@ const footerColumns = [
 
 // ─── MAIN COMPONENT ────────────────────────────────────────────────────────────
 export default function ThankYouPage() {
+  const [order, setOrder] = useState(defaultOrder)
   const [showConfetti, setShowConfetti] = useState(true)
   const [orderExpanded, setOrderExpanded] = useState(false)
   const [copied, setCopied] = useState(false)
   const [timeLeft, setTimeLeft] = useState({ hours: 23, minutes: 42, seconds: 18 })
+
+  // Load real order data from localStorage
+  useEffect(() => {
+    setOrder(loadOrder());
+  }, []);
 
   // Hide confetti after 5 seconds
   useEffect(() => {
@@ -573,26 +599,22 @@ export default function ThankYouPage() {
               {/* Price breakdown */}
               <div className="p-6 md:p-8">
                 <div className="space-y-3">
-                  <div className="flex justify-between font-sans text-sm">
-                    <span className="text-warm-gray">Shade (1× Custom Blackout)</span>
-                    <span className="text-dark">${order.items[0].price.toFixed(2)}</span>
-                  </div>
-                  <div className="flex justify-between font-sans text-sm">
-                    <span className="text-warm-gray">Motorized Upgrade — Rechargeable</span>
-                    <span className="text-dark">${order.motorized.toFixed(2)}</span>
-                  </div>
-                  <div className="flex justify-between font-sans text-sm">
-                    <span className="text-warm-gray">Decorative Valance</span>
-                    <span className="text-dark">${order.valance.toFixed(2)}</span>
-                  </div>
+                  {order.items.map((item: any, i: number) => (
+                    <div key={i} className="flex justify-between font-sans text-sm">
+                      <span className="text-warm-gray">{item.name} (Qty: {item.qty})</span>
+                      <span className="text-dark">${item.price.toFixed(2)}</span>
+                    </div>
+                  ))}
                   <div className="flex justify-between font-sans text-sm">
                     <span className="text-warm-gray">Shipping</span>
                     <span className="text-gold font-semibold">FREE</span>
                   </div>
-                  <div className="flex justify-between font-sans text-sm">
-                    <span className="text-warm-gray">Tax</span>
-                    <span className="text-dark">${order.tax.toFixed(2)}</span>
-                  </div>
+                  {order.discount > 0 && (
+                    <div className="flex justify-between font-sans text-sm">
+                      <span className="text-green-600 font-semibold">Promo Discount</span>
+                      <span className="text-green-600 font-semibold">-${order.discount.toFixed(2)}</span>
+                    </div>
+                  )}
 
                   <div className="border-t border-cream-dark pt-3 flex justify-between">
                     <span className="font-sans font-bold text-dark text-base">Order Total</span>
@@ -602,14 +624,14 @@ export default function ThankYouPage() {
                   </div>
                 </div>
 
-                {/* Savings callout */}
+                {/* Factory-direct callout */}
                 <div className="mt-4 bg-gold/10 border border-gold/30 rounded-sm px-5 py-3 flex items-center gap-3">
                   <span className="text-gold text-xl">✦</span>
                   <p className="font-sans text-sm">
                     <span className="font-bold text-gold">
-                      You saved ${order.retailSavings.toFixed(2)} vs. retail
+                      Factory-direct pricing
                     </span>{" "}
-                    <span className="text-warm-gray">— factory-direct pricing.</span>
+                    <span className="text-warm-gray">— custom made for you.</span>
                   </p>
                 </div>
 
