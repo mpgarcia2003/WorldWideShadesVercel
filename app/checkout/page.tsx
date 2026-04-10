@@ -161,22 +161,22 @@ function StripePaymentForm({
       // Save order confirmation data for the thank-you page
       localStorage.setItem("wws_last_order", JSON.stringify({
         order_number: orderNumber || `WWS-${new Date().toISOString().slice(0,10).replace(/-/g,'')}-${Math.floor(Math.random()*9000)+1000}`,
-        email: email,
+        email: orderData.email,
         date: new Date().toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' }),
-        items: cart.map(item => ({
-          name: `Custom ${item.config.shadeType || 'Roller'} Shade${item.config.shape !== 'Standard' ? ` — ${item.config.shape}` : ''}`,
-          fabric: item.config.material?.name || '—',
-          dimensions: getDimDisplay(item),
-          mount: item.config.mountType || '—',
-          control: item.config.controlType === 'Motorized' ? `Motorized — ${item.config.motorPower || 'Rechargeable'}` : `${item.config.controlType || 'Manual'} — ${item.config.controlPosition || 'Right'} Side`,
-          qty: item.config.quantity || 1,
-          price: item.totalPrice,
+        items: (orderData.items || []).map((item: any) => ({
+          name: item.shade_type || 'Custom Roller Shade',
+          fabric: item.fabric_name || '',
+          dimensions: `${item.width || 0}${item.width_fraction && item.width_fraction !== '0' ? ' ' + item.width_fraction : ''}" x ${item.height || 0}${item.height_fraction && item.height_fraction !== '0' ? ' ' + item.height_fraction : ''}"`,
+          mount: item.mount_type || '',
+          control: item.control_type || '',
+          qty: item.quantity || 1,
+          price: item.total_price || 0,
         })),
-        subtotal: cart.reduce((s, i) => s + i.totalPrice, 0),
-        discount: promoApplied ? 50 : 0,
+        subtotal: orderData.subtotal || total,
+        discount: orderData.discount || 0,
         shipping: 0,
         tax: 0,
-        total: cart.reduce((s, i) => s + i.totalPrice, 0) - (promoApplied ? 50 : 0),
+        total: total,
         stripe_payment_intent_id: paymentIntent.id,
       }));
 
