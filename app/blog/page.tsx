@@ -3,20 +3,23 @@ import Link from "next/link";
 import { generatePageMetadata } from "@/lib/seo/metadata";
 import { JsonLd } from "@/components/shared/JsonLd";
 import { breadcrumbJsonLd } from "@/lib/seo/jsonld";
+import { getAllPosts } from "@/lib/blog";
 
 export const metadata: Metadata = generatePageMetadata({ title: "Blog — Window Treatment Tips, Guides & Inspiration", description: "Expert guides on choosing, measuring, and installing custom window shades. Design inspiration and product updates.", path: "/blog" });
 
-const POSTS = [
-  { slug: "blackout-shades-nursery-guide", title: "The Complete Guide to Blackout Shades for Nurseries", excerpt: "Everything you need to know about creating the perfect sleep environment for your baby.", category: "Guides", date: "2026-03-28", image: "/images/blog-nursery.jpg" },
-  { slug: "motorized-shades-smart-home", title: "Motorized Shades: The Smart Home Upgrade You Didn't Know You Needed", excerpt: "How motorized window shades integrate with Alexa, Google Home, and Apple HomeKit.", category: "Product", date: "2026-03-20", image: "/images/blog-motorized.jpg" },
-  { slug: "how-to-measure-windows", title: "How to Measure Your Windows for Custom Shades", excerpt: "Step-by-step measuring guide with diagrams for inside and outside mount installations.", category: "Guides", date: "2026-03-12", image: "/images/blog-measure.jpg" },
-  { slug: "light-filtering-vs-blackout", title: "Light Filtering vs Blackout: Which Shade Is Right for Your Room?", excerpt: "A room-by-room breakdown to help you choose the perfect opacity for every window.", category: "Guides", date: "2026-03-05", image: "/images/blog-compare.jpg" },
-  { slug: "spring-window-refresh", title: "5 Ways to Refresh Your Windows This Spring", excerpt: "Simple updates that make a big impact — from new fabrics to smart upgrades.", category: "Inspiration", date: "2026-02-25", image: "/images/blog-spring.jpg" },
-  { slug: "specialty-shape-windows", title: "Shading Specialty Shape Windows: What You Need to Know", excerpt: "Triangles, arches, and hexagons — how custom shades solve unusual window challenges.", category: "Guides", date: "2026-02-18", image: "/images/blog-shapes.jpg" },
-];
-
 export default function BlogPage() {
-  const [featured, ...rest] = POSTS;
+  const posts = getAllPosts();
+  if (posts.length === 0) {
+    return (
+      <section className="section-padding bg-white">
+        <div className="container-site text-center py-20">
+          <h1 className="heading-display text-4xl text-dark mb-4">The Shade <span className="text-gold">Journal</span></h1>
+          <p className="text-warm-gray">Posts coming soon.</p>
+        </div>
+      </section>
+    );
+  }
+  const [featured, ...rest] = posts;
   return (
     <>
       <JsonLd data={breadcrumbJsonLd([{ name: "Home", path: "/" }, { name: "Blog", path: "/blog" }])} />
