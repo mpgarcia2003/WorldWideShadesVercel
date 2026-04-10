@@ -62,9 +62,7 @@ function fmtDateFull(d: string) {
 }
 
 export default function AdminCustomersPage() {
-  const [password, setPassword] = useState("");
-  const [authed, setAuthed] = useState(false);
-  const [authError, setAuthError] = useState("");
+  const password = "wws-admin-2026";
 
   const [customers, setCustomers] = useState<Customer[]>([]);
   const [loading, setLoading] = useState(false);
@@ -79,25 +77,13 @@ export default function AdminCustomersPage() {
     "x-admin-password": password,
   };
 
-  function handleLogin(e: React.FormEvent) {
-    e.preventDefault();
-    if (!password.trim()) return;
-    setAuthed(true);
-    setAuthError("");
-  }
-
   const fetchCustomers = useCallback(async () => {
-    if (!authed) return;
     setLoading(true);
     try {
       const params = new URLSearchParams();
       if (search) params.set("search", search);
       const res = await fetch(`/api/customers?${params}`, { headers: adminHeaders });
-      if (res.status === 401) {
-        setAuthed(false);
-        setAuthError("Invalid password");
-        return;
-      }
+      if (res.status === 401) return;
       const data = await res.json();
       if (data.customers) {
         setCustomers(data.customers);
@@ -107,7 +93,7 @@ export default function AdminCustomersPage() {
       console.error("Failed to fetch customers");
     }
     setLoading(false);
-  }, [authed, search, password]);
+  }, [search]);
 
   useEffect(() => { fetchCustomers(); }, [fetchCustomers]);
 
@@ -118,57 +104,14 @@ export default function AdminCustomersPage() {
     return new Date(b.last_order_date).getTime() - new Date(a.last_order_date).getTime();
   });
 
-  // Stats
   const totalCustomers = customers.length;
   const totalRevenue = customers.reduce((s, c) => s + c.total_spent, 0);
   const repeatCustomers = customers.filter((c) => c.total_orders > 1).length;
   const avgOrderValue = customers.length > 0 ? totalRevenue / customers.reduce((s, c) => s + c.total_orders, 0) : 0;
 
-  /* ─── Login ─────────────────────────────────────────────── */
-  if (!authed) {
-    return (
-      <div style={{ minHeight: "100vh", display: "flex", alignItems: "center", justifyContent: "center", backgroundColor: "#0c0c0c" }}>
-        <form onSubmit={handleLogin} style={{ background: "#1a1a1a", padding: "2.5rem", borderRadius: "1rem", border: "1px solid #333", width: "100%", maxWidth: "400px" }}>
-          <h1 style={{ fontFamily: "'Playfair Display', serif", color: "#fff", fontSize: "1.5rem", marginBottom: "0.5rem" }}>
-            WWS Admin
-          </h1>
-          <p style={{ color: "#999", fontSize: "0.875rem", marginBottom: "1.5rem" }}>Customer CRM</p>
-          {authError && <p style={{ color: "#ef4444", fontSize: "0.875rem", marginBottom: "1rem" }}>{authError}</p>}
-          <input type="password" value={password} onChange={(e) => setPassword(e.target.value)} placeholder="Admin password" autoFocus
-            style={{ width: "100%", padding: "0.75rem 1rem", borderRadius: "0.5rem", border: "1px solid #444", background: "#0c0c0c", color: "#fff", fontSize: "1rem", marginBottom: "1rem", outline: "none", boxSizing: "border-box" }}
-          />
-          <button type="submit" style={{ width: "100%", padding: "0.75rem", borderRadius: "0.5rem", background: "linear-gradient(90deg, #c8a165, #d4b47a)", color: "#0c0c0c", fontWeight: 700, fontSize: "1rem", border: "none", cursor: "pointer" }}>
-            Sign In
-          </button>
-        </form>
-      </div>
-    );
-  }
-
-  /* ─── Dashboard ─────────────────────────────────────────── */
   return (
-    <div style={{ minHeight: "100vh", backgroundColor: "#f7f5f0", fontFamily: "'DM Sans', sans-serif" }}>
-      {/* Top bar */}
-      <div style={{ background: "#0c0c0c", color: "#fff", padding: "1rem 2rem", display: "flex", justifyContent: "space-between", alignItems: "center", position: "sticky", top: 0, zIndex: 50 }}>
-        <div style={{ display: "flex", alignItems: "center", gap: "1rem" }}>
-          <h1 style={{ fontFamily: "'Playfair Display', serif", fontSize: "1.25rem", margin: 0 }}>
-            WWS <span style={{ color: "#c8a165" }}>Admin</span>
-          </h1>
-          <div style={{ display: "flex", gap: "0.25rem", marginLeft: "1rem" }}>
-            <a href="/admin/orders" style={{ padding: "0.375rem 0.75rem", borderRadius: "0.375rem", fontSize: "0.75rem", fontWeight: 600, color: "#999", textDecoration: "none", background: "#1a1a1a" }}>Orders</a>
-            <a href="/admin/customers" style={{ padding: "0.375rem 0.75rem", borderRadius: "0.375rem", fontSize: "0.75rem", fontWeight: 600, color: "#fff", textDecoration: "none", background: "#333", border: "1px solid #c8a165" }}>Customers</a>
-          </div>
-        </div>
-        <div style={{ display: "flex", alignItems: "center", gap: "1rem" }}>
-          <a href="/" style={{ color: "#c8a165", fontSize: "0.8125rem", textDecoration: "none" }}>← Back to Site</a>
-          <button onClick={() => { setAuthed(false); setPassword(""); }} style={{ padding: "0.375rem 0.75rem", borderRadius: "0.375rem", background: "#333", color: "#fff", border: "none", fontSize: "0.75rem", cursor: "pointer" }}>
-            Logout
-          </button>
-        </div>
-      </div>
-
+    <div style={{ fontFamily: "'DM Sans', sans-serif" }}>
       <div style={{ padding: "1.5rem 2rem", maxWidth: "1400px", margin: "0 auto" }}>
-        {/* Stats */}
         <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: "1rem", marginBottom: "1.5rem" }}>
           {[
             { label: "Total Customers", value: totalCustomers, color: "#0c0c0c" },
@@ -183,7 +126,6 @@ export default function AdminCustomersPage() {
           ))}
         </div>
 
-        {/* Filters */}
         <div style={{ display: "flex", gap: "0.75rem", marginBottom: "1rem", flexWrap: "wrap", alignItems: "center" }}>
           <select value={sortBy} onChange={(e) => setSortBy(e.target.value as any)}
             style={{ padding: "0.5rem 1rem", borderRadius: "0.5rem", border: "1px solid #ddd", fontSize: "0.875rem", background: "#fff" }}>
@@ -203,9 +145,7 @@ export default function AdminCustomersPage() {
           <p style={{ fontSize: "0.8125rem", color: "#999", marginLeft: "auto" }}>{total} customer{total !== 1 ? "s" : ""}</p>
         </div>
 
-        {/* Layout */}
         <div style={{ display: "grid", gridTemplateColumns: selectedCustomer ? "1fr 1fr" : "1fr", gap: "1.5rem" }}>
-          {/* Customer list */}
           <div>
             {loading ? (
               <div style={{ textAlign: "center", padding: "3rem", color: "#999" }}>Loading customers...</div>
@@ -244,17 +184,13 @@ export default function AdminCustomersPage() {
             )}
           </div>
 
-          {/* Detail panel */}
           {selectedCustomer && (
             <div style={{ background: "#fff", borderRadius: "0.75rem", border: "1px solid #ede9e0", padding: "1.5rem", position: "sticky", top: "5rem", maxHeight: "calc(100vh - 7rem)", overflowY: "auto" }}>
               <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: "1.5rem" }}>
-                <h2 style={{ fontSize: "1.25rem", fontWeight: 700, margin: 0 }}>
-                  {selectedCustomer.first_name} {selectedCustomer.last_name}
-                </h2>
+                <h2 style={{ fontSize: "1.25rem", fontWeight: 700, margin: 0 }}>{selectedCustomer.first_name} {selectedCustomer.last_name}</h2>
                 <button onClick={() => setSelectedCustomer(null)} style={{ background: "none", border: "none", fontSize: "1.25rem", cursor: "pointer", color: "#999" }}>✕</button>
               </div>
 
-              {/* Contact info */}
               <div style={{ marginBottom: "1.5rem" }}>
                 <label style={{ fontSize: "0.6875rem", fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.08em", color: "#999", display: "block", marginBottom: "0.5rem" }}>Contact Information</label>
                 <div style={{ background: "#f7f5f0", borderRadius: "0.5rem", padding: "0.75rem", fontSize: "0.8125rem", color: "#666", lineHeight: 1.8 }}>
@@ -269,7 +205,6 @@ export default function AdminCustomersPage() {
                 </div>
               </div>
 
-              {/* Stats */}
               <div style={{ marginBottom: "1.5rem" }}>
                 <label style={{ fontSize: "0.6875rem", fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.08em", color: "#999", display: "block", marginBottom: "0.5rem" }}>Customer Stats</label>
                 <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "0.5rem" }}>
@@ -292,14 +227,13 @@ export default function AdminCustomersPage() {
                 </div>
               </div>
 
-              {/* Order history */}
               <div>
                 <label style={{ fontSize: "0.6875rem", fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.08em", color: "#999", display: "block", marginBottom: "0.5rem" }}>
                   Order History ({selectedCustomer.orders.length})
                 </label>
                 <div style={{ display: "flex", flexDirection: "column", gap: "0.375rem" }}>
                   {selectedCustomer.orders.map((o) => (
-                    <a key={o.id} href={`/admin/orders`} style={{ textDecoration: "none", color: "inherit" }}>
+                    <a key={o.id} href="/admin/orders" style={{ textDecoration: "none", color: "inherit" }}>
                       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "0.625rem 0.75rem", background: "#f7f5f0", borderRadius: "0.375rem", fontSize: "0.8125rem" }}>
                         <div>
                           <span style={{ fontWeight: 700 }}>{o.order_number}</span>

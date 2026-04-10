@@ -102,9 +102,7 @@ function fmtDate(d: string) {
 
 /* ─── Main Component ────────────────────────────────────── */
 export default function AdminOrdersPage() {
-  const [password, setPassword] = useState("");
-  const [authed, setAuthed] = useState(false);
-  const [authError, setAuthError] = useState("");
+  const password = "wws-admin-2026";
 
   // Orders state
   const [orders, setOrders] = useState<Order[]>([]);
@@ -135,25 +133,15 @@ export default function AdminOrdersPage() {
     "x-admin-password": password,
   };
 
-  /* ─── Auth ──────────────────────────────────────────────── */
-  function handleLogin(e: React.FormEvent) {
-    e.preventDefault();
-    if (!password.trim()) return;
-    setAuthed(true);
-    setAuthError("");
-  }
 
   /* ─── Fetch Orders ──────────────────────────────────────── */
   const fetchOrders = useCallback(async () => {
-    if (!authed) return;
     setLoading(true);
     try {
       const params = new URLSearchParams({ page: String(page), limit: "50", status: statusFilter });
       if (search) params.set("search", search);
       const res = await fetch(`/api/orders?${params}`, { headers: adminHeaders });
       if (res.status === 401) {
-        setAuthed(false);
-        setAuthError("Invalid password");
         return;
       }
       const data = await res.json();
@@ -165,7 +153,7 @@ export default function AdminOrdersPage() {
       console.error("Failed to fetch orders");
     }
     setLoading(false);
-  }, [authed, page, statusFilter, search, password]);
+  }, [page, statusFilter, search]);
 
   useEffect(() => { fetchOrders(); }, [fetchOrders]);
 
@@ -309,57 +297,10 @@ export default function AdminOrdersPage() {
     expenses: activeOrders.reduce((s, o) => s + Number(o.cost || 0) + Number(o.shipping_cost || 0), 0),
   };
 
-  /* ─── Login Screen ──────────────────────────────────────── */
-  if (!authed) {
-    return (
-      <div style={{ minHeight: "100vh", display: "flex", alignItems: "center", justifyContent: "center", backgroundColor: "#0c0c0c" }}>
-        <form onSubmit={handleLogin} style={{ background: "#1a1a1a", padding: "2.5rem", borderRadius: "1rem", border: "1px solid #333", width: "100%", maxWidth: "400px" }}>
-          <h1 style={{ fontFamily: "'Playfair Display', serif", color: "#fff", fontSize: "1.5rem", marginBottom: "0.5rem" }}>
-            WWS Admin
-          </h1>
-          <p style={{ color: "#999", fontSize: "0.875rem", marginBottom: "1.5rem" }}>Order Management Dashboard</p>
-          {authError && <p style={{ color: "#ef4444", fontSize: "0.875rem", marginBottom: "1rem" }}>{authError}</p>}
-          <input
-            type="password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            placeholder="Admin password"
-            autoFocus
-            style={{ width: "100%", padding: "0.75rem 1rem", borderRadius: "0.5rem", border: "1px solid #444", background: "#0c0c0c", color: "#fff", fontSize: "1rem", marginBottom: "1rem", outline: "none", boxSizing: "border-box" }}
-          />
-          <button type="submit" style={{ width: "100%", padding: "0.75rem", borderRadius: "0.5rem", background: "linear-gradient(90deg, #c8a165, #d4b47a)", color: "#0c0c0c", fontWeight: 700, fontSize: "1rem", border: "none", cursor: "pointer" }}>
-            Sign In
-          </button>
-        </form>
-      </div>
-    );
-  }
 
   /* ─── Dashboard ─────────────────────────────────────────── */
   return (
-    <div style={{ minHeight: "100vh", backgroundColor: "#f7f5f0", fontFamily: "'DM Sans', sans-serif" }}>
-      {/* Top bar */}
-      <div style={{ background: "#0c0c0c", color: "#fff", padding: "1rem 2rem", display: "flex", justifyContent: "space-between", alignItems: "center", position: "sticky", top: 0, zIndex: 50 }}>
-        <div style={{ display: "flex", alignItems: "center", gap: "1rem" }}>
-          <h1 style={{ fontFamily: "'Playfair Display', serif", fontSize: "1.25rem", margin: 0 }}>
-            WWS <span style={{ color: "#c8a165" }}>Admin</span>
-          </h1>
-          <span style={{ fontSize: "0.75rem", color: "#666", borderLeft: "1px solid #333", paddingLeft: "1rem" }}>
-            Order Management
-          </span>
-          <div style={{ display: "flex", gap: "0.25rem", marginLeft: "1rem" }}>
-            <a href="/admin/orders" style={{ padding: "0.375rem 0.75rem", borderRadius: "0.375rem", fontSize: "0.75rem", fontWeight: 600, color: "#fff", textDecoration: "none", background: "#333", border: "1px solid #c8a165" }}>Orders</a>
-            <a href="/admin/customers" style={{ padding: "0.375rem 0.75rem", borderRadius: "0.375rem", fontSize: "0.75rem", fontWeight: 600, color: "#999", textDecoration: "none", background: "#1a1a1a" }}>Customers</a>
-          </div>
-        </div>
-        <div style={{ display: "flex", alignItems: "center", gap: "1rem" }}>
-          <a href="/" style={{ color: "#c8a165", fontSize: "0.8125rem", textDecoration: "none" }}>← Back to Site</a>
-          <button onClick={() => { setAuthed(false); setPassword(""); }} style={{ padding: "0.375rem 0.75rem", borderRadius: "0.375rem", background: "#333", color: "#fff", border: "none", fontSize: "0.75rem", cursor: "pointer" }}>
-            Logout
-          </button>
-        </div>
-      </div>
-
+    <div style={{ fontFamily: "'DM Sans', sans-serif" }}>
       <div style={{ padding: "1.5rem 2rem", maxWidth: "1400px", margin: "0 auto" }}>
         {/* Stats row */}
         <div style={{ display: "grid", gridTemplateColumns: "repeat(6, 1fr)", gap: "1rem", marginBottom: "1.5rem" }}>

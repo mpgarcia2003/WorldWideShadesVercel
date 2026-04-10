@@ -22,8 +22,6 @@ const PASS = "wws-admin-2026";
 const hdrs = { "Content-Type": "application/json", "x-admin-password": PASS };
 
 export default function AbandonedCartsPage() {
-  const [authed, setAuthed] = useState(false);
-  const [pw, setPw] = useState("");
   const [carts, setCarts] = useState<AbandonedCart[]>([]);
   const [total, setTotal] = useState(0);
   const [filter, setFilter] = useState<"all" | "pending" | "recovered">("pending");
@@ -39,7 +37,7 @@ export default function AbandonedCartsPage() {
     setTotal(data.total || 0);
   }
 
-  useEffect(() => { if (authed) fetchCarts(); }, [authed, filter]);
+  useEffect(() => { fetchCarts(); }, [filter]);
 
   async function sendRecoveryEmail(cartId: string) {
     setSending(cartId);
@@ -65,29 +63,11 @@ export default function AbandonedCartsPage() {
     fetchCarts();
   }
 
-  if (!authed) {
-    return (
-      <div style={{ minHeight: "100vh", display: "flex", alignItems: "center", justifyContent: "center", fontFamily: "'DM Sans', sans-serif", background: "#faf9f6" }}>
-        <div style={{ background: "#fff", padding: "2rem", borderRadius: "0.75rem", border: "1px solid #e5ddd0", width: "100%", maxWidth: "360px" }}>
-          <h1 style={{ fontFamily: "Georgia, serif", fontSize: "1.25rem", marginBottom: "1rem", textAlign: "center" }}>Abandoned Carts</h1>
-          <input type="password" placeholder="Admin password" value={pw} onChange={(e) => setPw(e.target.value)} onKeyDown={(e) => e.key === "Enter" && pw === PASS && setAuthed(true)} style={{ width: "100%", padding: "0.75rem", border: "1px solid #e5ddd0", borderRadius: "0.5rem", marginBottom: "0.75rem", fontSize: "0.875rem" }} />
-          <button onClick={() => pw === PASS && setAuthed(true)} style={{ width: "100%", padding: "0.75rem", background: "#0c0c0c", color: "#fff", border: "none", borderRadius: "0.5rem", fontWeight: 600, cursor: "pointer" }}>Login</button>
-        </div>
-      </div>
-    );
-  }
-
   const pendingCount = carts.filter(c => !c.recovered).length;
   const totalValue = carts.reduce((s, c) => s + (c.total || 0), 0);
 
   return (
-    <div style={{ minHeight: "100vh", background: "#faf9f6", fontFamily: "'DM Sans', sans-serif" }}>
-      {/* Nav */}
-      <div style={{ background: "#0c0c0c", padding: "0.75rem 1.5rem", display: "flex", gap: "1.5rem", alignItems: "center" }}>
-        <a href="/admin/orders" style={{ color: "#9ca3af", fontSize: "0.875rem", textDecoration: "none" }}>Orders</a>
-        <a href="/admin/customers" style={{ color: "#9ca3af", fontSize: "0.875rem", textDecoration: "none" }}>Customers</a>
-        <a href="/admin/abandoned" style={{ color: "#c8a165", fontSize: "0.875rem", textDecoration: "none", fontWeight: 600 }}>Abandoned Carts</a>
-      </div>
+    <div style={{ fontFamily: "'DM Sans', sans-serif" }}>
 
       <div style={{ maxWidth: "1100px", margin: "0 auto", padding: "2rem 1.5rem" }}>
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "1.5rem", flexWrap: "wrap", gap: "1rem" }}>
