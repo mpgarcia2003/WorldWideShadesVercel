@@ -10,6 +10,34 @@ import { trackBeginCheckout, trackAddPaymentInfo, trackPurchase, trackPhoneClick
 const stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY!);
 
 // ---------------------------------------------------------------------------
+// Promo Codes
+// ---------------------------------------------------------------------------
+interface PromoCode {
+  code: string;
+  type: "percent" | "flat";
+  value: number; // percent (10 = 10%) or flat dollar amount
+  minOrder: number;
+  label: string;
+  active: boolean;
+}
+
+const PROMO_CODES: PromoCode[] = [
+  { code: "COMEBACK10", type: "percent", value: 10, minOrder: 0, label: "10% Off — Welcome Back", active: true },
+  { code: "SHADE10", type: "flat", value: 50, minOrder: 100, label: "$50 Off", active: true },
+  { code: "SAVE15", type: "percent", value: 15, minOrder: 300, label: "15% Off", active: true },
+  { code: "FIRST20", type: "percent", value: 20, minOrder: 200, label: "20% Off — First Order", active: true },
+];
+
+function validatePromo(code: string, subtotal: number): { valid: boolean; promo?: PromoCode; discount?: number; error?: string } {
+  if (!code.trim()) return { valid: false, error: "Enter a promo code" };
+  const promo = PROMO_CODES.find((p) => p.code.toUpperCase() === code.trim().toUpperCase() && p.active);
+  if (!promo) return { valid: false, error: "Invalid promo code" };
+  if (subtotal < promo.minOrder) return { valid: false, error: `Minimum order ${promo.minOrder} required` };
+  const discount = promo.type === "percent" ? subtotal * (promo.value / 100) : promo.value;
+  return { valid: true, promo, discount: Math.min(discount, subtotal) };
+}
+
+// ---------------------------------------------------------------------------
 // Helpers
 // ---------------------------------------------------------------------------
 function fmt(n: number) {
@@ -340,15 +368,23 @@ function OrderSummary({
   setPromoCode,
   promoApplied,
   setPromoApplied,
+  promoDiscount,
+  promoLabel,
+  promoError,
+  onApplyPromo,
 }: {
   cart: CartItem[];
   promoCode: string;
   setPromoCode: (v: string) => void;
   promoApplied: boolean;
   setPromoApplied: (v: boolean) => void;
+  promoDiscount: number;
+  promoLabel: string;
+  promoError: string;
+  onApplyPromo: () => void;
 }) {
   const subtotal = cart.reduce((sum, item) => sum + item.totalPrice, 0);
-  const discount = promoApplied ? 50 : 0;
+  const discount = promoApplied ? promoDiscount : 0;
   const adjustedTotal = subtotal - discount;
 
   // Calculate savings from sale discount
@@ -401,7 +437,7 @@ function OrderSummary({
                   <span style={{ color: "#16a34a", fontWeight: 600 }}>FREE</span>
                 </span>
               </div>
-              {promoApplied && <PricingRow label="Promo (SHADE10)" value={`-${fmt(50)}`} valueStyle={{ color: "#16a34a", fontWeight: 600 }} />}
+              {promoApplied && <PricingRow label={`Promo (${promoLabel})`} value={`-${fmt(promoDiscount)}`} valueStyle={{ color: "#16a34a", fontWeight: 600 }} />}
             </div>
 
             <hr style={{ border: "none", borderTop: "1px solid #e5ddd0", margin: "0.75rem 0" }} />
@@ -416,12 +452,15 @@ function OrderSummary({
                 style={{ flex: 1, padding: "0.5rem 0.75rem", border: "1px solid #e5ddd0", borderRadius: "0.375rem", fontSize: "0.8125rem", color: "#0c0c0c", backgroundColor: "#fff", outline: "none" }}
               />
               <button
-                onClick={() => { if (promoCode.trim()) setPromoApplied(true); }}
+                onClick={onApplyPromo}
                 style={{ padding: "0.5rem 1rem", backgroundColor: promoApplied ? "#d1fae5" : "#0c0c0c", color: promoApplied ? "#065f46" : "#fff", border: "none", borderRadius: "0.375rem", fontSize: "0.8125rem", fontWeight: 600, cursor: "pointer", whiteSpace: "nowrap" }}
               >
                 {promoApplied ? "✓ Applied" : "Apply"}
               </button>
             </div>
+            {promoError && !promoApplied && (
+              <p style={{ fontSize: "0.75rem", color: "#dc2626", marginTop: "-0.5rem", marginBottom: "0.75rem" }}>{promoError}</p>
+            )}
 
             <hr style={{ border: "none", borderTop: "1px solid #e5ddd0", margin: "0.75rem 0" }} />
 
@@ -440,7 +479,7 @@ function OrderSummary({
 
             {isSaleActive() && saleSavings > 0 && (
               <p style={{ textAlign: "right", fontSize: "0.8125rem", color: "#16a34a", fontWeight: 700, marginTop: "0.25rem" }}>
-                You save {fmt(saleSavings + (promoApplied ? 50 : 0))}!
+                You save {fmt(saleSavings + (promoApplied ? promoDiscount : 0))}!
               </p>
             )}
           </>
@@ -558,6 +597,9 @@ export default function CheckoutPage() {
   const [orderSummaryOpen, setOrderSummaryOpen] = useState(false);
   const [promoCode, setPromoCode] = useState("");
   const [promoApplied, setPromoApplied] = useState(false);
+  const [promoDiscount, setPromoDiscount] = useState(0);
+  const [promoLabel, setPromoLabel] = useState("");
+  const [promoError, setPromoError] = useState("");
   const [isProcessing, setIsProcessing] = useState(false);
   const [clientSecret, setClientSecret] = useState<string | null>(null);
   const [stripeError, setStripeError] = useState("");
@@ -586,7 +628,7 @@ export default function CheckoutPage() {
   useEffect(() => {
     if (!loaded || cart.length === 0) return;
     const total = cart.reduce((sum, item) => sum + item.totalPrice, 0);
-    const discount = promoApplied ? 50 : 0;
+    const discount = promoApplied ? promoDiscount : 0;
     const amountInCents = Math.round((total - discount) * 100);
     if (amountInCents < 50) return;
 
@@ -606,10 +648,10 @@ export default function CheckoutPage() {
         else setStripeError(data.error || "Could not initialize payment.");
       })
       .catch(() => setStripeError("Could not connect to payment server."));
-  }, [loaded, cart, promoApplied]); // re-create if promo changes
+  }, [loaded, cart, promoApplied, promoDiscount]); // re-create if promo changes
 
   const subtotal = cart.reduce((sum, item) => sum + item.totalPrice, 0);
-  const discount = promoApplied ? 50 : 0;
+  const discount = promoApplied ? promoDiscount : 0;
   const adjustedTotal = subtotal - discount;
   const _salePercent = SALE_CONFIG.discountPercent;
   const _retailTotal = isSaleActive() ? cart.reduce((sum, item) => sum + (item.totalPrice / (1 - _salePercent / 100)), 0) : subtotal;
@@ -618,6 +660,21 @@ export default function CheckoutPage() {
   function handleUseBillingChange(checked: boolean) {
     setUseBillingAddress(checked);
     setShowBillingAddress(!checked);
+  }
+
+  function handleApplyPromo() {
+    const result = validatePromo(promoCode, subtotal);
+    if (result.valid && result.promo && result.discount !== undefined) {
+      setPromoApplied(true);
+      setPromoDiscount(result.discount);
+      setPromoLabel(result.promo.label);
+      setPromoError("");
+    } else {
+      setPromoApplied(false);
+      setPromoDiscount(0);
+      setPromoLabel("");
+      setPromoError(result.error || "Invalid code");
+    }
   }
 
   if (!loaded) {
@@ -670,7 +727,7 @@ export default function CheckoutPage() {
             </div>
           </button>
           <div className="mobile-summary-content" style={{ display: orderSummaryOpen ? "block" : "none", marginBottom: "1.5rem" }}>
-            <OrderSummary cart={cart} promoCode={promoCode} setPromoCode={setPromoCode} promoApplied={promoApplied} setPromoApplied={setPromoApplied} />
+            <OrderSummary cart={cart} promoCode={promoCode} setPromoCode={setPromoCode} promoApplied={promoApplied} setPromoApplied={setPromoApplied} promoDiscount={promoDiscount} promoLabel={promoLabel} promoError={promoError} onApplyPromo={handleApplyPromo} />
           </div>
         </div>
 
@@ -826,7 +883,7 @@ export default function CheckoutPage() {
           {/* RIGHT COLUMN (desktop only) */}
           <div className="desktop-order-summary-col">
             <div style={{ position: "sticky", top: "1.5rem" }}>
-              <OrderSummary cart={cart} promoCode={promoCode} setPromoCode={setPromoCode} promoApplied={promoApplied} setPromoApplied={setPromoApplied} />
+              <OrderSummary cart={cart} promoCode={promoCode} setPromoCode={setPromoCode} promoApplied={promoApplied} setPromoApplied={setPromoApplied} promoDiscount={promoDiscount} promoLabel={promoLabel} promoError={promoError} onApplyPromo={handleApplyPromo} />
             </div>
           </div>
         </div>
@@ -858,7 +915,7 @@ export default function CheckoutPage() {
               fontFamily: "'DM Sans', sans-serif"
             }}
           >
-            {isProcessing ? "Processing..." : `Place Order — ${fmt(cart.reduce((s, i) => s + i.totalPrice, 0) - (promoApplied ? 50 : 0))}`}
+            {isProcessing ? "Processing..." : `Place Order — ${fmt(cart.reduce((s, i) => s + i.totalPrice, 0) - (promoApplied ? promoDiscount : 0))}`}
           </button>
         </div>
       )}
