@@ -260,7 +260,7 @@ export async function sendNewOrderAlert(order: any, items: any[]) {
     </table>
 
     <div style="text-align:center;">
-      <a href="https://world-wide-shades-vercel-mpgarcia2003s-projects.vercel.app/admin/orders" style="display:inline-block;background:#0c0c0c;color:#fff;padding:12px 32px;border-radius:8px;text-decoration:none;font-weight:700;font-size:14px;">View in Admin →</a>
+      <a href="https://worldwideshades.com/admin/orders" style="display:inline-block;background:#0c0c0c;color:#fff;padding:12px 32px;border-radius:8px;text-decoration:none;font-weight:700;font-size:14px;">View in Admin →</a>
     </div>`;
 
   try {

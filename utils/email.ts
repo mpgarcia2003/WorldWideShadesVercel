@@ -116,7 +116,7 @@ const generateStyledOrderEmail = (order: Order, title: string, ctaUrl?: string):
         <div style="max-width: 440px; width: 100%; margin: 24px auto 0; text-align: center; padding: 0 20px;">
           <p style="color: #94a3b8; font-size: 12px; line-height: 1.6; margin: 0;">
             Questions about your custom shades? <br/>
-            Reply to this email or visit <a href="https://worldwide-shades.com" style="color: #4f46e5; text-decoration: none; font-weight: 600;">worldwide-shades.com</a>
+            Reply to this email or visit <a href="https://worldwideshades.com" style="color: #4f46e5; text-decoration: none; font-weight: 600;">worldwideshades.com</a>
           </p>
         </div>
       </td>
