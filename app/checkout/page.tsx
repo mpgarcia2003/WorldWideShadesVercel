@@ -545,12 +545,15 @@ export default function CheckoutPage() {
     setLoaded(true);
   }, []);
 
-  // Fire begin_checkout when cart loads
+  // Fire begin_checkout when cart loads (1.5s delay for Google Ads Tag to initialize)
   useEffect(() => {
     if (!loaded || cart.length === 0) return;
-    const total = cart.reduce((sum, item) => sum + item.totalPrice, 0);
-    const gtmItems = cart.map((item) => buildGTMItem(item.config, item.totalPrice));
-    trackBeginCheckout(gtmItems, total);
+    const timer = setTimeout(() => {
+      const total = cart.reduce((sum, item) => sum + item.totalPrice, 0);
+      const gtmItems = cart.map((item) => buildGTMItem(item.config, item.totalPrice));
+      trackBeginCheckout(gtmItems, total);
+    }, 1500);
+    return () => clearTimeout(timer);
   }, [loaded, cart.length]);
 
   // Create PaymentIntent when cart is loaded
