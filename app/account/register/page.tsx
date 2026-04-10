@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { supabaseAuth } from "@/lib/supabase/auth";
 
 export default function RegisterPage() {
   const [firstName, setFirstName] = useState("");
@@ -9,6 +10,7 @@ export default function RegisterPage() {
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+  const [success, setSuccess] = useState(false);
 
   async function handleRegister(e: React.FormEvent) {
     e.preventDefault();
@@ -16,10 +18,32 @@ export default function RegisterPage() {
     if (password.length < 8) { setError("Password must be at least 8 characters."); return; }
     setLoading(true);
     setError("");
-    // TODO: Replace with Supabase Auth signUp
-    await new Promise((r) => setTimeout(r, 1000));
-    localStorage.setItem("wws_auth", JSON.stringify({ email, name: `${firstName} ${lastName}` }));
-    window.location.href = "/account";
+
+    if (!supabaseAuth) { setError("Auth not configured."); setLoading(false); return; }
+
+    const { error: authError } = await supabaseAuth.auth.signUp({
+      email,
+      password,
+      options: {
+        data: { first_name: firstName, last_name: lastName, full_name: `${firstName} ${lastName}` },
+      },
+    });
+
+    if (authError) {
+      if (authError.message.includes("already registered")) {
+        setError("An account with this email already exists. Try signing in instead.");
+      } else {
+        setError(authError.message);
+      }
+      setLoading(false);
+      return;
+    }
+
+    setSuccess(true);
+    setLoading(false);
+
+    // Auto-redirect after a moment
+    setTimeout(() => { window.location.href = "/account"; }, 2000);
   }
 
   return (
@@ -45,30 +69,39 @@ export default function RegisterPage() {
             <p style={{ color: "#6b7280", fontSize: "0.9375rem" }}>Track orders, save configurations, and reorder easily.</p>
           </div>
 
-          <form onSubmit={handleRegister} style={{ background: "#fff", border: "1px solid #e5ddd0", borderRadius: "0.75rem", padding: "2rem" }}>
-            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "0.75rem", marginBottom: "1rem" }}>
-              <div>
-                <label style={{ display: "block", fontSize: "0.8125rem", fontWeight: 600, color: "#0c0c0c", marginBottom: "0.375rem" }}>First name</label>
-                <input className="auth-input" placeholder="Jane" value={firstName} onChange={(e) => setFirstName(e.target.value)} autoComplete="given-name" />
+          {success ? (
+            <div style={{ background: "#f0fdf4", border: "1px solid #86efac", borderRadius: "0.75rem", padding: "2rem", textAlign: "center" }}>
+              <p style={{ fontSize: "2rem", marginBottom: "0.75rem" }}>✓</p>
+              <h2 style={{ fontSize: "1.125rem", fontWeight: 700, color: "#0c0c0c", marginBottom: "0.5rem" }}>Account Created!</h2>
+              <p style={{ color: "#6b7280", fontSize: "0.875rem" }}>Check your email to confirm your account, then sign in.</p>
+              <a href="/account/login" style={{ display: "inline-block", marginTop: "1rem", color: "#c8a165", fontWeight: 600, textDecoration: "none" }}>Go to Sign In →</a>
+            </div>
+          ) : (
+            <form onSubmit={handleRegister} style={{ background: "#fff", border: "1px solid #e5ddd0", borderRadius: "0.75rem", padding: "2rem" }}>
+              {error && <p style={{ color: "#dc2626", fontSize: "0.875rem", marginBottom: "1rem", padding: "0.75rem", background: "#fef2f2", borderRadius: "0.375rem", border: "1px solid #fecaca" }}>{error}</p>}
+              <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "0.75rem", marginBottom: "1rem" }}>
+                <div>
+                  <label style={{ display: "block", fontSize: "0.8125rem", fontWeight: 600, color: "#0c0c0c", marginBottom: "0.375rem" }}>First name</label>
+                  <input className="auth-input" placeholder="Jane" value={firstName} onChange={(e) => setFirstName(e.target.value)} autoComplete="given-name" style={{ fontSize: "16px" }} />
+                </div>
+                <div>
+                  <label style={{ display: "block", fontSize: "0.8125rem", fontWeight: 600, color: "#0c0c0c", marginBottom: "0.375rem" }}>Last name</label>
+                  <input className="auth-input" placeholder="Smith" value={lastName} onChange={(e) => setLastName(e.target.value)} autoComplete="family-name" style={{ fontSize: "16px" }} />
+                </div>
               </div>
-              <div>
-                <label style={{ display: "block", fontSize: "0.8125rem", fontWeight: 600, color: "#0c0c0c", marginBottom: "0.375rem" }}>Last name</label>
-                <input className="auth-input" placeholder="Smith" value={lastName} onChange={(e) => setLastName(e.target.value)} autoComplete="family-name" />
+              <div style={{ marginBottom: "1rem" }}>
+                <label style={{ display: "block", fontSize: "0.8125rem", fontWeight: 600, color: "#0c0c0c", marginBottom: "0.375rem" }}>Email</label>
+                <input className="auth-input" type="email" placeholder="you@email.com" value={email} onChange={(e) => setEmail(e.target.value)} autoComplete="email" style={{ fontSize: "16px" }} />
               </div>
-            </div>
-            <div style={{ marginBottom: "1rem" }}>
-              <label style={{ display: "block", fontSize: "0.8125rem", fontWeight: 600, color: "#0c0c0c", marginBottom: "0.375rem" }}>Email</label>
-              <input className="auth-input" type="email" placeholder="you@example.com" value={email} onChange={(e) => setEmail(e.target.value)} autoComplete="email" />
-            </div>
-            <div style={{ marginBottom: "1.25rem" }}>
-              <label style={{ display: "block", fontSize: "0.8125rem", fontWeight: 600, color: "#0c0c0c", marginBottom: "0.375rem" }}>Password</label>
-              <input className="auth-input" type="password" placeholder="Min. 8 characters" value={password} onChange={(e) => setPassword(e.target.value)} autoComplete="new-password" />
-            </div>
-            {error && <p style={{ color: "#dc2626", fontSize: "0.875rem", marginBottom: "0.75rem" }}>{error}</p>}
-            <button type="submit" disabled={loading} style={{ width: "100%", padding: "1rem", background: "linear-gradient(135deg, #c8a165, #b8895a)", color: "#fff", border: "none", borderRadius: "0.5rem", fontSize: "1rem", fontWeight: 700, cursor: loading ? "not-allowed" : "pointer", fontFamily: "'DM Sans', sans-serif", opacity: loading ? 0.75 : 1 }}>
-              {loading ? "Creating account\u2026" : "Create Account"}
-            </button>
-          </form>
+              <div style={{ marginBottom: "1.25rem" }}>
+                <label style={{ display: "block", fontSize: "0.8125rem", fontWeight: 600, color: "#0c0c0c", marginBottom: "0.375rem" }}>Password</label>
+                <input className="auth-input" type="password" placeholder="Min. 8 characters" value={password} onChange={(e) => setPassword(e.target.value)} autoComplete="new-password" style={{ fontSize: "16px" }} />
+              </div>
+              <button type="submit" disabled={loading} style={{ width: "100%", padding: "1rem", background: "linear-gradient(135deg, #c8a165, #b8895a)", color: "#fff", border: "none", borderRadius: "0.5rem", fontSize: "1rem", fontWeight: 700, cursor: loading ? "not-allowed" : "pointer", fontFamily: "'DM Sans', sans-serif", opacity: loading ? 0.75 : 1 }}>
+                {loading ? "Creating account\u2026" : "Create Account"}
+              </button>
+            </form>
+          )}
 
           <p style={{ textAlign: "center", marginTop: "1.5rem", fontSize: "0.875rem", color: "#6b7280" }}>
             Already have an account? <a href="/account/login" style={{ color: "#c8a165", fontWeight: 600, textDecoration: "none" }}>Sign in</a>

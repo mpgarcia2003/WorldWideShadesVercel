@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { supabaseAuth } from "@/lib/supabase/auth";
 
 export default function LoginPage() {
   const [email, setEmail] = useState("");
@@ -10,13 +11,20 @@ export default function LoginPage() {
 
   async function handleLogin(e: React.FormEvent) {
     e.preventDefault();
-    if (!email || !password) { setError("Please enter your email and password."); return; }
+    if (!email || !password) { setError("Please enter email and password."); return; }
     setLoading(true);
     setError("");
-    // TODO: Replace with Supabase Auth signInWithPassword
-    await new Promise((r) => setTimeout(r, 1000));
-    // Demo: store auth flag and redirect
-    localStorage.setItem("wws_auth", JSON.stringify({ email, name: email.split("@")[0] }));
+
+    if (!supabaseAuth) { setError("Auth not configured."); setLoading(false); return; }
+
+    const { error: authError } = await supabaseAuth.auth.signInWithPassword({ email, password });
+
+    if (authError) {
+      setError(authError.message === "Invalid login credentials" ? "Wrong email or password." : authError.message);
+      setLoading(false);
+      return;
+    }
+
     window.location.href = "/account";
   }
 
@@ -40,26 +48,26 @@ export default function LoginPage() {
         <div style={{ width: "100%", maxWidth: "420px" }}>
           <div style={{ textAlign: "center", marginBottom: "2rem" }}>
             <h1 style={{ fontFamily: "'Playfair Display', Georgia, serif", fontSize: "1.75rem", fontWeight: 700, color: "#0c0c0c", marginBottom: "0.5rem" }}>Welcome Back</h1>
-            <p style={{ color: "#6b7280", fontSize: "0.9375rem" }}>Sign in to view your orders and account.</p>
+            <p style={{ color: "#6b7280", fontSize: "0.9375rem" }}>Sign in to track orders and manage your account.</p>
           </div>
 
           <form onSubmit={handleLogin} style={{ background: "#fff", border: "1px solid #e5ddd0", borderRadius: "0.75rem", padding: "2rem" }}>
+            {error && <p style={{ color: "#dc2626", fontSize: "0.875rem", marginBottom: "1rem", padding: "0.75rem", background: "#fef2f2", borderRadius: "0.375rem", border: "1px solid #fecaca" }}>{error}</p>}
             <div style={{ marginBottom: "1rem" }}>
               <label style={{ display: "block", fontSize: "0.8125rem", fontWeight: 600, color: "#0c0c0c", marginBottom: "0.375rem" }}>Email</label>
-              <input className="auth-input" type="email" placeholder="you@example.com" value={email} onChange={(e) => setEmail(e.target.value)} autoComplete="email" />
+              <input className="auth-input" type="email" placeholder="you@email.com" value={email} onChange={(e) => setEmail(e.target.value)} autoComplete="email" style={{ fontSize: "16px" }} />
             </div>
             <div style={{ marginBottom: "1.25rem" }}>
               <label style={{ display: "block", fontSize: "0.8125rem", fontWeight: 600, color: "#0c0c0c", marginBottom: "0.375rem" }}>Password</label>
-              <input className="auth-input" type="password" placeholder="\u2022\u2022\u2022\u2022\u2022\u2022\u2022\u2022" value={password} onChange={(e) => setPassword(e.target.value)} autoComplete="current-password" />
+              <input className="auth-input" type="password" placeholder="Your password" value={password} onChange={(e) => setPassword(e.target.value)} autoComplete="current-password" style={{ fontSize: "16px" }} />
             </div>
-            {error && <p style={{ color: "#dc2626", fontSize: "0.875rem", marginBottom: "0.75rem" }}>{error}</p>}
             <button type="submit" disabled={loading} style={{ width: "100%", padding: "1rem", background: "linear-gradient(135deg, #c8a165, #b8895a)", color: "#fff", border: "none", borderRadius: "0.5rem", fontSize: "1rem", fontWeight: 700, cursor: loading ? "not-allowed" : "pointer", fontFamily: "'DM Sans', sans-serif", opacity: loading ? 0.75 : 1 }}>
               {loading ? "Signing in\u2026" : "Sign In"}
             </button>
           </form>
 
           <p style={{ textAlign: "center", marginTop: "1.5rem", fontSize: "0.875rem", color: "#6b7280" }}>
-            Don&apos;t have an account? <a href="/account/register" style={{ color: "#c8a165", fontWeight: 600, textDecoration: "none" }}>Create one</a>
+            Don't have an account? <a href="/account/register" style={{ color: "#c8a165", fontWeight: 600, textDecoration: "none" }}>Create one</a>
           </p>
         </div>
       </main>
