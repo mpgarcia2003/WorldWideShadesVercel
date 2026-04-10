@@ -7,7 +7,7 @@ export const SITE = {
   tagline: "Custom Window Shades Made Simple",
   domain: "worldwideshades.com",
   builderDomain: "builder.worldwideshades.com",
-  phone: "(888) 123-4567",
+  phone: "(844) 674-2716",
   email: "hello@worldwideshades.com",
   social: {
     instagram: "https://instagram.com/worldwideshades",

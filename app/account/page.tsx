@@ -28,12 +28,8 @@ function fmt(n: number) {
   return n.toLocaleString("en-US", { style: "currency", currency: "USD" });
 }
 
-// Demo orders — will be replaced with Supabase query
-const DEMO_ORDERS: OrderSummary[] = [
-  { id: "WWS-20260408-0001", status: "in_production", total: 1111, itemCount: 3, createdAt: "2026-04-02", estimatedDelivery: "April 14\u201318, 2026" },
-  { id: "WWS-20260315-0042", status: "delivered", total: 487, itemCount: 1, createdAt: "2026-03-15", estimatedDelivery: "March 25, 2026" },
-  { id: "WWS-20260220-0019", status: "delivered", total: 1890, itemCount: 5, createdAt: "2026-02-20", estimatedDelivery: "March 3, 2026" },
-];
+// Orders — empty until user has real orders (TODO: fetch from Supabase)
+const DEMO_ORDERS: OrderSummary[] = [];
 
 export default function AccountDashboard() {
   const [user, setUser] = useState<User | null>(null);
@@ -90,10 +86,10 @@ export default function AccountDashboard() {
         {/* Quick actions */}
         <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))", gap: "1rem", marginBottom: "2.5rem" }}>
           {[
-            { label: "Design a New Shade", href: "/builder", icon: "🎨" },
-            { label: "Track an Order", href: "/track-order", icon: "📦" },
-            { label: "Order Free Swatches", href: "/swatches", icon: "🎨" },
-            { label: "Contact Support", href: "/contact", icon: "📞" },
+            { label: "Design a New Shade", href: "/builder", icon: "\uD83C\uDFA8" },
+            { label: "Track an Order", href: "/track-order", icon: "\uD83D\uDCE6" },
+            { label: "Order Free Swatches", href: "/swatches", icon: "\uD83C\uDFA8" },
+            { label: "Contact Support", href: "/contact", icon: "\uD83D\uDCDE" },
           ].map((a) => (
             <a key={a.label} href={a.href} style={{ display: "flex", alignItems: "center", gap: "0.75rem", padding: "1.25rem", background: "#fff", border: "1px solid #e5ddd0", borderRadius: "0.75rem", textDecoration: "none", color: "#0c0c0c", fontWeight: 600, fontSize: "0.9375rem", transition: "border-color 0.15s" }}>
               <span style={{ fontSize: "1.25rem" }}>{a.icon}</span>
@@ -108,9 +104,9 @@ export default function AccountDashboard() {
 
           {DEMO_ORDERS.length === 0 ? (
             <div style={{ textAlign: "center", padding: "3rem", background: "#fff", border: "1px solid #e5ddd0", borderRadius: "0.75rem" }}>
-              <p style={{ fontSize: "2rem", marginBottom: "0.75rem" }}>🛒</p>
+              <p style={{ fontSize: "2rem", marginBottom: "0.75rem" }}>{"\uD83D\uDED2"}</p>
               <p style={{ fontWeight: 700, color: "#0c0c0c", marginBottom: "0.5rem" }}>No orders yet</p>
-              <a href="/builder" style={{ color: "#c8a165", fontWeight: 600, textDecoration: "none" }}>Design Your First Shade \u2192</a>
+              <a href="/builder" style={{ color: "#c8a165", fontWeight: 600, textDecoration: "none" }}>Design Your First Shade {"\u2192"}</a>
             </div>
           ) : (
             <div style={{ display: "flex", flexDirection: "column", gap: "1rem" }}>
@@ -124,7 +120,7 @@ export default function AccountDashboard() {
                         <span style={{ fontSize: "0.7rem", fontWeight: 600, padding: "0.2rem 0.6rem", borderRadius: "999px", color: st.color, backgroundColor: st.bg }}>{st.label}</span>
                       </div>
                       <p style={{ fontSize: "0.8125rem", color: "#6b7280" }}>
-                        {order.itemCount} item{order.itemCount > 1 ? "s" : ""} \u2022 Placed {new Date(order.createdAt).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })}
+                        {order.itemCount} item{order.itemCount > 1 ? "s" : ""} {"\u2022"} Placed {new Date(order.createdAt).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })}
                       </p>
                       {order.status !== "delivered" && (
                         <p style={{ fontSize: "0.75rem", color: "#c8a165", fontWeight: 600, marginTop: "0.25rem" }}>Est. delivery: {order.estimatedDelivery}</p>
