@@ -155,8 +155,9 @@ function StripePaymentForm({
       } catch (e) {
         console.error("Failed to save order:", e);
       }
-      // Clear cart and redirect
+      // Clear cart and redirect (1.5s delay for Google Ads conversion pixel to complete)
       localStorage.removeItem("wws_cart_v1");
+      await new Promise((resolve) => setTimeout(resolve, 1500));
       window.location.href = "/order-confirmation";
     } else {
       setIsProcessing(false);
