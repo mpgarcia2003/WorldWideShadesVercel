@@ -1,5 +1,6 @@
 import type { MetadataRoute } from "next";
 import { LANDING_PAGES } from "@/data/pages";
+import { getAllPosts } from "@/lib/blog";
 
 const BASE = "https://worldwideshades.com";
 
@@ -28,9 +29,8 @@ export default function sitemap(): MetadataRoute.Sitemap {
     url: `${BASE}/rooms/${room}`, lastModified: now, changeFrequency: "monthly" as const, priority: 0.7,
   }));
 
-  const blogSlugs = ["blackout-shades-nursery-guide", "motorized-shades-smart-home", "how-to-measure-windows", "light-filtering-vs-blackout", "spring-window-refresh", "specialty-shape-windows"];
-  const blogPages: MetadataRoute.Sitemap = blogSlugs.map((slug) => ({
-    url: `${BASE}/blog/${slug}`, lastModified: now, changeFrequency: "monthly" as const, priority: 0.6,
+  const blogPages: MetadataRoute.Sitemap = getAllPosts().map((post) => ({
+    url: `${BASE}/blog/${post.slug}`, lastModified: post.date || now, changeFrequency: "monthly" as const, priority: 0.6,
   }));
 
   return [...staticPages, ...landingPages, ...roomPages, ...blogPages];
