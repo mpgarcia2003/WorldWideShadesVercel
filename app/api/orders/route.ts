@@ -182,5 +182,14 @@ export async function POST(req: NextRequest) {
     console.error("Email send error:", emailErr);
   }
 
+  // Mark any abandoned carts from this email as recovered
+  try {
+    await supabase
+      .from("abandoned_carts")
+      .update({ recovered: true, recovery_order_id: order.id, updated_at: new Date().toISOString() })
+      .eq("email", (body.email || "").toLowerCase())
+      .eq("recovered", false);
+  } catch {}
+
   return NextResponse.json({ order, order_number: orderNumber }, { status: 201 });
 }

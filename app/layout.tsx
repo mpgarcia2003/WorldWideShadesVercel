@@ -6,6 +6,7 @@ import { Header } from "@/components/shell/Header";
 import { Footer } from "@/components/shell/Footer";
 import { Providers } from "@/components/shared/Providers";
 import { GlobalPhoneTracker } from "@/components/shared/GlobalPhoneTracker";
+import { ExitIntentPopup } from "@/components/shared/ExitIntentPopup";
 import { JsonLd } from "@/components/shared/JsonLd";
 import { organizationJsonLd, websiteJsonLd, localBusinessJsonLd } from "@/lib/seo/jsonld";
 import { SITE } from "@/lib/constants";
@@ -40,6 +41,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <div className="flex min-h-screen flex-col">
           <Providers>
             <GlobalPhoneTracker />
+            <ExitIntentPopup page="builder" />
             <AnnouncementBar />
             <Header />
             <main className="flex-1">{children}</main>
