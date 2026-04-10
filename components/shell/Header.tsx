@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect, useRef } from "react";
+import { createPortal } from "react-dom";
 import Link from "next/link";
 import { Menu, X, ChevronDown, ShoppingBag, Phone, User } from "lucide-react";
 import { NAV_ITEMS, type NavItem } from "@/data/navigation";
@@ -116,8 +117,10 @@ function MegaMenuPanel({ item, isOpen, onMouseEnter, onMouseLeave, onLinkClick }
 
 function MobileDrawer({ open, onClose }: { open: boolean; onClose: () => void }) {
   const [expandedGroup, setExpandedGroup] = useState<string | null>(null);
-  if (!open) return null;
-  return (
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => { setMounted(true); }, []);
+  if (!open || !mounted) return null;
+  return createPortal(
     <>
       <div className="fixed inset-0 bg-dark/50 z-[999] lg:hidden" onClick={onClose} />
       <div className="fixed top-0 right-0 h-full w-[85vw] max-w-sm bg-white z-[1000] overflow-y-auto lg:hidden shadow-2xl">
@@ -161,6 +164,7 @@ function MobileDrawer({ open, onClose }: { open: boolean; onClose: () => void })
           </div>
         </div>
       </div>
-    </>
+    </>,
+    document.body
   );
 }
