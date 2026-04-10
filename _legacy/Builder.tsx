@@ -767,6 +767,23 @@ const Builder: React.FC<BuilderProps> = ({ addToCart, addToSwatches, swatches })
       quote_saved: !!result,
     });
 
+    // 3b. Also save to abandoned_carts table for admin dashboard
+    try {
+      await fetch('/api/abandoned-carts', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          email: exitEmail,
+          name: null,
+          cart_data: [{ config: quoteConfig, totalPrice: priceBreakdown.product, unitPrice: priceBreakdown.product }],
+          page: 'builder',
+          source: 'builder_exit_intent',
+          total: priceBreakdown.product,
+          item_count: 1,
+        }),
+      });
+    } catch {}
+
     // 4. Notify admin
     notifyAdminExitIntent({
       email: exitEmail,

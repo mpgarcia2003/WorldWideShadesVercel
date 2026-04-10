@@ -18,6 +18,14 @@ export function ExitIntentPopup({ page }: ExitIntentPopupProps) {
   const [submitted, setSubmitted] = useState(false);
   const [loading, setLoading] = useState(false);
 
+  // Don't render on builder page — builder has its own exit intent
+  const [isBuilder, setIsBuilder] = useState(false);
+  useEffect(() => {
+    if (typeof window !== "undefined" && window.location.pathname.startsWith("/builder")) {
+      setIsBuilder(true);
+    }
+  }, []);
+
   const triggerPopup = useCallback(() => {
     // Don't show if already shown this session or lead already captured
     if (typeof window === "undefined") return;
@@ -29,7 +37,8 @@ export function ExitIntentPopup({ page }: ExitIntentPopupProps) {
 
   useEffect(() => {
     if (typeof window === "undefined") return;
-    // Don't show if lead already captured
+    // Don't show on builder page or if lead already captured
+    if (isBuilder) return;
     if (localStorage.getItem(LEAD_KEY)) return;
     if (sessionStorage.getItem(POPUP_KEY)) return;
 
