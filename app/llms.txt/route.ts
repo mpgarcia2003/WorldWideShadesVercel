@@ -1,4 +1,17 @@
-# World Wide Shades — llms.txt
+import { NextResponse } from "next/server";
+import { getAllPosts } from "@/lib/blog";
+
+export const dynamic = "force-static";
+export const revalidate = false; // regenerates on every build
+
+export async function GET() {
+  const posts = getAllPosts();
+
+  const blogSection = posts
+    .map((p) => `- [${p.title}](https://worldwideshades.com/blog/${p.slug}): ${p.excerpt}`)
+    .join("\n");
+
+  const content = `# World Wide Shades — llms.txt
 # https://worldwideshades.com
 
 > World Wide Shades is a direct-to-consumer custom roller shade manufacturer. We build precision-measured, custom-fit window shades with 700+ fabric options, shipped directly to homes across the United States. Based in The Bronx, NY.
@@ -19,13 +32,9 @@
 - [Contact](https://worldwideshades.com/contact): Phone (844) 674-2716, email hello@worldwideshades.com
 - [Blog](https://worldwideshades.com/blog): Window treatment guides, comparisons, and expert advice
 
-## Blog Articles
+## Blog Articles (${posts.length} total)
 
-- [Energy-Efficient Window Shades](https://worldwideshades.com/blog/energy-efficient-window-shades): How shades reduce heating/cooling costs, cellular vs solar vs blackout for energy
-- [Best Fabrics for Custom Roller Shades](https://worldwideshades.com/blog/best-fabrics-roller-shades): Fabric types explained — polyester, PVC-coated fiberglass, natural blends
-- [Roller Shades for Kitchens and Bathrooms](https://worldwideshades.com/blog/roller-shades-kitchen-bathroom): Moisture-resistant options for humid rooms
-- [Smart Home Motorized Shade Setup](https://worldwideshades.com/blog/smart-home-motorized-shades-setup): Alexa, Google Home, HomeKit integration guide
-- [Child-Safe Window Treatments](https://worldwideshades.com/blog/child-safe-window-treatments): Cordless options, safety standards, parent guide
+${blogSection}
 
 ## Room Guides
 
@@ -49,3 +58,12 @@
 - Average shade price around $300
 - Phone: (844) 674-2716
 - Email: hello@worldwideshades.com
+`;
+
+  return new NextResponse(content, {
+    headers: {
+      "Content-Type": "text/plain; charset=utf-8",
+      "Cache-Control": "public, max-age=86400",
+    },
+  });
+}
