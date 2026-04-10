@@ -6,6 +6,7 @@ import { ArrowLeft, ChevronDown } from "lucide-react";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import rehypeSlug from "rehype-slug";
+import { trackCTAClick } from "@/lib/gtm/events";
 import type { BlogPost } from "@/lib/blog";
 
 interface BlogArticleProps {
@@ -198,10 +199,10 @@ export function BlogArticle({ post, slug, related }: BlogArticleProps) {
           <h2 className="heading-display text-2xl lg:text-3xl text-white mb-4">Precision-Measured Shades, Shipped to Your Door</h2>
           <p className="text-sm text-white/60 max-w-md mx-auto mb-6">World Wide Shades offers precision-measured, custom-built window treatments shipped directly to your door.</p>
           <div className="flex items-center justify-center gap-4 flex-wrap">
-            <Link href="/builder" className="inline-flex items-center gap-2 px-6 py-3 bg-gold text-white text-sm font-medium rounded hover:bg-gold-dark transition-colors">
+            <Link href="/builder" onClick={() => trackCTAClick('Design Your Custom Shade', 'blog_cta_banner', '/builder')} className="inline-flex items-center gap-2 px-6 py-3 bg-gold text-white text-sm font-medium rounded hover:bg-gold-dark transition-colors">
               Design Your Custom Shade &rarr;
             </Link>
-            <Link href="/swatches" className="inline-flex items-center gap-2 px-6 py-3 border border-white/30 text-white text-sm font-medium rounded hover:border-white/60 hover:bg-white/5 transition-colors">
+            <Link href="/swatches" onClick={() => trackCTAClick('Request Free Swatches', 'blog_cta_banner', '/swatches')} className="inline-flex items-center gap-2 px-6 py-3 border border-white/30 text-white text-sm font-medium rounded hover:border-white/60 hover:bg-white/5 transition-colors">
               Request Free Swatches
             </Link>
           </div>
