@@ -753,7 +753,7 @@ const Builder: React.FC<BuilderProps> = ({ addToCart, addToSwatches, swatches })
 
     // 2. Send customer email with recovery link + discount
     if (result) {
-      const recoveryUrl = `${window.location.origin}${window.location.pathname}?quote=${result.quoteId}`;
+      const recoveryUrl = `${window.location.origin}${window.location.pathname}?quote=${result.quoteId}&utm_source=email&utm_medium=recovery&utm_campaign=builder_save`;
 
       await sendCustomerQuoteEmail({
         email: exitEmail,
@@ -796,7 +796,7 @@ const Builder: React.FC<BuilderProps> = ({ addToCart, addToSwatches, swatches })
       email: exitEmail,
       stepsCompleted: completedSteps.size,
       config,
-      recoveryUrl: result ? `${window.location.origin}${window.location.pathname}?quote=${result.quoteId}` : undefined,
+      recoveryUrl: result ? `${window.location.origin}${window.location.pathname}?quote=${result.quoteId}&utm_source=email&utm_medium=recovery&utm_campaign=builder_exit` : undefined,
       price: priceBreakdown.product,
     });
 
@@ -831,7 +831,7 @@ const Builder: React.FC<BuilderProps> = ({ addToCart, addToSwatches, swatches })
 
     // 2. Send customer email with recovery link + discount
     if (result) {
-      const recoveryUrl = `${window.location.origin}${window.location.pathname}?quote=${result.quoteId}`;
+      const recoveryUrl = `${window.location.origin}${window.location.pathname}?quote=${result.quoteId}&utm_source=email&utm_medium=recovery&utm_campaign=precision_save`;
 
       const emailSent = await sendCustomerQuoteEmail({
         email,
@@ -861,7 +861,7 @@ const Builder: React.FC<BuilderProps> = ({ addToCart, addToSwatches, swatches })
       email,
       stepsCompleted: completedSteps.size,
       config,
-      recoveryUrl: result ? `${window.location.origin}${window.location.pathname}?quote=${result.quoteId}` : undefined,
+      recoveryUrl: result ? `${window.location.origin}${window.location.pathname}?quote=${result.quoteId}&utm_source=email&utm_medium=recovery&utm_campaign=precision_exit` : undefined,
       price: priceBreakdown.product,
     });
   };

@@ -99,7 +99,7 @@ export async function GET(req: NextRequest) {
       <p style="font-size:18px;font-weight:700;color:#0c0c0c;margin:0;">${itemCount} custom shade${itemCount > 1 ? "s" : ""} \u2014 $${total.toFixed(2)}</p>
       ${showDiscount ? `<div style="margin-top:12px;padding:10px;background:#f0fdf4;border:1px solid #bbf7d0;border-radius:6px;"><p style="margin:0;font-size:14px;font-weight:600;color:#15803d;">\u2728 Use code COMEBACK10 for 10% off</p></div>` : ""}
     </div>` : ""}
-    <a href="https://worldwideshades.com/recover/${cart.id}" style="display:inline-block;padding:16px 40px;background:linear-gradient(135deg,#c8a165,#b8895a);color:#fff;text-decoration:none;border-radius:8px;font-size:16px;font-weight:700;">
+    <a href="https://worldwideshades.com/recover/${cart.id}?utm_source=email&utm_medium=recovery&utm_campaign=abandoned_cart_auto&utm_content=email${emailNum}" style="display:inline-block;padding:16px 40px;background:linear-gradient(135deg,#c8a165,#b8895a);color:#fff;text-decoration:none;border-radius:8px;font-size:16px;font-weight:700;">
       ${emailNum === 3 ? "Finish Before It Expires \u2192" : "Complete Your Order \u2192"}
     </a>
     <p style="font-size:13px;color:#9ca3af;margin:20px 0 0;">Free shipping \u00b7 7-day production \u00b7 100% satisfaction guarantee</p>

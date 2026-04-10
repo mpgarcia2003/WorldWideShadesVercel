@@ -108,7 +108,7 @@ export async function sendOrderConfirmation(order: any, items: any[]) {
 
     <div style="margin-top:24px;text-align:center;">
       <p style="font-size:13px;color:#666;margin:0 0 16px;">Your shades enter production within 1 business day.</p>
-      <a href="https://worldwideshades.com/track-order" style="display:inline-block;background:#c8a165;color:#fff;padding:12px 32px;border-radius:8px;text-decoration:none;font-weight:700;font-size:14px;">Track Your Order</a>
+      <a href="https://worldwideshades.com/track-order?utm_source=email&utm_medium=transactional&utm_campaign=order_confirmation" style="display:inline-block;background:#c8a165;color:#fff;padding:12px 32px;border-radius:8px;text-decoration:none;font-weight:700;font-size:14px;">Track Your Order</a>
     </div>
 
     <div style="margin-top:24px;padding:16px;background:#fdf9f5;border:1px solid #e5ddd0;border-radius:8px;text-align:center;">
@@ -173,9 +173,9 @@ export async function sendStatusUpdate(order: any, newStatus: string, trackingNu
       ? `
     <div style="margin-top:20px;">
       <p style="font-size:13px;font-weight:700;color:#0c0c0c;margin:0 0 8px;">Installation Resources</p>
-      <a href="https://worldwideshades.com/guides/WWS-Roller-Shades-Installation-Guide_1.pdf" style="display:block;color:#c8a165;font-size:13px;margin-bottom:4px;">📄 Installation Guide (PDF)</a>
-      <a href="https://worldwideshades.com/guides/WWS-Window-Measuring-Guide.pdf" style="display:block;color:#c8a165;font-size:13px;margin-bottom:4px;">📄 Measuring Guide (PDF)</a>
-      <a href="https://worldwideshades.com/guides/WWS-Somfy_Remote_Programming_Guide.pdf" style="display:block;color:#c8a165;font-size:13px;">📄 Remote Programming Guide (PDF)</a>
+      <a href="https://worldwideshades.com/guides/WWS-Roller-Shades-Installation-Guide_1.pdf?utm_source=email&utm_medium=transactional&utm_campaign=delivery_followup" style="display:block;color:#c8a165;font-size:13px;margin-bottom:4px;">📄 Installation Guide (PDF)</a>
+      <a href="https://worldwideshades.com/guides/WWS-Window-Measuring-Guide.pdf?utm_source=email&utm_medium=transactional&utm_campaign=delivery_followup" style="display:block;color:#c8a165;font-size:13px;margin-bottom:4px;">📄 Measuring Guide (PDF)</a>
+      <a href="https://worldwideshades.com/guides/WWS-Somfy_Remote_Programming_Guide.pdf?utm_source=email&utm_medium=transactional&utm_campaign=delivery_followup" style="display:block;color:#c8a165;font-size:13px;">📄 Remote Programming Guide (PDF)</a>
     </div>`
       : "";
 
@@ -200,7 +200,7 @@ export async function sendStatusUpdate(order: any, newStatus: string, trackingNu
     ${installSection}
 
     <div style="margin-top:24px;text-align:center;">
-      <a href="https://worldwideshades.com/track-order" style="display:inline-block;background:#c8a165;color:#fff;padding:12px 32px;border-radius:8px;text-decoration:none;font-weight:700;font-size:14px;">View Order Status</a>
+      <a href="https://worldwideshades.com/track-order?utm_source=email&utm_medium=transactional&utm_campaign=status_update" style="display:inline-block;background:#c8a165;color:#fff;padding:12px 32px;border-radius:8px;text-decoration:none;font-weight:700;font-size:14px;">View Order Status</a>
     </div>`;
 
   try {
@@ -260,7 +260,7 @@ export async function sendNewOrderAlert(order: any, items: any[]) {
     </table>
 
     <div style="text-align:center;">
-      <a href="https://worldwideshades.com/admin/orders" style="display:inline-block;background:#0c0c0c;color:#fff;padding:12px 32px;border-radius:8px;text-decoration:none;font-weight:700;font-size:14px;">View in Admin →</a>
+      <a href="https://worldwideshades.com/admin/orders?utm_source=email&utm_medium=transactional&utm_campaign=admin_alert" style="display:inline-block;background:#0c0c0c;color:#fff;padding:12px 32px;border-radius:8px;text-decoration:none;font-weight:700;font-size:14px;">View in Admin →</a>
     </div>`;
 
   try {
