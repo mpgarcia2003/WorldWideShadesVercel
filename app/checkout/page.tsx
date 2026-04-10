@@ -815,6 +815,28 @@ export default function CheckoutPage() {
           </div>
         </div>
       )}
+      {cart.length > 0 && clientSecret && (
+        <div className="mobile-sticky-cta">
+          <button
+            onClick={() => {
+              const el = document.querySelector('.place-order-btn');
+              if (el) {
+                el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                setTimeout(() => (el as HTMLButtonElement).click(), 600);
+              }
+            }}
+            disabled={isProcessing}
+            style={{
+              width: "100%", padding: "1rem", background: "linear-gradient(135deg, #c8a165 0%, #b8895a 100%)",
+              color: "#fff", border: "none", borderRadius: "0.625rem", fontSize: "1rem", fontWeight: 700,
+              cursor: isProcessing ? "not-allowed" : "pointer", opacity: isProcessing ? 0.65 : 1,
+              fontFamily: "'DM Sans', sans-serif"
+            }}
+          >
+            {isProcessing ? "Processing..." : `Place Order — ${fmt(cart.reduce((s, i) => s + i.totalPrice, 0) - (promoApplied ? 50 : 0))}`}
+          </button>
+        </div>
+      )}
     </div>
   );
 }

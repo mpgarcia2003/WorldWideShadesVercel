@@ -119,8 +119,8 @@ function MobileDrawer({ open, onClose }: { open: boolean; onClose: () => void })
   if (!open) return null;
   return (
     <>
-      <div className="fixed inset-0 bg-dark/50 z-40 lg:hidden" onClick={onClose} />
-      <div className="fixed top-0 right-0 h-full w-[85vw] max-w-sm bg-white z-50 overflow-y-auto lg:hidden shadow-2xl">
+      <div className="fixed inset-0 bg-dark/50 z-[999] lg:hidden" onClick={onClose} />
+      <div className="fixed top-0 right-0 h-full w-[85vw] max-w-sm bg-white z-[1000] overflow-y-auto lg:hidden shadow-2xl">
         <div className="flex items-center justify-between px-5 py-4 border-b border-cream-dark">
           <span className="heading-display text-lg text-dark">World Wide <span className="text-gold">Shades</span></span>
           <button onClick={onClose} className="p-2 text-dark" aria-label="Close menu"><X className="w-5 h-5" /></button>
