@@ -105,7 +105,7 @@ export async function POST(req: NextRequest) {
       ` : ""}
 
       <!-- CTA -->
-      <a href="https://worldwideshades.com/builder" style="display:inline-block;padding:16px 40px;background:linear-gradient(135deg,#c8a165,#b8895a);color:#fff;text-decoration:none;border-radius:8px;font-size:16px;font-weight:700;letter-spacing:0.5px;">
+      <a href="https://worldwideshades.com/recover/${cart.id}" style="display:inline-block;padding:16px 40px;background:linear-gradient(135deg,#c8a165,#b8895a);color:#fff;text-decoration:none;border-radius:8px;font-size:16px;font-weight:700;letter-spacing:0.5px;">
         Complete Your Order →
       </a>
 
