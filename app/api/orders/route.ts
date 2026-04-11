@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createAdminClient } from "@/lib/supabase/client";
 import { sendOrderConfirmation, sendNewOrderAlert } from "@/lib/email/send";
+import { trackServerPurchase } from "@/lib/tracking/server";
 
 export const dynamic = 'force-dynamic';
 
@@ -190,6 +191,26 @@ export async function POST(req: NextRequest) {
       .eq("email", (body.email || "").toLowerCase())
       .eq("recovered", false);
   } catch {}
+
+  // Server-side GA4 purchase (bypasses ad blockers)
+  try {
+    await trackServerPurchase({
+      transactionId: body.stripe_payment_intent_id || order.id,
+      value: Number(order.total),
+      tax: Number(body.tax || 0),
+      shipping: Number(body.shipping || 0),
+      coupon: body.promo_code || "",
+      items: (body.items || []).map((i: any) => ({
+        item_id: i.fabric_id || "shade",
+        item_name: i.shade_type || "Custom Roller Shade",
+        price: Number(i.total_price || 0),
+        quantity: i.quantity || 1,
+      })),
+      userEmail: body.email,
+    });
+  } catch (trackErr) {
+    console.error("Server tracking error:", trackErr);
+  }
 
   return NextResponse.json({ order, order_number: orderNumber }, { status: 201 });
 }

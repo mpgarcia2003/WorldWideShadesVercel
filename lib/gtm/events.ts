@@ -102,10 +102,12 @@ export function trackPurchase(
   transactionId: string,
   value: number,
   items: GTMItem[],
-  extras?: { tax?: number; shipping?: number; coupon?: string; discount?: number }
+  extras?: { tax?: number; shipping?: number; coupon?: string; discount?: number },
+  userData?: { email?: string; phone?: string; firstName?: string; lastName?: string; address?: string; city?: string; state?: string; zip?: string }
 ) {
   clearEcommerce();
-  push({
+
+  const eventData: Record<string, unknown> = {
     event: GTM_EVENTS.PURCHASE,
     ecommerce: {
       transaction_id: transactionId,
@@ -117,7 +119,26 @@ export function trackPurchase(
       discount: extras?.discount || 0,
       items,
     },
-  });
+  };
+
+  // Enhanced Conversions — user data for better attribution
+  if (userData?.email) {
+    eventData.user_data = {
+      email_address: userData.email.trim().toLowerCase(),
+      phone_number: userData.phone || "",
+      address: {
+        first_name: userData.firstName || "",
+        last_name: userData.lastName || "",
+        street: userData.address || "",
+        city: userData.city || "",
+        region: userData.state || "",
+        postal_code: userData.zip || "",
+        country: "US",
+      },
+    };
+  }
+
+  push(eventData);
 }
 
 // ═══════════════════════════════════════════════════════════════

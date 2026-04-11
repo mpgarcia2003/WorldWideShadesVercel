@@ -167,7 +167,8 @@ function StripePaymentForm({
         paymentIntent.id,
         total,
         orderData.items?.map((i: any) => ({ item_id: i.fabric_id || "shade", item_name: i.shade_type, item_category: i.shade_type, price: i.total_price, quantity: i.quantity || 1 })) || [],
-        { tax: 0, shipping: 0, coupon: orderData.promo_code || "", discount: orderData.discount || 0 }
+        { tax: 0, shipping: 0, coupon: orderData.promo_code || "", discount: orderData.discount || 0 },
+        { email: orderData.email, phone: orderData.phone, firstName: orderData.shipping_first_name, lastName: orderData.shipping_last_name, address: orderData.shipping_address1, city: orderData.shipping_city, state: orderData.shipping_state, zip: orderData.shipping_zip }
       );
 
       // Save order to Supabase
