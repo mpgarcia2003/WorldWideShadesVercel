@@ -6,7 +6,7 @@ export const COMPANY_NAME = "World Wide Shades";
 export const SALE_CONFIG = {
   active: true,
   discountPercent: 40,
-  endDate: new Date('2026-04-10T23:59:59-04:00'), // Apr 10, 2026 EDT
+  endDate: new Date('2026-04-18T23:59:59-04:00'), // Apr 18, 2026 EDT
   reason: 'Spring Into Shade Sale',
 };
 
