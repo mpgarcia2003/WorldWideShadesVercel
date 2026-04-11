@@ -8,12 +8,7 @@ import { useLanguage } from '../LanguageContext';
 // Shopify checkout removed — now using /checkout with Stripe
 import { trackEvent } from '../utils/analytics';
 
-// Declare Stripe types globally since we are loading via script tag
-declare global {
-  interface Window {
-    Stripe?: any;
-  }
-}
+// Stripe types handled by @stripe/stripe-js
 
 interface CheckoutDrawerProps {
   isOpen: boolean;
