@@ -140,6 +140,7 @@ export async function DELETE(req: NextRequest, { params }: { params: Promise<{ i
   const supabase = createAdminClient();
   const url = new URL(req.url);
   const refund = url.searchParams.get("refund") === "true";
+  const hardDelete = url.searchParams.get("delete") === "true";
 
   // Get order
   const { data: order, error: fetchError } = await supabase
@@ -150,6 +151,14 @@ export async function DELETE(req: NextRequest, { params }: { params: Promise<{ i
 
   if (fetchError || !order) {
     return NextResponse.json({ error: "Order not found" }, { status: 404 });
+  }
+
+  // Hard delete — permanently remove from database
+  if (hardDelete) {
+    await supabase.from("order_status_history").delete().eq("order_id", id);
+    await supabase.from("order_items").delete().eq("order_id", id);
+    await supabase.from("orders").delete().eq("id", id);
+    return NextResponse.json({ success: true, deleted: true });
   }
 
   // Process Stripe refund if requested

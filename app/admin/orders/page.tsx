@@ -286,6 +286,31 @@ export default function AdminOrdersPage() {
     setUpdating(false);
   }
 
+  /* ─── Delete Order (permanent) ─────────────────────── */
+  async function deleteOrder(orderId: string) {
+    if (!confirm("PERMANENTLY DELETE this order? This cannot be undone. The order, items, and history will be removed from the database.")) return;
+    if (!confirm("Are you sure? This is irreversible.")) return;
+    setUpdating(true);
+    setActionMessage("");
+    try {
+      const res = await fetch(`/api/orders/${orderId}?delete=true`, {
+        method: "DELETE",
+        headers: adminHeaders,
+      });
+      const data = await res.json();
+      if (data.success) {
+        setActionMessage("Order permanently deleted");
+        fetchOrders();
+        setSelectedOrder(null);
+      } else {
+        setActionMessage(`Error: ${data.error}`);
+      }
+    } catch {
+      setActionMessage("Failed to delete order");
+    }
+    setUpdating(false);
+  }
+
   /* ─── Stats ─────────────────────────────────────────────── */
   const activeOrders = orders.filter((o) => o.status !== "cancelled");
   const stats = {
@@ -725,6 +750,17 @@ export default function AdminOrdersPage() {
                   )}
                 </div>
               )}
+
+              {/* Delete permanently */}
+              <div style={{ borderTop: "1px solid #eee", paddingTop: "0.75rem", marginTop: "0.5rem" }}>
+                <button
+                  onClick={() => deleteOrder(selectedOrder.id)}
+                  disabled={updating}
+                  style={{ width: "100%", padding: "0.5rem", borderRadius: "0.375rem", background: "none", color: "#999", border: "1px solid #ddd", fontSize: "0.75rem", cursor: "pointer", opacity: updating ? 0.5 : 1 }}
+                >
+                  Delete Order Permanently
+                </button>
+              </div>
             </div>
           )}
         </div>
