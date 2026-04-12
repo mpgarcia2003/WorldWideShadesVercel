@@ -62,7 +62,7 @@ function fmtDateFull(d: string) {
 }
 
 export default function AdminCustomersPage() {
-  const password = "wws-admin-2026";
+  const password = process.env.NEXT_PUBLIC_ADMIN_PASSWORD || "wws-admin-2026";
 
   const [customers, setCustomers] = useState<Customer[]>([]);
   const [loading, setLoading] = useState(false);

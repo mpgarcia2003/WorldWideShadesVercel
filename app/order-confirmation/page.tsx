@@ -1,6 +1,7 @@
 "use client"
 
 import { useState, useEffect } from "react"
+import { trackPurchase } from "@/lib/gtm/events"
 import {
   CheckCircle,
   Factory,
@@ -199,9 +200,34 @@ export default function ThankYouPage() {
   const [copied, setCopied] = useState(false)
   const [timeLeft, setTimeLeft] = useState({ hours: 23, minutes: 42, seconds: 18 })
 
-  // Load real order data from localStorage
+  // Load real order data from localStorage + backup purchase tracking
   useEffect(() => {
-    setOrder(loadOrder());
+    const loaded = loadOrder();
+    setOrder(loaded);
+
+    // Backup purchase event — fires ONLY if checkout didn't already track it
+    // Covers: 3DS redirects, slow network, ad blocker killed GTM mid-fire
+    if (loaded.total > 0 && loaded.number !== defaultOrder.number) {
+      const alreadyTracked = sessionStorage.getItem('wws_purchase_tracked');
+      if (!alreadyTracked) {
+        const stripePI = (typeof window !== 'undefined' && localStorage.getItem('wws_last_order'))
+          ? JSON.parse(localStorage.getItem('wws_last_order')!).stripe_payment_intent_id || loaded.number
+          : loaded.number;
+        trackPurchase(
+          stripePI,
+          loaded.total,
+          loaded.items.map((i: any) => ({
+            item_id: i.fabric || 'shade',
+            item_name: i.name || 'Custom Roller Shade',
+            item_category: i.name || 'Roller Shade',
+            price: i.price || 0,
+            quantity: i.qty || 1,
+          })),
+          { tax: loaded.tax, shipping: loaded.shipping, discount: loaded.discount }
+        );
+        sessionStorage.setItem('wws_purchase_tracked', 'true');
+      }
+    }
   }, []);
 
   // Hide confetti after 5 seconds

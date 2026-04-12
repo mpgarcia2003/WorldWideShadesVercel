@@ -29,7 +29,7 @@ const formatDim = (val: number, frac: string) => {
 };
 
 // Using a Dummy/Test Key for now to prevent real charges during testing
-const STRIPE_PK = 'pk_test_51SYqIGFRaiFwpthJYbVNO02GXjz5JO8M5BC9TbA69TYIXOMKNQDzVZFnW1FsRivjflAhGNBb219wHcvtNIPq8Q0N00HQlcew4k';
+const STRIPE_PK = process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY || '';
 
 // ─── CART ITEM CARD ─────────────────────────────────────────────────────────
 // Shows room preview image (if captured) + collapsible spec table
@@ -293,7 +293,7 @@ const CheckoutDrawer: React.FC<CheckoutDrawerProps> = ({
               return;
           }
 
-          const productionUrl = 'https://worldwide-shades.com';
+          const productionUrl = 'https://worldwideshades.com';
           const baseUrl = window.location.hostname === 'localhost' ? window.location.origin : productionUrl;
           const shareUrl = `${baseUrl}/?cart=${shareId}`;
           

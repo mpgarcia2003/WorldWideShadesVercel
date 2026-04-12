@@ -102,7 +102,7 @@ function fmtDate(d: string) {
 
 /* ─── Main Component ────────────────────────────────────── */
 export default function AdminOrdersPage() {
-  const password = "wws-admin-2026";
+  const password = process.env.NEXT_PUBLIC_ADMIN_PASSWORD || "wws-admin-2026";
 
   // Orders state
   const [orders, setOrders] = useState<Order[]>([]);

@@ -210,6 +210,7 @@ function StripePaymentForm({
       }));
 
       // Clear cart and redirect (1.5s delay for Google Ads conversion pixel to complete)
+      sessionStorage.setItem('wws_purchase_tracked', 'true');
       localStorage.removeItem("wws_cart_v1");
       await new Promise((resolve) => setTimeout(resolve, 1500));
       window.location.href = "/order-confirmation";

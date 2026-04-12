@@ -70,7 +70,7 @@ const Blogs: React.FC<BlogsProps> = ({ onNavigate, activeArticleId }) => {
         "name": COMPANY_NAME,
         "logo": {
           "@type": "ImageObject",
-          "url": "https://worldwide-shades.com/logo.png" // Placeholder
+          "url": "https://worldwideshades.com/logo.png" // Placeholder
         }
       },
       "datePublished": selectedPost.date, // Ideally ISO format
@@ -78,7 +78,7 @@ const Blogs: React.FC<BlogsProps> = ({ onNavigate, activeArticleId }) => {
       "articleBody": typeof selectedPost.content === 'string' ? selectedPost.content : "Full article content...",
       "mainEntityOfPage": {
         "@type": "WebPage",
-        "@id": `https://worldwide-shades.com/?page=blogs&article=${selectedPost.id}`
+        "@id": `https://worldwideshades.com/?page=blogs&article=${selectedPost.id}`
       }
     };
 

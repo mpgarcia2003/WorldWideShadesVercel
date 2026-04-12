@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 import { usePathname } from "next/navigation";
 import Link from "next/link";
 
-const PASS = "wws-admin-2026";
+const PASS = process.env.NEXT_PUBLIC_ADMIN_PASSWORD || "wws-admin-2026";
 const AUTH_KEY = "wws_admin_auth";
 
 const TABS = [

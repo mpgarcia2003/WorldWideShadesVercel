@@ -48,37 +48,6 @@ export const initAnalytics = () => {
   }
 };
 
-const isInIframe = (): boolean => {
-  try { return window.self !== window.top; } catch (e) { return true; }
-};
-
-const getParentOrigin = (): string => {
-  if (document.referrer) {
-    try {
-      const referrerUrl = new URL(document.referrer);
-      if (referrerUrl.hostname.includes('worldwideshades.com') || 
-          referrerUrl.hostname.includes('myshopify.com')) {
-        return referrerUrl.origin;
-      }
-    } catch (e) {}
-  }
-  return 'https://worldwideshades.com';
-};
-
-const sendToParent = (eventName: string, properties: Record<string, any>) => {
-  if (!isInIframe()) return;
-  try {
-    const parentOrigin = getParentOrigin();
-    window.parent.postMessage({
-      type: 'GTM_EVENT',
-      event: eventName,
-      data: properties
-    }, parentOrigin);
-  } catch (e) {
-    console.warn('[Iframe] Could not send event to parent:', e);
-  }
-};
-
 // GA4 gtag helper - fires gtag events directly
 const fireGtagEvent = (eventName: string, properties: Record<string, any>) => {
   if (typeof window === 'undefined' || typeof (window as any).gtag !== 'function') return;
@@ -175,12 +144,6 @@ export const trackEvent = (eventName: string, properties: Record<string, any> = 
     window.dataLayer = window.dataLayer || [];
     // @ts-ignore
     window.dataLayer.push(payload);
-
-    // Send to parent Shopify page via postMessage → parent GTM
-    // Skip 'purchase' — that's handled exclusively by the Shopify custom pixel
-    if (eventName !== 'purchase') {
-      sendToParent(eventName, properties);
-    }
 
     // Fire Meta Pixel events for key actions
     fireMetaPixelEvent(eventName, properties);

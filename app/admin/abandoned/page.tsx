@@ -18,7 +18,7 @@ interface AbandonedCart {
   created_at: string;
 }
 
-const PASS = "wws-admin-2026";
+const PASS = process.env.NEXT_PUBLIC_ADMIN_PASSWORD || "wws-admin-2026";
 const hdrs = { "Content-Type": "application/json", "x-admin-password": PASS };
 
 export default function AbandonedCartsPage() {
