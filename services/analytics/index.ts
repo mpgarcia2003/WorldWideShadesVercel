@@ -22,7 +22,7 @@ export const builderHooks = {
   onShapeSelected(_shape: string) {},
   onFabricViewed(_fabricId: string, _fabricName: string, _category: string) {},
   onFabricFiltered(_filters: string[]) {},
-  onFabricSelected(_fabric: any, _viewedCount?: number, _timeMs?: number) {},
+  onFabricSelected(_fabric: any, _fabricName?: any, _category?: any, _viewedCount?: number, _timeMs?: number) {},
   onSizeEntered(_w: number, _h: number, _shape?: string) {},
   onMountSelected(_mount: string) {},
   onControlSelected(_control: string) {},
