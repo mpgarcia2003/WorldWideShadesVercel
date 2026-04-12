@@ -47,7 +47,7 @@ Pricing for custom solar shades typically ranges from $65 to $200 per window, de
 
 ### Blackout Roller Shades
 
-While [blackout shades](/blog/blackout-shades-no-light-gaps) are primarily known for light control, they also provide significant energy benefits. A quality blackout roller shade with a white or reflective backing can reflect up to 70% of solar energy away from the window.
+While [blackout shades](/blog/blackout-curtains-vs-blackout-shades) are primarily known for light control, they also provide significant energy benefits. A quality blackout roller shade with a white or reflective backing can reflect up to 70% of solar energy away from the window.
 
 The key to energy performance with blackout shades is the backing material. White-backed or aluminum-backed blackout fabrics outperform dark-backed options by a significant margin. A white-backed blackout shade can reduce solar heat gain by 33% more than a dark-backed shade of the same opacity.
 
@@ -69,11 +69,11 @@ Energy savings vary based on climate, window type, shade type, and usage habits,
 
 ## Installation Matters: Inside Mount vs. Outside Mount
 
-How your shades are installed affects their energy performance. An [inside-mounted shade](/blog/inside-mount-vs-outside-mount-roller-shades) that fits snugly within the window frame creates a tighter seal and performs better thermally than a loosely mounted shade.
+How your shades are installed affects their energy performance. An [inside-mounted shade](/blog/how-to-install-roller-shades) that fits snugly within the window frame creates a tighter seal and performs better thermally than a loosely mounted shade.
 
 For maximum energy efficiency, consider these installation tips:
 
-- **Inside mount with minimal gaps.** Measure precisely to leave no more than 1/8 inch of clearance on each side. Our guide on [how to measure windows](/blog/how-to-measure-windows) walks you through the process.
+- **Inside mount with minimal gaps.** Measure precisely to leave no more than 1/8 inch of clearance on each side. Our guide on [how to measure windows](/blog/how-to-install-roller-shades) walks you through the process.
 - **Side channels for cellular shades.** These U-shaped tracks seal the edges of the shade against the window frame, preventing air from circulating around the shade. They can improve thermal performance by an additional 15% to 20%.
 - **Sealed headrail or cassette.** A closed cassette at the top of the shade prevents warm air from escaping above the rolled-up fabric.
 
@@ -81,7 +81,7 @@ If you need help with measurements or installation planning, [contact our team](
 
 ## Smart Controls Amplify Energy Savings
 
-Pairing energy-efficient shades with [motorization and smart home integration](/blog/motorized-roller-shades-worth-it) takes savings to the next level. Automated shades can be programmed to:
+Pairing energy-efficient shades with [motorization and smart home integration](/blog/smart-home-motorized-shades-setup) takes savings to the next level. Automated shades can be programmed to:
 
 - Close on south-facing windows when the sun hits a specific angle
 - Open in winter to capture passive solar heat during midday hours
@@ -96,17 +96,17 @@ Different rooms have different needs. Here is a quick guide:
 
 **Living room.** Solar shades (3% to 5% openness) for daytime heat reduction without blocking the view. Consider a dual shade system if you also want blackout capability for movie nights.
 
-**Bedroom.** Cellular blackout shades for maximum insulation and light blocking. Double-cell construction with side channels provides the best [sleep-quality darkness](/blog/blackout-shades-nursery-cordless) plus thermal performance.
+**Bedroom.** Cellular blackout shades for maximum insulation and light blocking. Double-cell construction with side channels provides the best [sleep-quality darkness](/blog/child-safe-window-treatments) plus thermal performance.
 
 **Kitchen and bathroom.** Moisture-resistant roller shades with a reflective backing. These rooms generate internal heat, so solar heat rejection is a priority during summer months.
 
 **Home office.** Solar shades to reduce glare on screens while managing heat gain. A 3% openness shade is ideal — it cuts glare dramatically while maintaining natural light.
 
-**South-facing windows.** These receive the most direct sun and benefit most from solar shades or reflective roller shades. Prioritize these windows first if you are upgrading in stages.
+****South-facing windows and outdoor spaces.** These receive the most direct sun. For patios and porches, see our guide on [outdoor roller shades](/blog/outdoor-roller-shades-patio). Indoor south-facing windows and benefit most from solar shades or reflective roller shades. Prioritize these windows first if you are upgrading in stages.
 
 ## Tax Credits and Incentives for Energy-Efficient Window Treatments
 
-Under the Inflation Reduction Act, certain energy-efficient home improvements may qualify for federal tax credits. While window treatments alone typically do not qualify for the 25C Energy Efficient Home Improvement Credit (which focuses on windows, doors, and insulation), they can contribute to a home's overall energy performance when combined with other upgrades.
+Under the Inflation Reduction Act, certain energy-efficient home improvements may qualify for federal tax credits. While window treatments alone typically do not qualify for the 25C Energy Efficient Home Improvement Credit (which focuses on windows, doors, and insulation), they can contribute to a home's overall energy performance when combined with other upgrades. If you are building a new home, read our guide on [ordering custom shades for new construction](/blog/custom-shades-new-construction) to time your shade order for maximum energy savings from day one.
 
 Some utility companies also offer rebates for energy-efficient window treatments. Con Edison's energy efficiency programs, for example, occasionally include incentives for qualifying shade installations. Check with your local utility provider for current offers.
 

@@ -49,7 +49,7 @@ The decision between an inside mount and an outside mount shapes how the finishe
 
 For woven wood shades, inside mounts are particularly popular because they let the natural fiber texture contrast against painted trim. However, inside mounting requires a minimum depth of **2 inches** (preferably 2.5 inches or more for a flush mount with no projection). If your frame is shallower than that, an outside mount is the better path.
 
-Our [inside mount vs. outside mount guide](/blog/inside-mount-vs-outside-mount-roller-shades) covers the trade-offs in full detail — including how each affects the apparent size of your window — and is worth reading before you finalize your order. For precise instructions on how to take your measurements, check out [how to measure windows for shades](/blog/how-to-measure-windows).
+Our [inside mount vs. outside mount guide](/blog/how-to-install-roller-shades) covers the trade-offs in full detail — including how each affects the apparent size of your window — and is worth reading before you finalize your order. For precise instructions on how to take your measurements, check out [how to measure windows for shades](/blog/how-to-install-roller-shades).
 
 ## Operating Systems: Cordless, Motorized, and Loop Chain
 

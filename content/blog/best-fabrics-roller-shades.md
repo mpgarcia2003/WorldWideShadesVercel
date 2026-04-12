@@ -42,7 +42,7 @@ Solar fabrics are typically made from PVC-coated fiberglass or PVC-coated polyes
 
 ### Blackout Fabrics
 
-Blackout fabrics block 100% of visible light when properly installed. They are essential for bedrooms, nurseries, media rooms, and any space where complete darkness is required. Read our detailed guide on [blackout shades with no light gaps](/blog/blackout-shades-no-light-gaps) for installation techniques that maximize light blocking.
+Blackout fabrics block 100% of visible light when properly installed. They are essential for bedrooms, nurseries, media rooms, and any space where complete darkness is required. Read our detailed guide on [blackout shades with no light gaps](/blog/blackout-curtains-vs-blackout-shades) for installation techniques that maximize light blocking.
 
 Blackout roller shade fabrics achieve total opacity through one of three methods:
 
@@ -86,7 +86,7 @@ For homeowners concerned about PVC off-gassing or environmental impact, PVC-free
 
 ### Natural Fiber Blends
 
-Some roller shade fabrics incorporate natural fibers like cotton, linen, or jute blended with synthetic materials for stability. These offer a warmer, more textured aesthetic but require more careful maintenance.
+Some roller shade fabrics incorporate natural fibers like cotton, linen, or jute. For a full breakdown of natural materials, see our guide on [woven wood shades](/blog/woven-wood-shades-guide). These fabrics blended with synthetic materials for stability. These offer a warmer, more textured aesthetic but require more careful maintenance.
 
 **Pros:** Beautiful organic texture, warm aesthetic, sustainable appeal.
 
@@ -102,7 +102,7 @@ Choosing the right fabric depends on three questions: What does this room need f
 
 Priority: Blackout capability and soft aesthetics.
 
-**Recommended fabric:** Multi-layer laminated blackout in a neutral tone. For the ultimate sleep environment, pair with [side channels](/blog/blackout-shades-no-light-gaps) to eliminate edge light leaks. If you want a more natural look, woven blackout fabrics in linen-like textures are a premium option that photographs beautifully and feels luxurious.
+**Recommended fabric:** Multi-layer laminated blackout in a neutral tone. For the ultimate sleep environment, pair with [side channels](/blog/blackout-curtains-vs-blackout-shades) to eliminate edge light leaks. If you want a more natural look, woven blackout fabrics in linen-like textures are a premium option that photographs beautifully and feels luxurious.
 
 ### Living Rooms
 
@@ -126,7 +126,7 @@ Priority: Glare reduction on screens.
 
 Priority: Total blackout, safety, and low chemical emissions.
 
-**Recommended fabric:** PVC-free blackout or GREENGUARD-certified multi-layer laminate. Pair with [cordless operation](/blog/blackout-shades-nursery-cordless) for child safety. Avoid fabrics with strong chemical odors — premium options off-gas minimally and are safe for sensitive environments.
+**Recommended fabric:** PVC-free blackout or GREENGUARD-certified multi-layer laminate. Pair with [cordless operation](/blog/child-safe-window-treatments) for child safety. Avoid fabrics with strong chemical odors — premium options off-gas minimally and are safe for sensitive environments.
 
 ## Fabric Weight and Width Limitations
 
@@ -134,7 +134,7 @@ Heavier fabrics require stronger hardware. Here are general guidelines:
 
 - **Lightweight fabrics (under 8 oz/yd²).** Suitable for windows up to 72 inches wide with standard roller tubes (1.25-inch diameter).
 - **Medium weight fabrics (8 to 14 oz/yd²).** Can span up to 96 inches on a standard tube, or up to 120 inches with a heavy-duty 1.5-inch tube.
-- **Heavyweight fabrics (over 14 oz/yd²).** Require heavy-duty hardware and may need a larger roller tube. Best suited for [oversized windows](/blog/custom-roller-shades-large-windows) and commercial installations.
+- **Heavyweight fabrics (over 14 oz/yd²).** Require heavy-duty hardware and may need a larger roller tube. Best suited for [oversized windows](/blog/best-fabrics-roller-shades) and commercial installations.
 
 When ordering custom shades from [World Wide Shades](/builder), we automatically spec the appropriate hardware for your fabric and width combination — you do not need to worry about compatibility.
 
@@ -169,7 +169,7 @@ Yes. At [World Wide Shades](/swatches), we offer free fabric swatches so you can
 
 ### What fabric is best for large windows over 80 inches wide?
 
-Fiberglass-core fabrics are the best choice for [large windows](/blog/custom-roller-shades-large-windows). They maintain dimensional stability across wide spans without sagging or curling at the edges. Pair with a heavy-duty 1.5-inch roller tube for optimal performance on windows over 80 inches.
+Fiberglass-core fabrics are the best choice for [large windows](/blog/best-fabrics-roller-shades). They maintain dimensional stability across wide spans without sagging or curling at the edges. Pair with a heavy-duty 1.5-inch roller tube for optimal performance on windows over 80 inches.
 
 ### Is there a fabric that blocks light but still looks like natural linen?
 

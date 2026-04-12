@@ -17,7 +17,7 @@ Light filtering shades are window treatments made from woven or semi-opaque fabr
 
 The fabric typically blocks between 50% and 85% of incoming light depending on weave density and material. A standard light filtering roller shade in a 3% openness factor fabric, for example, reduces glare dramatically while still letting you see daylight through the shade. Go tighter to a 1% openness factor and the view-through diminishes further, but the room stays noticeably bright.
 
-These shades do not provide blackout conditions. If you need true darkness — for a bedroom, a media room, or a nursery — you want to look at our [blackout roller shades guide](/blog/blackout-shades-no-light-gaps) instead. But for living rooms, kitchens, offices, and common areas, light filtering is the workhorse choice.
+These shades do not provide blackout conditions. If you need true darkness — for a bedroom, a media room, or a nursery — you want to look at our [blackout roller shades guide](/blog/blackout-curtains-vs-blackout-shades) instead. But for living rooms, kitchens, offices, and common areas, light filtering is the workhorse choice.
 
 ## How Light Filtering Shades Actually Work
 
@@ -51,7 +51,7 @@ Blackout shades are the right choice when:
 - The room is used for presentations, projectors, or screen viewing
 - You want complete privacy after dark (light filtering fabrics glow from outside when interior lights are on at night)
 
-For a detailed breakdown of how blackout shades handle edge gaps and side light bleed, see our post on [blackout shades with no light gaps](/blog/blackout-shades-no-light-gaps). Many customers in our Bronx showroom end up ordering light filtering shades for their living room and blackout for the bedroom — the two products solve different problems and work well together.
+For a detailed breakdown of how blackout shades handle edge gaps and side light bleed, see our post on [blackout shades with no light gaps](/blog/blackout-curtains-vs-blackout-shades). Many customers in our Bronx showroom end up ordering light filtering shades for their living room and blackout for the bedroom — the two products solve different problems and work well together.
 
 ## Light Filtering vs Solar Shades: What's the Difference?
 
@@ -104,7 +104,7 @@ Accurate measurement is critical for light filtering shades because light bleed 
 
 **Outside mount:** Measure the window opening width and add 2–4 inches on each side for adequate coverage. For a standard 36-inch window opening, we recommend a 42–44-inch shade width. Add 3–4 inches above the frame for the mounting bracket and fabric roll.
 
-For windows wider than 96 inches, we fabricate in two panels on a split-rail system. Our post on [custom roller shades for large windows](/blog/custom-roller-shades-large-windows) covers multi-panel configurations, motorized options, and how to handle unusually wide openings.
+For windows wider than 96 inches, we fabricate in two panels on a split-rail system. Our post on [custom roller shades for large windows](/blog/best-fabrics-roller-shades) covers multi-panel configurations, motorized options, and how to handle unusually wide openings.
 
 If you're unsure, use our [custom shade builder](/builder) to enter your dimensions — the system flags anything outside standard ranges and surfaces the right hardware options automatically.
 

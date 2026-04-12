@@ -193,8 +193,8 @@ If you live in a region with snow or freezing rain, many homeowners retract shad
 ## Cross-links: related guides for planning your full home
 
 - /blog/energy-efficient-window-shades for managing sun and comfort indoors
-- /blog/best-shades-south-facing-windows for controlling intense sun exposure
-- /blog/window-shade-trends-2026 for current style direction if you’re updating multiple spaces
+- /blog/energy-efficient-window-shades for controlling intense sun exposure
+- /blog/best-window-shades-bedroom for current style direction if you’re updating multiple spaces
 
 ## FAQ: outdoor roller shades
 

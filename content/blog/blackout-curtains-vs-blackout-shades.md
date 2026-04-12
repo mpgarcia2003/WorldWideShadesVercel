@@ -230,7 +230,7 @@ Either can block a lot of light through the fabric, but the winner often comes d
 If you want a clean look, easy daily operation, and consistent coverage, blackout shades are often worth it. They’re especially practical for small rooms, modern interiors, and windows where curtains would interfere with furniture.
 
 ### Do blackout curtains help with noise?
-They can reduce echo and soften some high-frequency sound, but they are not true soundproofing. If noise is a major issue, focus on window sealing and consider thicker materials; see /blog/noise-reducing-window-shades for a deeper look.
+They can reduce echo and soften some high-frequency sound, but they are not true soundproofing. If noise is a major issue, focus on window sealing and consider thicker materials; see /blog/energy-efficient-window-shades for a deeper look.
 
 ### Are blackout shades good for renters?
 They can be, especially if you can do an inside mount into a wood jamb. Outside mounts usually require more holes, but the improved coverage can be worth it if you plan to stay a while. For rental-friendly strategies, see /blog/roller-shades-rental-apartment.

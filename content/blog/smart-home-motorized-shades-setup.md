@@ -223,7 +223,9 @@ Most home routers support 20 to 30 connected devices without issues. If you have
 
 ### Are motorized shades compatible with existing manual roller shades?
 
-In most cases, no. Motorized shades use a different roller tube and mounting system than manual shades. You would need to replace the entire shade assembly, not just add a motor. However, your existing brackets may work depending on the mounting style. [Contact us](/contact) with your current setup details and we can advise on compatibility.
+In most cases, no. Motorized shades use a different roller tube and mounting system than manual shades. You would need to replace the entire shade assembly. Our guide on [the best fabrics for roller shades](/blog/best-fabrics-roller-shades) can help you choose the right material, not just add a motor. However, your existing brackets may work depending on the mounting style. [Contact us](/contact) with your current setup details and we can advise on compatibility.
+
+For bedrooms, pairing motorized operation with [blackout shades](/blog/blackout-curtains-vs-blackout-shades) creates the ultimate automated sleep environment. And if you have children, check our [child safety guide](/blog/child-safe-window-treatments) — motorized shades eliminate cord hazards entirely.
 
 ## Build Your Smart Shade System
 

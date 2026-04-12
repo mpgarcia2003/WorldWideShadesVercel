@@ -57,7 +57,7 @@ The simplest cordless mechanism. A spring inside the roller tube provides tensio
 
 **Price:** Spring-loaded cordless operation typically adds $10 to $20 to the base shade price compared to a standard chain-operated shade.
 
-**Best for:** [Nurseries](/blog/blackout-shades-nursery-cordless), toddler bedrooms, playrooms — any room where children are most active.
+**Best for:** [Nurseries](/blog/child-safe-window-treatments), toddler bedrooms, playrooms — any room where children are most active.
 
 ### Motorized (Battery or Hardwired)
 
@@ -97,7 +97,7 @@ Some shades and blinds use a rigid plastic or metal wand (typically 12 to 24 inc
 
 This is the highest-priority room for child-safe window treatments. Babies spend unsupervised time in cribs, and as they grow, toddlers climb and explore.
 
-**Recommendation:** Cordless blackout roller shade or motorized blackout roller shade. Position the crib at least 3 feet from any window. Choose a shade with no accessible components — no chains, no cords, no dangling bottom bar tassels. Read our complete guide to [blackout shades for nurseries](/blog/blackout-shades-nursery-cordless).
+**Recommendation:** Cordless blackout roller shade or motorized blackout roller shade. Position the crib at least 3 feet from any window. Choose a shade with no accessible components — no chains, no cords, no dangling bottom bar tassels. Read our complete guide to [blackout shades for nurseries](/blog/child-safe-window-treatments).
 
 **Additional safety step:** Secure the shade's bottom bar with hold-down brackets if the shade is near the crib. This prevents a child from pulling the shade away from the window and getting behind it.
 

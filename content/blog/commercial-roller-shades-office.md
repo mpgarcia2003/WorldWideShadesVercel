@@ -41,7 +41,7 @@ Commercial windows are not residential windows. They're larger, often floor-to-c
 
 **Inside mount vs. outside mount** is a more nuanced decision in commercial settings than it is residentially. Inside mounts offer the cleanest look and pair well with recessed cassettes, but require a minimum window depth of 2 inches for hardware clearance. Outside mounts are necessary when the depth isn't available and are often preferred when covering full wall sections rather than individual window openings.
 
-If your project involves oversized or unusually proportioned openings, our post on [custom roller shades for large windows](/blog/custom-roller-shades-large-windows) covers fabrication limits and design strategies in detail.
+If your project involves oversized or unusually proportioned openings, our post on [custom roller shades for large windows](/blog/best-fabrics-roller-shades) covers fabrication limits and design strategies in detail.
 
 ## Motorization in Commercial Settings: A Practical Necessity
 
@@ -51,7 +51,7 @@ Modern commercial motorization runs on either 110V AC wiring (hard-wired) or bat
 
 A typical hard-wired commercial motor costs $150–$300 per shade for the motor unit alone, plus installation labor. For a 20-window project, total motorization costs commonly run $8,000–$15,000 depending on integration complexity — but the energy savings from automated solar management often recoup that cost within 3–5 years in sun-exposed commercial spaces.
 
-For a thorough look at the ROI case for motorized systems, our post on [whether motorized roller shades are worth it](/blog/motorized-roller-shades-worth-it) walks through the math in detail. And if you're integrating shades into a broader smart office ecosystem, see our guide on [smart home motorized shade setup](/blog/smart-home-motorized-shades-setup) for system compatibility notes.
+For a thorough look at the ROI case for motorized systems, our post on [whether motorized roller shades are worth it](/blog/smart-home-motorized-shades-setup) walks through the math in detail. And if you're integrating shades into a broader smart office ecosystem, see our guide on [smart home motorized shade setup](/blog/smart-home-motorized-shades-setup) for system compatibility notes.
 
 ## Energy Performance and Commercial Building Codes
 

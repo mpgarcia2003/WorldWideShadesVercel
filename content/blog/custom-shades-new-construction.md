@@ -27,7 +27,7 @@ For most new construction projects, the window opening dimensions are finalized 
 
 Here's a general timeline that works well for most buyers:
 
-**6–8 weeks before move-in:** Schedule your final measurement appointment. If you're planning [inside mount roller shades](/blog/inside-mount-vs-outside-mount-roller-shades), the inside depth of the window box needs to be confirmed at this stage. A minimum of 2" of clearance is standard for most cassette roller shades; some deeper-profile cassettes need 3" or more.
+**6–8 weeks before move-in:** Schedule your final measurement appointment. If you're planning [inside mount roller shades](/blog/how-to-install-roller-shades), the inside depth of the window box needs to be confirmed at this stage. A minimum of 2" of clearance is standard for most cassette roller shades; some deeper-profile cassettes need 3" or more.
 
 **5–6 weeks before move-in:** Place your custom order. This window gives you enough buffer for a standard 10–15 business day production lead time, plus shipping and a few days of buffer if anything needs to be reviewed or re-confirmed.
 
@@ -45,15 +45,15 @@ Before you measure anything, confirm that the following are complete:
 - Window trim is installed (if applicable — many modern new builds go trimless)
 - Window hardware such as locks and cranks is fully seated
 
-For [inside mount shades](/blog/inside-mount-vs-outside-mount-roller-shades), measure the width at three points: top, middle, and bottom of the opening. Use the narrowest measurement and round down to the nearest 1/8". Custom shades are fabricated to your specified width, and the manufacturer will typically deduct a small amount (usually ⅛" to ¼") for operational clearance — but confirm this with your supplier before you submit.
+For [inside mount shades](/blog/how-to-install-roller-shades), measure the width at three points: top, middle, and bottom of the opening. Use the narrowest measurement and round down to the nearest 1/8". Custom shades are fabricated to your specified width, and the manufacturer will typically deduct a small amount (usually ⅛" to ¼") for operational clearance — but confirm this with your supplier before you submit.
 
 Measure the height from the top of the inside frame to the window sill. Again, measure on both sides and in the center, and use the shortest measurement.
 
-For outside mount shades — which are often the right call in new construction because they provide better light blocking and a larger apparent coverage area — you have more flexibility. You can overlap the window opening by 2" to 4" on each side and extend 4" to 6" above the frame. This approach works especially well for [large windows](/blog/custom-roller-shades-large-windows) that need maximum coverage and for rooms where you want to create the illusion of taller or wider windows.
+For outside mount shades — which are often the right call in new construction because they provide better light blocking and a larger apparent coverage area — you have more flexibility. You can overlap the window opening by 2" to 4" on each side and extend 4" to 6" above the frame. This approach works especially well for [large windows](/blog/best-fabrics-roller-shades) that need maximum coverage and for rooms where you want to create the illusion of taller or wider windows.
 
 If you're ordering for multiple rooms in a new build — which most buyers are — take photos of each window alongside a labeled sticky note. Mistakes happen when 14 windows are being measured in a single afternoon. The photo documentation also makes it easy to reference if there's ever a question during production.
 
-For a complete breakdown of how to measure correctly, see our guide on [how to measure windows for custom shades](/blog/how-to-measure-windows).
+For a complete breakdown of how to measure correctly, see our guide on [how to measure windows for custom shades](/blog/how-to-install-roller-shades).
 
 ## Choosing the Right Shades for a New Build
 
@@ -61,7 +61,7 @@ New construction is a rare opportunity: you're not constrained by existing aesth
 
 **Fabric and opacity:** The two most common categories are light-filtering and blackout. Light-filtering fabrics (typically 3% to 10% openness factor) diffuse sunlight and reduce glare without fully blocking the view. Blackout fabrics — true blackout, not just "room darkening" — block virtually all light and are the right choice for bedrooms and home theaters. In a new build, many buyers choose blackout for bedrooms and light-filtering for living areas, kitchens, and offices. World Wide Shades carries both at price points starting around $89 per shade for standard sizes.
 
-**Motorization:** If you're having smart home technology installed in a new build, the time to add motorized shades is now — not after the walls are closed up. Running low-voltage wiring for hardwired motorized shades is straightforward when electrical work is still active. Battery-operated motors are also an excellent option and require no wiring at all; they're compatible with Alexa, Google Home, and most smart home hubs. The convenience factor is particularly high in new builds with [large or high windows](/blog/custom-roller-shades-large-windows) that are difficult to reach manually. If you're on the fence, read our deep-dive on [whether motorized roller shades are worth it](/blog/motorized-roller-shades-worth-it) before you decide.
+**Motorization:** If you're having smart home technology installed in a new build, the time to add motorized shades is now — not after the walls are closed up. Running low-voltage wiring for hardwired motorized shades is straightforward when electrical work is still active. Battery-operated motors are also an excellent option and require no wiring at all; they're compatible with Alexa, Google Home, and most smart home hubs. The convenience factor is particularly high in new builds with [large or high windows](/blog/best-fabrics-roller-shades) that are difficult to reach manually. If you're on the fence, read our deep-dive on [whether motorized roller shades are worth it](/blog/smart-home-motorized-shades-setup) before you decide.
 
 **Energy efficiency:** New construction homes often have better insulation than older homes, but windows are still the primary source of heat gain and heat loss. Cellular (honeycomb) shades and solar shades with low openness factors significantly reduce solar heat gain in summer and thermal loss in winter. If your new home has a high HVAC load — common in open-plan new builds with lots of glass — the right window treatments can reduce energy bills by 15–25%. See our guide on [energy-efficient window shades](/blog/energy-efficient-window-shades) for a full breakdown of which fabrics and styles deliver the best thermal performance.
 
@@ -120,7 +120,7 @@ Custom shades are fabricated to your exact specifications and cannot be re-cut o
 
 ### Is motorization worth adding in a new construction home?
 
-For most new construction buyers, yes — especially if you have large windows, high windows, or smart home infrastructure already being installed. The incremental cost of battery-operated motorization ranges from $80 to $150 per shade depending on the motor brand and compatibility, and the convenience and integration value over the life of the home is substantial. See our full breakdown at [/blog/motorized-roller-shades-worth-it](/blog/motorized-roller-shades-worth-it).
+For most new construction buyers, yes — especially if you have large windows, high windows, or smart home infrastructure already being installed. The incremental cost of battery-operated motorization ranges from $80 to $150 per shade depending on the motor brand and compatibility, and the convenience and integration value over the life of the home is substantial. See our full breakdown at [/blog/smart-home-motorized-shades-setup](/blog/smart-home-motorized-shades-setup).
 
 ## Ready to Get Started?
 

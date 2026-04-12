@@ -13,7 +13,7 @@ Renting an apartment doesn't mean settling for bare windows or the landlord's di
 
 Walk into any big-box store and you'll find accordion cellular shades in three widths and roller shades in five colors, all designed for a fictional "standard" window. The problem is that real apartment windows are anything but standard. Windows in older Bronx and New York City walk-ups routinely come in odd dimensions — 27¾ inches wide, 51⅜ inches tall — sizes that stock shades can't cover cleanly.
 
-Ill-fitting shades create light gaps on both sides, defeat the purpose of blackout fabric, and frankly look cheap. More importantly for renters, a poorly sized shade often requires improvised mounting that puts unnecessary stress on window trim or forces you to drill into a wall you're not allowed to touch. Starting with a properly sized, custom-cut shade solves nearly every problem before it starts. Check out our guide on [how to measure windows for roller shades](/blog/how-to-measure-windows) before you order anything — correct measurements are the single biggest factor in getting a shade that fits and hangs straight.
+Ill-fitting shades create light gaps on both sides, defeat the purpose of blackout fabric, and frankly look cheap. More importantly for renters, a poorly sized shade often requires improvised mounting that puts unnecessary stress on window trim or forces you to drill into a wall you're not allowed to touch. Starting with a properly sized, custom-cut shade solves nearly every problem before it starts. Check out our guide on [how to measure windows for roller shades](/blog/how-to-install-roller-shades) before you order anything — correct measurements are the single biggest factor in getting a shade that fits and hangs straight.
 
 ## No-Drill Installation Methods That Actually Hold
 
@@ -25,7 +25,7 @@ The standard objection to "no-drill" window treatments is that they're flimsy or
 
 **Tension rods with fabric panels** are a lower-cost option for decorative coverage, but they don't give you the clean top-down light control of a roller or cellular shade, and they tend to shift over time.
 
-For most renters, an inside-mount tension-fit roller shade is the optimal combination of stability, appearance, and reversibility. Our [inside mount vs. outside mount guide](/blog/inside-mount-vs-outside-mount-roller-shades) walks through every scenario, including windows with shallow frames or protruding handles that make inside mounting impractical.
+For most renters, an inside-mount tension-fit roller shade is the optimal combination of stability, appearance, and reversibility. Our [inside mount vs. outside mount guide](/blog/how-to-install-roller-shades) walks through every scenario, including windows with shallow frames or protruding handles that make inside mounting impractical.
 
 ## The Best Shade Types for Rental Apartments
 
@@ -33,7 +33,7 @@ For most renters, an inside-mount tension-fit roller shade is the optimal combin
 
 Roller shades are the top pick for renters, and for good reason. They're slim, they stack tight at the top of the window when raised (maximizing your view), and the hardware is minimal enough that tension-fit mounting is straightforward. A custom roller shade from [our builder](/builder) starts around $59 for a small window and scales with size — expect $85–$140 for most standard apartment windows in the 24–48 inch width range.
 
-The fabric choice matters more than most people expect. A light-filtering fabric in a warm white will soften sunlight without darkening the room — good for living rooms and kitchens. For bedrooms, blackout fabric (typically a 3-pass or foam-back construction) blocks 99%+ of light. If you're dealing with specific light-leak problems around the edges, our deep dive on [blackout shades and eliminating light gaps](/blog/blackout-shades-no-light-gaps) covers every fix. Fabric selection is also where you can introduce real style — textured linen-look weaves, subtle patterns, or bold solids that make the window a design feature rather than an afterthought.
+The fabric choice matters more than most people expect. A light-filtering fabric in a warm white will soften sunlight without darkening the room — good for living rooms and kitchens. For bedrooms, blackout fabric (typically a 3-pass or foam-back construction) blocks 99%+ of light. If you're dealing with specific light-leak problems around the edges, our deep dive on [blackout shades and eliminating light gaps](/blog/blackout-curtains-vs-blackout-shades) covers every fix. Fabric selection is also where you can introduce real style — textured linen-look weaves, subtle patterns, or bold solids that make the window a design feature rather than an afterthought.
 
 ### Cellular (Honeycomb) Shades
 
@@ -47,7 +47,7 @@ Solar shades are woven from an open-weave fabric that reduces glare and UV expos
 
 ### Cordless and Motorized Options
 
-Every shade type above is available in cordless operation, which is the default recommendation for any window a child or pet can reach — and it's now a code requirement in many states for newly manufactured window coverings. Motorized shades are increasingly relevant for renters as well: battery-operated motors require no hardwiring and can integrate with Alexa, Google Home, or Apple HomeKit. If you've been on the fence, our breakdown of [whether motorized roller shades are worth it](/blog/motorized-roller-shades-worth-it) lays out the honest cost-benefit analysis. Battery-powered motors typically run $40–$80 per shade as an add-on and require charging every 6–18 months depending on use.
+Every shade type above is available in cordless operation, which is the default recommendation for any window a child or pet can reach — and it's now a code requirement in many states for newly manufactured window coverings. Motorized shades are increasingly relevant for renters as well: battery-operated motors require no hardwiring and can integrate with Alexa, Google Home, or Apple HomeKit. If you've been on the fence, our breakdown of [whether motorized roller shades are worth it](/blog/smart-home-motorized-shades-setup) lays out the honest cost-benefit analysis. Battery-powered motors typically run $40–$80 per shade as an add-on and require charging every 6–18 months depending on use.
 
 ## Choosing the Right Fabric for Your Space
 

@@ -37,7 +37,7 @@ The window directly above the kitchen sink takes the most direct water exposure.
 
 **Best choice:** PVC-coated fiberglass solar shade in 3% to 5% openness. This blocks glare and UV while allowing you to see outside, resists water damage, and wipes clean easily. Mount it with at least 2 inches of clearance above the faucet to prevent direct splash contact.
 
-**Sizing tip:** Order the shade 1/4 inch narrower than the window opening for an inside mount, which creates enough clearance for moisture to escape rather than trapping it against the glass. Read our [measuring guide](/blog/how-to-measure-windows) for precise inside-mount instructions.
+**Sizing tip:** Order the shade 1/4 inch narrower than the window opening for an inside mount, which creates enough clearance for moisture to escape rather than trapping it against the glass. Read our [measuring guide](/blog/how-to-install-roller-shades) for precise inside-mount instructions.
 
 ### Near the Stovetop
 
@@ -63,7 +63,7 @@ This is the highest-humidity environment in your home. During a hot shower, rela
 
 **Best choice:** PVC-coated fiberglass blackout shade for full privacy, or a PVC-coated fiberglass solar shade (1% to 3% openness) if you want natural light while showering. The fiberglass core is completely unaffected by humidity, and the PVC coating prevents mold colonization.
 
-**Mounting recommendation:** Outside mount with 2 to 3 inches of overlap on each side. This maximizes privacy coverage while allowing airflow around the shade edges to prevent condensation trapping. For more on mounting options, see our [inside mount vs. outside mount guide](/blog/inside-mount-vs-outside-mount-roller-shades).
+**Mounting recommendation:** Outside mount with 2 to 3 inches of overlap on each side. This maximizes privacy coverage while allowing airflow around the shade edges to prevent condensation trapping. For more on mounting options, see our [inside mount vs. outside mount guide](/blog/how-to-install-roller-shades).
 
 **Ventilation tip:** Always run the exhaust fan during and for 15 to 20 minutes after showering. Even the most moisture-resistant shade benefits from good air circulation. Chronic high humidity without ventilation will eventually affect any fabric.
 
@@ -79,7 +79,7 @@ Some bathrooms have a window directly in the shower enclosure or bathtub surroun
 
 **Best choice:** Solid vinyl roller shade or PVC-coated fiberglass with waterproof hardware. Standard aluminum headrails and bottom bars will work fine, but avoid wooden components or exposed springs that can corrode. Consider a spring-loaded roller mechanism rather than a chain-operated clutch, as metal chains in humid environments can develop surface rust over time.
 
-For [cordless operation options](/blog/blackout-shades-nursery-cordless) that also eliminate dangling hardware in wet areas, check our cordless shade guide.
+For [cordless operation options](/blog/child-safe-window-treatments) that also eliminate dangling hardware in wet areas, check our cordless shade guide.
 
 ## Cleaning and Maintenance in Wet Environments
 
@@ -122,7 +122,7 @@ Here is what to expect when budgeting for moisture-resistant roller shades:
 - **PVC-coated fiberglass solar shade:** $75 to $160 per window. The best balance of performance, durability, and aesthetics. Our most recommended option for kitchens.
 - **Moisture-resistant polyester light filtering:** $55 to $110 per window. Good for half-baths and breakfast areas with moderate humidity.
 - **PVC-coated fiberglass blackout:** $90 to $180 per window. Maximum privacy and moisture resistance. Ideal for primary bathrooms.
-- **Motorized upgrade:** Add $80 to $150 per shade for motorized operation, which eliminates chains and cords in wet areas. Learn about [motorized shade benefits](/blog/motorized-roller-shades-worth-it).
+- **Motorized upgrade:** Add $80 to $150 per shade for motorized operation, which eliminates chains and cords in wet areas. Learn about [motorized shade benefits](/blog/smart-home-motorized-shades-setup).
 
 ## Frequently Asked Questions
 
@@ -141,6 +141,8 @@ Moisture-resistant shades will not grow mold themselves, but they do not prevent
 ### Can I use the same shade fabric in my kitchen and bathroom?
 
 Absolutely. PVC-coated fiberglass works well in both environments. Many homeowners order the same fabric in the same color for a cohesive look throughout their home's wet areas. This also simplifies ordering and can qualify for volume discounts when you configure multiple shades through our [online builder](/builder).
+
+For covered patios, porches, and other outdoor entertaining spaces, explore our guide on [outdoor roller shades](/blog/outdoor-roller-shades-patio) — built to withstand sun, wind, and weather.
 
 ## Get the Right Shades for Your Wet Spaces
 
