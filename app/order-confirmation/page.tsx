@@ -90,7 +90,7 @@ const timelineSteps = [
     status: "COMPLETED" as const,
     title: "Order Received",
     description: "Order confirmed and payment processed.",
-    timeframe: "Today, April 8",
+    timeframe: `Today, ${new Date().toLocaleDateString('en-US', { month: 'long', day: 'numeric' })}`,
   },
   {
     number: 2,
@@ -98,7 +98,7 @@ const timelineSteps = [
     status: "IN_PROGRESS" as const,
     title: "Production Started",
     description: "Your shade is being precision-cut and assembled in our USA facility.",
-    timeframe: "By April 9",
+    timeframe: `By ${new Date(Date.now() + 86400000).toLocaleDateString('en-US', { month: 'long', day: 'numeric' })}`,
   },
   {
     number: 3,
@@ -106,7 +106,7 @@ const timelineSteps = [
     status: "UPCOMING" as const,
     title: "Quality Check & Ship",
     description: "Final inspection, packaging, and FedEx pickup.",
-    timeframe: "April 10–11",
+    timeframe: `${new Date(Date.now() + 2*86400000).toLocaleDateString('en-US', { month: 'long', day: 'numeric' })}–${new Date(Date.now() + 3*86400000).toLocaleDateString('en-US', { month: 'long', day: 'numeric' })}`,
   },
   {
     number: 4,
@@ -114,7 +114,7 @@ const timelineSteps = [
     status: "UPCOMING" as const,
     title: "Delivered",
     description: "Arrives at your door. 15-minute install. Hardware included.",
-    timeframe: "April 14–18",
+    timeframe: `${new Date(Date.now() + 6*86400000).toLocaleDateString('en-US', { month: 'long', day: 'numeric' })}–${new Date(Date.now() + 10*86400000).toLocaleDateString('en-US', { month: 'long', day: 'numeric' })}`,
   },
 ]
 

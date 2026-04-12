@@ -148,7 +148,7 @@ const translations = {
     "actions.langCode": "ES",
     "sale.banner": "Spring Into Shade Sale — 40% Off Everything",
     "sale.badge": "40% OFF",
-    "sale.ends": "Sale ends April 10",
+    "sale.ends": "Sale ends April 18",
     "sale.reason": "Spring Into Shade Sale",
     "sale.originalPrice": "Regular Price",
     "sale.salePrice": "Sale Price"
@@ -292,7 +292,7 @@ const translations = {
     "actions.langCode": "EN",
     "sale.banner": "Venta de Primavera — 40% de Descuento en Todo",
     "sale.badge": "40% DESC.",
-    "sale.ends": "La oferta termina el 10 de abril",
+    "sale.ends": "La oferta termina el 18 de abril",
     "sale.reason": "Venta de Primavera",
     "sale.originalPrice": "Precio Regular",
     "sale.salePrice": "Precio de Oferta"
