@@ -40,7 +40,7 @@ export async function trackServerPurchase(data: ServerPurchaseData) {
     non_personalized_ads: false,
     events: [
       {
-        name: "purchase",
+        name: "purchase_server",
         params: {
           transaction_id: data.transactionId,
           value: data.value,
