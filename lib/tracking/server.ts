@@ -1,6 +1,6 @@
 /**
  * Server-Side GA4 Measurement Protocol
- * Sends purchase conversion directly from the server — bypasses ad blockers.
+ * Sends purchase conversion directly from the server - bypasses ad blockers.
  * 
  * Setup: Add GA4_MEASUREMENT_SECRET to your .env.local and Vercel env vars.
  * Get it from: GA4 Admin > Data Streams > your stream > Measurement Protocol API secrets > Create
@@ -33,7 +33,6 @@ export async function trackServerPurchase(data: ServerPurchaseData) {
 
   const url = `https://www.google-analytics.com/mp/collect?measurement_id=${GA4_MEASUREMENT_ID}&api_secret=${apiSecret}`;
 
-  // Generate a pseudo client_id for server events
   const clientId = `server.${data.transactionId.replace(/[^a-zA-Z0-9]/g, "").slice(0, 10)}.${Date.now()}`;
 
   const payload = {
