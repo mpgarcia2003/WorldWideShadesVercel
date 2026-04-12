@@ -13,7 +13,7 @@ Windows are one of the biggest weak spots in any home's thermal envelope. Accord
 
 The good news is that the right window shades can act as a thermal barrier, reducing the amount of heat that enters your home in summer and escaping in winter. Energy-efficient window shades are not a gimmick — they are a proven, cost-effective upgrade that pays for itself over time.
 
-At [World Wide Shades](/builder), we help homeowners and businesses across the Bronx, Manhattan, and the entire tri-state area select custom shades that balance style, light control, and energy performance. Here is everything you need to know about how window shades affect your energy bills and which types deliver the best results.
+At [World Wide Shades](/builder), we help homeowners and businesses across the Bronx, Manhattan, and the entire tri-state area select custom shades that balance style, light control, and energy performance. Here is everything you need to know about how window shades affect your energy bills and which types deliver the best results. Ready to get started? [Use our online shade builder](/builder) to configure and price your custom shades right now.
 
 ## How Window Shades Reduce Energy Costs
 
@@ -24,6 +24,8 @@ Window shades reduce energy consumption through three primary mechanisms:
 **Insulation and heat retention.** In winter, single-pane windows lose heat rapidly. Even double-pane windows allow some thermal transfer. Cellular (honeycomb) shades trap air in their fabric pockets, creating an insulating layer that slows heat loss. Studies from the Department of Energy show cellular shades can reduce heat loss through windows by up to 40%.
 
 **Air leakage reduction.** Window shades installed inside the window frame create a tighter seal around the glass, reducing drafts and air infiltration. Inside-mounted shades with side channels are especially effective at minimizing convective heat loops — the cycle where cold air near the glass drops, pulls warm room air up, and creates a constant draft.
+
+[World Wide Shades](/contact) can help you identify which windows are your biggest energy losers and recommend the most cost-effective treatment for each one. Call (844) 674-2716 for a free consultation.
 
 ## Types of Energy-Efficient Window Shades
 
@@ -43,7 +45,7 @@ Solar shades are designed specifically to block UV rays and reduce solar heat ga
 
 Solar shades are ideal for south-facing and west-facing windows that receive direct afternoon sun. In a Bronx brownstone with large front windows facing south, a set of 5% openness solar shades can reduce cooling costs for those rooms by 15% to 20% during peak summer months.
 
-Pricing for custom solar shades typically ranges from $65 to $200 per window, depending on size and fabric selection. Explore options on our [swatches page](/swatches) to compare openness factors and colors.
+Pricing for custom solar shades typically ranges from $65 to $200 per window, depending on size and fabric selection. Explore options on our [swatches page](/swatches) to compare openness factors and colors. For guidance on matching fabric type to specific rooms, see our [best fabrics for roller shades guide](/blog/best-fabrics-roller-shades).
 
 ### Blackout Roller Shades
 
@@ -51,11 +53,13 @@ While [blackout shades](/blog/blackout-curtains-vs-blackout-shades) are primaril
 
 The key to energy performance with blackout shades is the backing material. White-backed or aluminum-backed blackout fabrics outperform dark-backed options by a significant margin. A white-backed blackout shade can reduce solar heat gain by 33% more than a dark-backed shade of the same opacity.
 
+[World Wide Shades](/builder) offers blackout roller shades in both foam-backed and multi-layer laminated constructions — browse the options in our builder to compare backing colors, opacity levels, and pricing.
+
 ### Dual Roller Shades
 
 For maximum versatility, dual roller shades combine a solar shade for daytime use with a blackout shade for nighttime — all on a single bracket. During summer days, the solar shade reduces heat gain while maintaining your view. At night or during winter, the blackout shade provides insulation and privacy.
 
-This combination approach is one of the most energy-efficient setups available, especially for living rooms and bedrooms where both light control and temperature regulation matter.
+This combination approach is one of the most energy-efficient setups available, especially for living rooms and bedrooms where both light control and temperature regulation matter. [Get started with a custom quote from World Wide Shades](/builder) to see exactly how a dual shade system would work for your windows.
 
 ## The Numbers: How Much Can You Actually Save?
 
@@ -73,11 +77,11 @@ How your shades are installed affects their energy performance. An [inside-mount
 
 For maximum energy efficiency, consider these installation tips:
 
-- **Inside mount with minimal gaps.** Measure precisely to leave no more than 1/8 inch of clearance on each side. Our guide on [how to measure windows](/blog/how-to-install-roller-shades) walks you through the process.
+- **Inside mount with minimal gaps.** Measure precisely to leave no more than 1/8 inch of clearance on each side. Our guide on [how to install roller shades](/blog/how-to-install-roller-shades) walks you through the process.
 - **Side channels for cellular shades.** These U-shaped tracks seal the edges of the shade against the window frame, preventing air from circulating around the shade. They can improve thermal performance by an additional 15% to 20%.
 - **Sealed headrail or cassette.** A closed cassette at the top of the shade prevents warm air from escaping above the rolled-up fabric.
 
-If you need help with measurements or installation planning, [contact our team](/contact) for a free consultation.
+If you need help with measurements or installation planning, [contact World Wide Shades](/contact) for a free consultation — call us at (844) 674-2716 and we will walk you through every step.
 
 ## Smart Controls Amplify Energy Savings
 
@@ -88,21 +92,23 @@ Pairing energy-efficient shades with [motorization and smart home integration](/
 - Close at sunset to retain heat during cold nights
 - Respond to temperature sensors or smart thermostat signals
 
-Studies suggest that automated shade control can improve energy savings by an additional 10% to 15% compared to manual operation, simply because the shades are always in the optimal position rather than relying on occupants to remember to adjust them.
+Studies suggest that automated shade control can improve energy savings by an additional 10% to 15% compared to manual operation, simply because the shades are always in the optimal position rather than relying on occupants to remember to adjust them. [World Wide Shades](/builder) offers motorized options for every shade type — configure yours in the builder or call (844) 674-2716 to discuss smart home compatibility.
 
 ## Choosing the Right Energy-Efficient Shade for Each Room
 
 Different rooms have different needs. Here is a quick guide:
 
-**Living room.** Solar shades (3% to 5% openness) for daytime heat reduction without blocking the view. Consider a dual shade system if you also want blackout capability for movie nights.
+**Living room.** Solar shades (3% to 5% openness) for daytime heat reduction without blocking the view. Consider a dual shade system if you also want blackout capability for movie nights. See our [light filtering shades guide](/blog/light-filtering-shades-guide) for a deeper breakdown of openness factors.
 
-**Bedroom.** Cellular blackout shades for maximum insulation and light blocking. Double-cell construction with side channels provides the best [sleep-quality darkness](/blog/child-safe-window-treatments) plus thermal performance.
+**Bedroom.** Cellular blackout shades for maximum insulation and light blocking. Double-cell construction with side channels provides the best sleep-quality darkness plus thermal performance. Our [best window shades for bedrooms post](/blog/best-window-shades-bedroom) covers the full range of options.
 
-**Kitchen and bathroom.** Moisture-resistant roller shades with a reflective backing. These rooms generate internal heat, so solar heat rejection is a priority during summer months.
+**Kitchen and bathroom.** Moisture-resistant roller shades with a reflective backing. These rooms generate internal heat, so solar heat rejection is a priority during summer months. See our guide on [roller shades for kitchens and bathrooms](/blog/roller-shades-kitchen-bathroom) for moisture-rated fabric recommendations.
 
 **Home office.** Solar shades to reduce glare on screens while managing heat gain. A 3% openness shade is ideal — it cuts glare dramatically while maintaining natural light.
 
-****South-facing windows and outdoor spaces.** These receive the most direct sun. For patios and porches, see our guide on [outdoor roller shades](/blog/outdoor-roller-shades-patio). Indoor south-facing windows and benefit most from solar shades or reflective roller shades. Prioritize these windows first if you are upgrading in stages.
+**South-facing windows and outdoor spaces.** These receive the most direct sun. For patios and porches, see our guide on [outdoor roller shades for patios](/blog/outdoor-roller-shades-patio). Indoor south-facing windows benefit most from solar shades or reflective roller shades. Prioritize these windows first if you are upgrading in stages.
+
+[Browse free fabric swatches](/swatches) to compare solar, cellular, and blackout materials side by side before deciding which option suits each room in your home.
 
 ## Tax Credits and Incentives for Energy-Efficient Window Treatments
 
@@ -114,7 +120,7 @@ Some utility companies also offer rebates for energy-efficient window treatments
 
 ### How much can energy-efficient shades reduce my electric bill?
 
-Most homeowners see a 10% to 25% reduction in heating and cooling costs, which translates to $200 to $400 per year for a typical New York City household. The exact savings depend on window orientation, shade type, and how consistently the shades are used in optimal positions.
+Most homeowners see a 10% to 25% reduction in heating and cooling costs, which translates to $200 to $400 per year for a typical New York City household. The exact savings depend on window orientation, shade type, and how consistently the shades are used in optimal positions. [World Wide Shades](/contact) can walk you through a room-by-room estimate — call (844) 674-2716 for a free consultation.
 
 ### Are cellular shades better than roller shades for energy efficiency?
 
@@ -130,6 +136,6 @@ Absolutely. At [World Wide Shades](/builder), every shade is made to your exact 
 
 ## Start Saving on Energy Costs Today
 
-Energy-efficient window shades are one of the smartest home improvements you can make — they pay for themselves, improve comfort, and look great doing it. Whether you are outfitting a single room or an entire home, [World Wide Shades](/builder) offers custom-fabricated cellular, solar, and blackout shades built to your exact specifications.
+Energy-efficient window shades are one of the smartest home improvements you can make — they pay for themselves, improve comfort, and look great doing it. Whether you are outfitting a single room or an entire home, [World Wide Shades](/builder) offers custom-fabricated cellular, solar, and blackout shades built to your exact specifications. We are based in The Bronx and serve New York City homeowners and businesses — call (844) 674-2716 to get started.
 
-Browse our [fabric swatches](/swatches) to explore materials and colors, or [get in touch](/contact) to schedule a free consultation with our team. We will help you choose the right shade for every window in your home.
+Browse our [fabric swatches](/swatches) to explore materials and colors, or [contact World Wide Shades](/contact) to schedule a free consultation with our team. We will help you choose the right shade for every window in your home.

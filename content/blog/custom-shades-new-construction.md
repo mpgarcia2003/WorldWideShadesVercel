@@ -9,7 +9,7 @@ author: "World Wide Shades"
 
 Moving into a newly built home is exciting — but the window situation can catch you completely off guard. Bare windows on day one aren't just an aesthetic problem. They're a privacy problem, a glare problem, and sometimes a heat problem, especially in a south- or west-facing room that gets full afternoon sun. Ordering custom shades for new construction requires a specific approach that's entirely different from replacing shades in an existing home.
 
-The good news: with the right timeline and a few insider tips, you can have your custom shades ready to hang the week you move in — or very close to it. Here's everything you need to know.
+The good news: with the right timeline and a few insider tips from [World Wide Shades](/builder), you can have your custom shades ready to hang the week you move in — or very close to it. Here's everything you need to know.
 
 ## Why New Construction Requires a Different Approach
 
@@ -17,9 +17,9 @@ In an existing home, the windows are what they are. You measure, you order, you 
 
 Ordering too early — say, the moment framing is complete — means you're measuring rough openings, not finished openings. That difference can be anywhere from ¼ inch to over an inch on each side, which completely invalidates a custom order. Custom shades are cut to your exact specification. A shade ordered at 36" wide that needs to be 34½" wide is not something you can return for a store credit and re-order overnight.
 
-Ordering too late, on the other hand, means you're camping out in your brand-new home with no window coverings for weeks. Standard lead times for custom roller shades run 10 to 21 business days depending on the fabric, opacity, and whether motorization is included. Rush orders exist, but they typically add 30–50% to the base cost and are not available for every product.
+Ordering too late, on the other hand, means you're camping out in your brand-new home with no window coverings for weeks. Standard lead times for custom roller shades from World Wide Shades run 10 to 21 business days depending on the fabric, opacity, and whether motorization is included. Rush orders exist, but they typically add 30–50% to the base cost and are not available for every product.
 
-The sweet spot is understanding exactly when your windows are truly "done" — and then acting fast.
+The sweet spot is understanding exactly when your windows are truly "done" — and then acting fast. [Contact World Wide Shades](/contact) early in your construction timeline so we can help you plan your measurement and ordering schedule. Call (844) 674-2716 to get the conversation started.
 
 ## The Ideal Ordering Timeline
 
@@ -29,15 +29,17 @@ Here's a general timeline that works well for most buyers:
 
 **6–8 weeks before move-in:** Schedule your final measurement appointment. If you're planning [inside mount roller shades](/blog/how-to-install-roller-shades), the inside depth of the window box needs to be confirmed at this stage. A minimum of 2" of clearance is standard for most cassette roller shades; some deeper-profile cassettes need 3" or more.
 
-**5–6 weeks before move-in:** Place your custom order. This window gives you enough buffer for a standard 10–15 business day production lead time, plus shipping and a few days of buffer if anything needs to be reviewed or re-confirmed.
+**5–6 weeks before move-in:** Place your custom order with [World Wide Shades](/builder). This window gives you enough buffer for a standard 10–15 business day production lead time, plus shipping and a few days of buffer if anything needs to be reviewed or re-confirmed.
 
 **1–2 weeks before move-in:** Your shades should be delivered or available for pickup. Installation in a new build is typically straightforward — walls are clean, there's no old hardware to remove, and most new construction windows have consistent reveals.
 
-If your builder is running behind schedule, don't panic. Most custom shade companies, including World Wide Shades, will hold a confirmed order in queue and adjust shipping timing if you communicate early. What you don't want to do is delay placing the order because the move-in date got pushed — production time doesn't compress just because your schedule did.
+If your builder is running behind schedule, don't panic. World Wide Shades will hold a confirmed order in queue and adjust shipping timing if you communicate early. What you don't want to do is delay placing the order because the move-in date got pushed — production time doesn't compress just because your schedule did.
+
+[Use our online builder](/builder) to configure your shades and lock in your order today — even if your move-in date is flexible, having the order in queue protects your production slot.
 
 ## Getting Accurate Measurements in a New Build
 
-This is the single most important step, and it's where most DIY new-construction shade projects go wrong.
+This is the single most important step, and it's where most DIY new-construction shade projects go wrong. Getting measurements wrong on a 15-window order is an expensive mistake — and it's exactly the kind of thing that a free consultation with [World Wide Shades](/contact) can help you avoid.
 
 Before you measure anything, confirm that the following are complete:
 
@@ -53,21 +55,21 @@ For outside mount shades — which are often the right call in new construction 
 
 If you're ordering for multiple rooms in a new build — which most buyers are — take photos of each window alongside a labeled sticky note. Mistakes happen when 14 windows are being measured in a single afternoon. The photo documentation also makes it easy to reference if there's ever a question during production.
 
-For a complete breakdown of how to measure correctly, see our guide on [how to measure windows for custom shades](/blog/how-to-install-roller-shades).
+For a complete breakdown of how to measure correctly, see our guide on [how to install roller shades](/blog/how-to-install-roller-shades).
 
 ## Choosing the Right Shades for a New Build
 
-New construction is a rare opportunity: you're not constrained by existing aesthetics, existing hardware holes, or a landlord's restrictions. You can design the window treatment scheme from scratch, room by room.
+New construction is a rare opportunity: you're not constrained by existing aesthetics, existing hardware holes, or a landlord's restrictions. You can design the window treatment scheme from scratch, room by room. World Wide Shades works with new construction buyers, builders, and interior designers throughout the tri-state area — here is what we recommend most often.
 
-**Fabric and opacity:** The two most common categories are light-filtering and blackout. Light-filtering fabrics (typically 3% to 10% openness factor) diffuse sunlight and reduce glare without fully blocking the view. Blackout fabrics — true blackout, not just "room darkening" — block virtually all light and are the right choice for bedrooms and home theaters. In a new build, many buyers choose blackout for bedrooms and light-filtering for living areas, kitchens, and offices. World Wide Shades carries both at price points starting around $89 per shade for standard sizes.
+**Fabric and opacity:** The two most common categories are light-filtering and blackout. Light-filtering fabrics (typically 3% to 10% openness factor) diffuse sunlight and reduce glare without fully blocking the view. Blackout fabrics — true blackout, not just "room darkening" — block virtually all light and are the right choice for bedrooms and home theaters. In a new build, many buyers choose blackout for bedrooms and light-filtering for living areas, kitchens, and offices. World Wide Shades carries both at price points starting around $89 per shade for standard sizes. See our [light filtering shades guide](/blog/light-filtering-shades-guide) for a full breakdown of openness factors, and our [best fabrics for roller shades post](/blog/best-fabrics-roller-shades) for a deep dive into material comparisons.
 
-**Motorization:** If you're having smart home technology installed in a new build, the time to add motorized shades is now — not after the walls are closed up. Running low-voltage wiring for hardwired motorized shades is straightforward when electrical work is still active. Battery-operated motors are also an excellent option and require no wiring at all; they're compatible with Alexa, Google Home, and most smart home hubs. The convenience factor is particularly high in new builds with [large or high windows](/blog/best-fabrics-roller-shades) that are difficult to reach manually. If you're on the fence, read our deep-dive on [whether motorized roller shades are worth it](/blog/smart-home-motorized-shades-setup) before you decide.
+**Motorization:** If you're having smart home technology installed in a new build, the time to add motorized shades is now — not after the walls are closed up. Running low-voltage wiring for hardwired motorized shades is straightforward when electrical work is still active. Battery-operated motors are also an excellent option and require no wiring at all; they're compatible with Alexa, Google Home, and most smart home hubs. The convenience factor is particularly high in new builds with large or high windows that are difficult to reach manually. If you're on the fence, read our deep-dive on [whether motorized roller shades are worth it](/blog/smart-home-motorized-shades-setup) before you decide.
 
 **Energy efficiency:** New construction homes often have better insulation than older homes, but windows are still the primary source of heat gain and heat loss. Cellular (honeycomb) shades and solar shades with low openness factors significantly reduce solar heat gain in summer and thermal loss in winter. If your new home has a high HVAC load — common in open-plan new builds with lots of glass — the right window treatments can reduce energy bills by 15–25%. See our guide on [energy-efficient window shades](/blog/energy-efficient-window-shades) for a full breakdown of which fabrics and styles deliver the best thermal performance.
 
 **Color and finish:** In a freshly painted new build, you have a clean palette to work with. Neutral fabric tones — warm whites, soft grays, greige — tend to read as architectural elements rather than decorative accessories and age well as furniture and decor change over the years. Bolder colors can work well as accent shades in a dining room or reading nook, but be cautious about committing to a trend color on 20 windows throughout the house.
 
-If you want to see how fabrics look in your actual windows before committing, order swatches from the [World Wide Shades swatch program](/swatches). Swatches are inexpensive and will save you from an expensive mistake on a large order.
+If you want to see how fabrics look in your actual windows before committing, [order swatches from World Wide Shades](/swatches). Swatches are free and will save you from an expensive mistake on a large order.
 
 ## How to Handle Large or Irregular Windows
 
@@ -75,9 +77,9 @@ New construction homes — particularly those built in the last decade — frequ
 
 For windows over 96" wide, most roller shade manufacturers require a center support or will split the opening into two shades on a single headrail. This is a structural necessity, not a compromise — roller tubes have a maximum unsupported span before they begin to bow or cause uneven rolling. At World Wide Shades, we handle configurations up to 144" in width for split-shade installations.
 
-Floor-to-ceiling windows in great rooms or primary suites are another common feature in new construction. If the window height exceeds 84", measure carefully and confirm that your chosen shade can accommodate the drop. Motorization becomes essentially mandatory at this height for practical day-to-day use.
+Floor-to-ceiling windows in great rooms or primary suites are another common feature in new construction. If the window height exceeds 84", measure carefully and confirm that your chosen shade can accommodate the drop. Motorization becomes essentially mandatory at this height for practical day-to-day use. Our guide on [outdoor roller shades for patios](/blog/outdoor-roller-shades-patio) also covers large-scale installations that share similar hardware considerations.
 
-For any window that's non-standard in size or shape, use our [custom shade builder](/builder) to get an accurate quote before you commit, or [contact our team directly](/contact) for a personalized consultation.
+For any window that's non-standard in size or shape, use our [custom shade builder](/builder) to get an accurate quote before you commit, or [contact World Wide Shades](/contact) directly for a personalized consultation. Call (844) 674-2716 — our team handles complex configurations every week and can spec the right solution quickly.
 
 ## Coordinating with Your Builder and Other Trades
 
@@ -91,11 +93,11 @@ If you're in a community with an HOA, confirm window treatment guidelines before
 
 Finally, talk to your builder about whether punch-list items — touch-up painting, baseboard installation, hardware finishing — will happen after you've taken possession. If a painter is coming back to do touch-ups two weeks after move-in, you may want to hold off on installing shades in those specific rooms to avoid paint splatter on new fabric.
 
+[World Wide Shades](/contact) is happy to help you build a sequenced installation plan that works around your builder's timeline. It's a service we offer as part of our new construction support — no charge.
+
 ## What to Expect from the Order Process at World Wide Shades
 
-World Wide Shades is a custom window shade company based in The Bronx, NY. We work with homeowners, builders, and interior designers on new construction projects of all sizes — from single-family homes to large multi-unit residential developments.
-
-Here's how a typical new construction order works:
+World Wide Shades is a custom window shade company based in The Bronx, NY. We work with homeowners, builders, and interior designers on new construction projects of all sizes — from single-family homes to large multi-unit residential developments. Here's how a typical new construction order works:
 
 1. **Use the builder tool** at [/builder](/builder) to configure your shades room by room, enter your measurements, choose fabric and opacity, and select manual or motorized operation.
 2. **Order swatches** at [/swatches](/swatches) if you want to see physical fabric samples before placing your full order. Standard swatch turnaround is 3–5 business days.
@@ -112,18 +114,22 @@ Measure only after drywall is fully finished and any interior trim is installed.
 
 ### Can I order custom shades if I haven't picked out all my paint colors yet?
 
-Yes — shade fabric choice and wall color are independent decisions. Most neutral fabric tones (white, off-white, light gray, linen) coordinate with virtually any paint palette. If you want to match a specific wall color precisely, order swatches from [/swatches](/swatches) once your paint is selected.
+Yes — shade fabric choice and wall color are independent decisions. Most neutral fabric tones (white, off-white, light gray, linen) coordinate with virtually any paint palette. If you want to match a specific wall color precisely, [order swatches from World Wide Shades](/swatches) once your paint is selected.
 
 ### What if my measurements are slightly off after I order?
 
-Custom shades are fabricated to your exact specifications and cannot be re-cut or modified after production. This is why accurate measurement before ordering is essential. If your measurements are off by more than ¼" on a tight inside mount, the shade may not fit correctly. For new construction, we recommend double-checking every measurement before submitting and confirming with a second person when possible.
+Custom shades are fabricated to your exact specifications and cannot be re-cut or modified after production. This is why accurate measurement before ordering is essential. If your measurements are off by more than ¼" on a tight inside mount, the shade may not fit correctly. For new construction, World Wide Shades recommends double-checking every measurement before submitting and confirming with a second person when possible. When in doubt, [contact us](/contact) before you place your order — a quick review call can prevent an expensive remeasure.
 
 ### Is motorization worth adding in a new construction home?
 
-For most new construction buyers, yes — especially if you have large windows, high windows, or smart home infrastructure already being installed. The incremental cost of battery-operated motorization ranges from $80 to $150 per shade depending on the motor brand and compatibility, and the convenience and integration value over the life of the home is substantial. See our full breakdown at [/blog/smart-home-motorized-shades-setup](/blog/smart-home-motorized-shades-setup).
+For most new construction buyers, yes — especially if you have large windows, high windows, or smart home infrastructure already being installed. The incremental cost of battery-operated motorization ranges from $80 to $150 per shade depending on the motor brand and compatibility, and the convenience and integration value over the life of the home is substantial. See our full breakdown at [smart home motorized shades setup](/blog/smart-home-motorized-shades-setup).
+
+### What about child safety with new construction window treatments?
+
+If children will be living in the home, cordless and motorized options are the safest choice. Corded lift systems pose a strangulation risk recognized by the CPSC. World Wide Shades offers cordless spring-lift and motorized options on all shade types. See our guide on [child-safe window treatments](/blog/child-safe-window-treatments) for a complete safety overview.
 
 ## Ready to Get Started?
 
 New construction is your best opportunity to get window treatments exactly right — the right fabric, the right sizing, the right mounting style, and the right operation for every room. The key is timing your measurements and order correctly so your shades arrive when you need them.
 
-Use the [World Wide Shades custom builder](/builder) to configure and price your shades room by room. Order fabric samples at [/swatches](/swatches) to see how each option looks in your actual light conditions. And if you're working with a complex layout, multiple rooms, or a tight timeline, [reach out to our team](/contact) — we work with new construction buyers regularly and know how to make the process smooth from the first measurement to the final install.
+Use the [World Wide Shades custom builder](/builder) to configure and price your shades room by room. Order fabric samples at [/swatches](/swatches) to see how each option looks in your actual light conditions. And if you're working with a complex layout, multiple rooms, or a tight timeline, [reach out to World Wide Shades](/contact) — call (844) 674-2716 and we will make the process smooth from the first measurement to the final install.

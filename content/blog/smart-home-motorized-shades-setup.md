@@ -13,7 +13,9 @@ Smart home technology has moved far beyond novelty gadgets. Today, nearly 70 mil
 
 The benefits go beyond convenience. Automated shades improve energy efficiency by adjusting to sun position throughout the day, enhance security by simulating occupancy while you are away, and protect furniture and floors from UV damage by closing during peak sun hours. Paired with the right integration, motorized shades become one of the hardest-working components in your smart home.
 
-At [World Wide Shades](/builder), we offer motorized roller shades compatible with every major smart home platform. This guide walks you through the setup process for each platform and helps you design an automation strategy that fits your household.
+[World Wide Shades](/builder) offers motorized roller shades compatible with every major smart home platform — Alexa, Google Home, Apple HomeKit, SmartThings, and more. This guide walks you through the setup process for each platform and helps you design an automation strategy that fits your household.
+
+Use our [online shade builder](/builder) to configure motorized roller shades to your exact window measurements and get a price before you order.
 
 ## Choosing the Right Motor and Connectivity
 
@@ -23,7 +25,7 @@ Before diving into platform-specific setup, you need to understand the motor typ
 
 **Battery-powered motors.** The easiest to install — no wiring required. Modern lithium-ion shade motors last 6 to 12 months on a single charge with typical daily use (2 to 4 full cycles per day). Rechargeable motors use a micro-USB or USB-C cable. These are ideal for retrofitting existing windows without running electrical.
 
-**Hardwired motors.** Powered by low-voltage (12V or 24V DC) wiring that runs from the headrail to a power supply, which plugs into a standard outlet or connects to your home's electrical system. Hardwired motors never need recharging and can handle heavier, wider shades. They are the preferred option for new construction or renovations where you can run wiring during the build phase.
+**Hardwired motors.** Powered by low-voltage (12V or 24V DC) wiring that runs from the headrail to a power supply, which plugs into a standard outlet or connects to your home's electrical system. Hardwired motors never need recharging and can handle heavier, wider shades. They are the preferred option for new construction or renovations where you can run wiring during the build phase. If you're planning a new build or renovation, see our guide to [custom shades for new construction](/blog/custom-shades-new-construction) for how to coordinate wiring and headrail placement with your contractor.
 
 **Plug-in motors.** A middle ground — the motor is powered by a cord that runs from the headrail to a nearby outlet. No battery management, no electrician. The downside is a visible power cord, which can be concealed with paintable cord covers.
 
@@ -39,7 +41,9 @@ Before diving into platform-specific setup, you need to understand the motor typ
 
 **RF (Radio Frequency).** Proprietary radio signals used by some brands with their own remotes and bridges. Requires the manufacturer's bridge device to connect to smart home platforms.
 
-For full smart home integration, we recommend Wi-Fi or Zigbee motors. Wi-Fi is simpler for small installations (1 to 5 shades). Zigbee is better for larger homes (6+ shades) where network reliability and battery life matter more.
+For full smart home integration, [World Wide Shades](/builder) recommends Wi-Fi or Zigbee motors. Wi-Fi is simpler for small installations (1 to 5 shades). Zigbee is better for larger homes (6+ shades) where network reliability and battery life matter more.
+
+Browse [free fabric swatches](/swatches) while you're planning your motor type — the fabric and connectivity decision often happen at the same time, and seeing physical samples helps you finalize the spec.
 
 ## Setting Up With Amazon Alexa
 
@@ -110,13 +114,15 @@ Google Home's automation (called "Household Routines") supports:
 - **Presence-based.** When everyone leaves home (based on phone location), close all shades. When someone arrives, open them.
 - **Stacked actions.** Combine shade control with lights, music, and thermostat in a single routine.
 
+Get started with a [custom quote from World Wide Shades](/builder) — configure your motorized shades by window size and connectivity protocol before your next smart home project call.
+
 ## Setting Up With Apple HomeKit
 
 Apple HomeKit offers the tightest integration for Apple households, with Siri control, Apple Home app management, and HomeKit automations.
 
 ### Requirements
 
-HomeKit-compatible motorized shades connect either directly (via Wi-Fi with HomeKit firmware) or through a HomeKit-compatible hub like HomeBridge or a manufacturer's bridge device. Check that your specific motor model lists "Works with Apple HomeKit" before purchasing.
+HomeKit-compatible motorized shades connect either directly (via Wi-Fi with HomeKit firmware) or through a HomeKit-compatible hub like HomeBridge or a manufacturer's bridge device. Check that your specific motor model lists "Works with Apple HomeKit" before purchasing. [World Wide Shades](/contact) can advise on HomeKit-compatible motor options at (844) 674-2716.
 
 ### Setup
 
@@ -154,7 +160,7 @@ The most energy-efficient automation strategy adjusts shades based on the sun's 
 - **3:00 PM:** Close west-facing shades to 25% before afternoon sun arrives.
 - **Sunset:** Close all shades for privacy and insulation.
 
-This approach can reduce cooling costs by 15% to 20% compared to static shade positions, as covered in our [energy-efficient shades guide](/blog/energy-efficient-window-shades).
+This approach can reduce cooling costs by 15% to 20% compared to static shade positions, as covered in our [energy-efficient window shades guide](/blog/energy-efficient-window-shades). For outdoor spaces, automated shades work just as well — see our guide to [outdoor roller shades for patios](/blog/outdoor-roller-shades-patio) for motorization options for covered patios and pergolas.
 
 ### Occupancy-Based Control
 
@@ -172,7 +178,7 @@ The most powerful automation connects shades to your thermostat or HVAC system:
 - When the thermostat calls for heating in winter, open south-facing shades to capture passive solar heat.
 - When the temperature in a specific room exceeds a threshold (measured by a room sensor), close that room's shades.
 
-These integrations work best through platforms like SmartThings, Home Assistant, or Hubitat that support complex conditional logic.
+These integrations work best through platforms like SmartThings, Home Assistant, or Hubitat that support complex conditional logic. [World Wide Shades](/contact) can help you select motor protocols that work with your existing smart home hub — call (844) 674-2716 before you order if you have an unusual or multi-hub setup.
 
 ## Grouping and Room Organization
 
@@ -185,6 +191,8 @@ Proper shade grouping is critical for a smooth smart home experience. Here are b
 **Name shades descriptively.** "Left Bedroom Window" and "Right Bedroom Window" are more useful than "Shade 1" and "Shade 2." Voice assistants work better with natural, descriptive names.
 
 **Set default positions.** Most platforms let you set a default open position (e.g., 75% instead of 100%) so your shades stop at your preferred height.
+
+[World Wide Shades](/builder) offers motorized shades compatible with all major group-control platforms — configure your whole-home system with consistent motor types to simplify grouping and automation.
 
 ## Troubleshooting Common Issues
 
@@ -211,7 +219,7 @@ Proper shade grouping is critical for a smooth smart home experience. Here are b
 
 ### Do I need a separate hub for motorized shades?
 
-It depends on the motor's connectivity protocol. Wi-Fi motors connect directly to your router — no hub needed. Zigbee and Z-Wave motors require a compatible hub (SmartThings, Hubitat, etc.). If you already have a smart home hub, check whether it supports the shade motor's protocol before purchasing. If you are starting from scratch, Wi-Fi motors offer the simplest setup for small installations.
+It depends on the motor's connectivity protocol. Wi-Fi motors connect directly to your router — no hub needed. Zigbee and Z-Wave motors require a compatible hub (SmartThings, Hubitat, etc.). If you already have a smart home hub, check whether it supports the shade motor's protocol before purchasing. If you are starting from scratch, Wi-Fi motors offer the simplest setup for small installations. [Contact World Wide Shades](/contact) at (844) 674-2716 and we'll match you with the right motor protocol for your setup.
 
 ### Can I control motorized shades from my phone when I am away from home?
 
@@ -223,12 +231,18 @@ Most home routers support 20 to 30 connected devices without issues. If you have
 
 ### Are motorized shades compatible with existing manual roller shades?
 
-In most cases, no. Motorized shades use a different roller tube and mounting system than manual shades. You would need to replace the entire shade assembly. Our guide on [the best fabrics for roller shades](/blog/best-fabrics-roller-shades) can help you choose the right material, not just add a motor. However, your existing brackets may work depending on the mounting style. [Contact us](/contact) with your current setup details and we can advise on compatibility.
+In most cases, no. Motorized shades use a different roller tube and mounting system than manual shades. You would need to replace the entire shade assembly. Our guide on [best fabrics for roller shades](/blog/best-fabrics-roller-shades) can help you choose the right material for your motorized upgrade — not just the motor. [World Wide Shades](/contact) can advise on whether your existing brackets are compatible before you commit to fabrication.
 
-For bedrooms, pairing motorized operation with [blackout shades](/blog/blackout-curtains-vs-blackout-shades) creates the ultimate automated sleep environment. And if you have children, check our [child safety guide](/blog/child-safe-window-treatments) — motorized shades eliminate cord hazards entirely.
+### Are motorized shades safe for homes with children?
+
+Yes — motorized shades from [World Wide Shades](/builder) are one of the safest options for homes with young children precisely because they have no accessible cords or chains. The motor is sealed inside the roller tube. For more on child safety standards and the full range of cordless options, read our [child-safe window treatments guide](/blog/child-safe-window-treatments). For bedrooms, pairing motorized operation with [blackout shades](/blog/blackout-curtains-vs-blackout-shades) creates the ultimate automated sleep environment.
+
+### What fabric works best with motorized shades in a kitchen or bathroom?
+
+Motorized shades in wet environments should use PVC-coated fiberglass or moisture-resistant polyester fabrics — the motorization itself works fine in humid conditions, but the fabric matters. See our [roller shades for kitchens and bathrooms guide](/blog/roller-shades-kitchen-bathroom) for the full breakdown of moisture-resistant material options.
 
 ## Build Your Smart Shade System
 
-Motorized shades are one of the most impactful smart home upgrades you can make — they combine convenience, energy savings, and security in a single investment. Whether you are automating a single bedroom or outfitting an entire home, [World Wide Shades](/builder) offers motorized roller shades compatible with Alexa, Google Home, HomeKit, and all major smart home platforms.
+Motorized shades are one of the most impactful smart home upgrades you can make — they combine convenience, energy savings, and security in a single investment. Whether you are automating a single bedroom or outfitting an entire home, [World Wide Shades](/builder) offers motorized roller shades compatible with Alexa, Google Home, HomeKit, and all major smart home platforms, custom-fabricated at our Bronx shop to your exact window dimensions.
 
-Use our [online builder](/builder) to configure motorized shades for your windows, explore [fabric options](/swatches) for every room, or [contact our team](/contact) for help designing a whole-home motorized shade plan.
+Use our [online builder](/builder) to configure motorized shades for your windows, explore [fabric options](/swatches) for every room, or [contact our team](/contact) for help designing a whole-home motorized shade plan. Call (844) 674-2716 — World Wide Shades will help you build a system that works perfectly with your smart home from day one.
