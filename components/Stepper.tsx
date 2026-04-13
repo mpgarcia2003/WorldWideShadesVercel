@@ -6,6 +6,7 @@ import FabricSuggestions from './FabricSuggestions';
 import { useLanguage } from '../LanguageContext';
 import { trackEvent } from '../utils/analytics';
 import ShapeAndSize from './ShapeAndSize';
+import FabricPicker from './FabricPicker';
 import { trackShapeSelected, trackMeasurementsEntered, trackFabricSelected, trackMountSelected, trackControlSelected, trackBuilderComplete, trackSelectItem, trackPhoneClick } from '../lib/gtm/events';
 
 interface StepperProps {
@@ -299,7 +300,7 @@ const Stepper: React.FC<StepperProps> = ({
         const w = (config.widthFraction && config.widthFraction !== '0') ? `${config.width} ${config.widthFraction}` : `${config.width}`;
         const h = (config.heightFraction && config.heightFraction !== '0') ? `${config.height} ${config.heightFraction}` : `${config.height}`;
         return config.width > 0 ? `${w}" x ${h}"` : t('step.summary.diy');
-      case 2: return config.shadeType ? t(`shadeType.${config.shadeType === 'Light Filtering' ? 'lightFiltering' : config.shadeType === 'Blackout' ? 'blackout' : 'all'}`) : t('step.summary.allFabrics');
+      case 1: return config.material ? `${config.material.category} — ${config.material.name.split('|')[0].trim()}` : t('step.summary.allFabrics');
       case 3: return activeFabricName || t('fabric.selectMaterial');
       case 4: return t(config.mountType === 'Inside Mount' ? 'mount.inside' : 'mount.outside');
       case 5: return config.controlType === 'Metal Chain' ? `${t('control.chain')} \u2014 ${config.controlPosition || 'Right'} Side` : t('control.motorized');
@@ -505,98 +506,32 @@ const Stepper: React.FC<StepperProps> = ({
               )}
 
               {index === 1 && (
-                <div className="space-y-3 pt-2">
-                    {/* Step 3 Header */}
-                    <div className="text-center mb-1">
-                      <h3 className="text-[18px] font-normal text-[#1a1a1a] mb-0.5" style={{ fontFamily: "'Playfair Display', Georgia, serif", letterSpacing: '-0.01em' }}>
-                        Choose your light preference
-                      </h3>
-                      <p className="text-[12px] text-[#94a3b8]">
-                        Select the option that works best for your room
-                      </p>
-                    </div>
-
-                    <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
-                        {/* BLACKOUT — first, Most Popular */}
-                        <button 
-                          onClick={() => { updateConfig('shadeType', 'Blackout'); setTimeout(() => handleStepConfirmWithTracking(1), 400); }} 
-                          className={`p-4 border-2 rounded-xl transition-all flex flex-col items-center justify-center gap-2 text-center group relative ${
-                              config.shadeType === 'Blackout' 
-                              ? 'border-[#c8a165] bg-[#faf8f4] shadow-md' 
-                              : 'border-gray-100 hover:border-gray-300 bg-white'
-                          }`}
-                        >
-                            <div className="absolute -top-2.5 left-1/2 -translate-x-1/2 text-white text-[8px] font-bold px-2 py-0.5 rounded-full uppercase tracking-wider whitespace-nowrap" style={{ background: 'linear-gradient(135deg, #c8a165, #b8914f)' }}>
-                              Most Popular
-                            </div>
-                            <div className={`p-2 rounded-full transition-colors ${config.shadeType === 'Blackout' ? 'text-white' : 'bg-gray-50 text-slate-300 group-hover:text-slate-500'}`} style={config.shadeType === 'Blackout' ? { backgroundColor: '#c8a165' } : {}}>
-                              <Layers size={20} />
-                            </div>
-                            <span className={`text-[11px] font-black uppercase tracking-widest leading-tight ${config.shadeType === 'Blackout' ? 'text-[#8b6d3f]' : 'text-slate-500'}`}>
-                              {t('shadeType.blackout')}
-                            </span>
-                            <p className="text-[11px] font-normal text-slate-600 leading-snug mt-1 normal-case tracking-normal">
-                              {t('shadeType.blackoutDesc')}
-                            </p>
-                            <div className="text-[10px] font-bold text-slate-400 uppercase tracking-tighter mt-0.5">
-                              {fabricCounts.blackout} {t('blueprint.material')}s
-                            </div>
-                            <StartingAt shape={config.shape || 'Standard'} category="Blackout" />
-                        </button>
-
-                        {/* LIGHT FILTERING — second */}
-                        <button 
-                          onClick={() => { updateConfig('shadeType', 'Light Filtering'); setTimeout(() => handleStepConfirmWithTracking(1), 400); }} 
-                          className={`p-4 border-2 rounded-xl transition-all flex flex-col items-center justify-center gap-2 text-center group relative ${
-                              config.shadeType === 'Light Filtering' 
-                              ? 'border-[#c8a165] bg-[#faf8f4] shadow-md' 
-                              : 'border-gray-100 hover:border-gray-300 bg-white'
-                          }`}
-                        >
-                            <div className={`p-2 rounded-full transition-colors ${config.shadeType === 'Light Filtering' ? 'text-white' : 'bg-gray-50 text-slate-300 group-hover:text-slate-500'}`} style={config.shadeType === 'Light Filtering' ? { backgroundColor: '#c8a165' } : {}}>
-                              <Sun size={20} />
-                            </div>
-                            <span className={`text-[11px] font-black uppercase tracking-widest leading-tight ${config.shadeType === 'Light Filtering' ? 'text-[#8b6d3f]' : 'text-slate-500'}`}>
-                              {t('shadeType.lightFiltering')}
-                            </span>
-                            <p className="text-[11px] font-normal text-slate-600 leading-snug mt-1 normal-case tracking-normal">
-                              {t('shadeType.lightFilteringDesc')}
-                            </p>
-                            <div className="text-[10px] font-bold text-slate-400 uppercase tracking-tighter mt-0.5">
-                              {fabricCounts.lightFiltering} {t('blueprint.material')}s
-                            </div>
-                            <StartingAt shape={config.shape || 'Standard'} category="Light Filtering" />
-                        </button>
-
-                        {/* ALL FABRICS — third */}
-                        <button 
-                          onClick={() => { updateConfig('shadeType', 'All'); setTimeout(() => handleStepConfirmWithTracking(1), 400); }} 
-                          className={`p-4 border-2 rounded-xl transition-all flex flex-col items-center justify-center gap-2 text-center group relative ${
-                              config.shadeType === 'All' 
-                              ? 'border-[#c8a165] bg-[#faf8f4] shadow-md' 
-                              : 'border-gray-100 hover:border-gray-300 bg-white'
-                          }`}
-                        >
-                            <div className={`p-2 rounded-full transition-colors ${config.shadeType === 'All' ? 'text-white' : 'bg-gray-50 text-slate-300 group-hover:text-slate-500'}`} style={config.shadeType === 'All' ? { backgroundColor: '#c8a165' } : {}}>
-                              <AllFabricsIcon className="w-5 h-5" />
-                            </div>
-                            <span className={`text-[11px] font-black uppercase tracking-widest leading-tight ${config.shadeType === 'All' ? 'text-[#8b6d3f]' : 'text-slate-500'}`}>
-                              {t('shadeType.all')}
-                            </span>
-                            <p className="text-[11px] font-normal text-slate-600 leading-snug mt-1 normal-case tracking-normal">
-                              {t('shadeType.allDesc')}
-                            </p>
-                            <div className="text-[10px] font-bold text-slate-400 uppercase tracking-tighter mt-0.5">
-                              {fabricCounts.all} {t('blueprint.material')}s
-                            </div>
-                        </button>
-                    </div>
+                <div className="pt-2">
+                  <FabricPicker
+                    fabrics={fabrics}
+                    loading={loadingFabrics}
+                    selectedId={config.material?.id}
+                    shadeType={config.shadeType || 'Blackout'}
+                    width={config.width}
+                    height={config.height}
+                    widthFraction={config.widthFraction}
+                    heightFraction={config.heightFraction}
+                    onShadeTypeChange={(type) => {
+                      const newConfig = { ...config, shadeType: type };
+                      if (config.material && config.material.category !== type) {
+                        newConfig.material = undefined as any;
+                      }
+                      setConfig(newConfig);
+                    }}
+                    onFabricSelect={(f) => { onSelectFabric(f); trackFabricSelected(f.name, f.category, f.priceGroup); }}
+                    onConfirm={() => handleStepConfirmWithTracking(1)}
+                    onAddSwatch={onAddSwatch}
+                    requestedSwatches={requestedSwatches}
+                  />
                 </div>
               )}
 
-              {index === 2 && <div className="pt-2"><FabricSuggestions loading={loadingFabrics} fabrics={fabrics} onSelect={(f) => { onSelectFabric(f); trackFabricSelected(f.name, f.category, f.priceGroup); setTimeout(() => onAutoAdvance(2), 400); }} selectedId={config.material?.id} width={config.width} height={config.height} widthFraction={config.widthFraction} heightFraction={config.heightFraction} onAddSwatch={onAddSwatch} requestedSwatches={requestedSwatches} analysis={analysis} config={config} /></div>}
-
-              {index === 3 && (
+              {index === 2 && (
                 <div className="space-y-3 pt-2">
                     {/* Step 5 Header */}
                     <div className="text-center mb-1">
@@ -652,7 +587,7 @@ const Stepper: React.FC<StepperProps> = ({
                 </div>
               )}
 
-              {index === 4 && (
+              {index === 3 && (
                 <div className="space-y-4 pt-2">
                     {/* Step 6 Header */}
                     <div className="text-center mb-1">
@@ -823,7 +758,7 @@ const Stepper: React.FC<StepperProps> = ({
                 </div>
               )}
 
-              {index === 5 && (
+              {index === 4 && (
                 <div className="space-y-6 pt-2">
                     {/* Step 7 Header */}
                     <div className="text-center mb-1">
@@ -994,7 +929,7 @@ const Stepper: React.FC<StepperProps> = ({
                 </div>
               )}
               
-              {index === 6 && (
+              {index === 5 && (
                 <div className="space-y-4 pt-2">
                   {/* Quantity header */}
                   <div className="text-center mb-1">
@@ -1047,6 +982,7 @@ const Stepper: React.FC<StepperProps> = ({
                 const isMeasureStep = false; // Merged into step 0
                 // Skip generic CTA for step 0 when ShapeAndSize renders its own
                 if (index === 0 && (config.shape === 'Standard' && !showSpecialtyShapes)) return null;
+                if (index === 1) return null; // FabricPicker has its own CTA
                 const shapeData = SHAPE_CONFIGS[config.shape as keyof typeof SHAPE_CONFIGS];
                 const hasMeasurements = shapeData?.inputs
                   ? shapeData.inputs.every((input: any) => {
@@ -1069,7 +1005,7 @@ const Stepper: React.FC<StepperProps> = ({
                   }}
                 >
                   <span style={{ fontFamily: "'Playfair Display', Georgia, serif" }}>
-                    {isLastStep ? (isSaleActive() ? `Add My Shade to Cart — ${SALE_CONFIG.discountPercent}% OFF` : 'Add My Shade to Cart') : index === 1 ? 'Choose Fabric' : index === 3 ? 'Choose Your Control Type' : index === 4 ? 'Customize Your Look' : index === 5 ? 'Choose Your Quantity' : 'Continue'}
+                    {isLastStep ? (isSaleActive() ? `Add My Shade to Cart — ${SALE_CONFIG.discountPercent}% OFF` : 'Add My Shade to Cart') : index === 2 ? 'Choose Your Control Type' : index === 3 ? 'Customize Your Look' : index === 4 ? 'Choose Your Quantity' : 'Continue'}
                   </span>
                   <ArrowRight size={15} className={`transition-transform duration-300 ${isDisabled ? '' : 'group-hover/btn:translate-x-1'}`} />
                 </button>

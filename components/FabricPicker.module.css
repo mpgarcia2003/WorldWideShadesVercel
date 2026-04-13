@@ -1,0 +1,520 @@
+/* ═══════════════════════════════════════════════════════════
+   FabricPicker.module.css
+   ─────────────────────────────────────────────────────────
+   Styles for the merged Shade Type + Fabric chooser step.
+   Replaces old Steps 3 + 4.
+
+   Palette:
+     Dark:     #1A1A1A
+     Warm mid: #706B63
+     Warm lt:  #B0ACA5
+     Sand:     #F5F3EF
+     Gold:     #C9A96E
+     Green:    #2F6B4F
+     White:    #FFFFFF
+   ═══════════════════════════════════════════════════════════ */
+
+/* ── Container ── */
+.root {
+  max-width: 560px;
+  margin: 0 auto;
+  padding: 32px 20px 40px;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto,
+    'Helvetica Neue', Arial, sans-serif;
+  color: #1A1A1A;
+}
+
+/* ── Step Header ── */
+.stepHeader {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 4px;
+}
+
+.stepBadge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: #706B63;
+  background: #F5F3EF;
+  border-radius: 20px;
+  padding: 4px 12px;
+  line-height: 1;
+}
+
+.stepTitle {
+  font-size: 22px;
+  font-weight: 700;
+  margin: 0;
+  color: #1A1A1A;
+  line-height: 1.2;
+}
+
+.helper {
+  font-size: 13px;
+  color: #B0ACA5;
+  margin-bottom: 20px;
+  line-height: 1.4;
+}
+
+/* ═══════════════════════════════════════════════════════════
+   TOGGLE BAR
+   ═══════════════════════════════════════════════════════════ */
+.toggleBar {
+  display: flex;
+  background: #F5F3EF;
+  border-radius: 14px;
+  padding: 4px;
+  margin-bottom: 16px;
+  gap: 4px;
+}
+
+.toggleOption {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  padding: 12px 8px 10px;
+  font-family: inherit;
+  border: none;
+  background: transparent;
+  border-radius: 11px;
+  cursor: pointer;
+  transition: background 0.2s ease, box-shadow 0.2s ease, color 0.2s ease;
+  color: #706B63;
+}
+
+.toggleOption:hover:not(.toggleActive) {
+  background: rgba(255, 255, 255, 0.5);
+}
+
+.toggleActive {
+  background: #FFFFFF;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  color: #1A1A1A;
+}
+
+.toggleLabel {
+  font-size: 14px;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  line-height: 1.3;
+}
+
+.popularBadge {
+  display: inline-block;
+  font-size: 9px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  background: #2F6B4F;
+  color: #FFFFFF;
+  padding: 2px 7px;
+  border-radius: 8px;
+  vertical-align: middle;
+  line-height: 1.4;
+}
+
+.toggleSub {
+  font-size: 11px;
+  font-weight: 400;
+  color: #B0ACA5;
+  margin-top: 2px;
+  display: block;
+  line-height: 1.3;
+}
+
+.toggleActive .toggleSub {
+  color: #706B63;
+}
+
+/* ═══════════════════════════════════════════════════════════
+   SEARCH BAR
+   ═══════════════════════════════════════════════════════════ */
+.searchBar {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: #FAFAF8;
+  border: 1.5px solid #E0DDD8;
+  border-radius: 10px;
+  padding: 10px 14px;
+  margin-bottom: 12px;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.searchBar:focus-within {
+  border-color: #1A1A1A;
+  box-shadow: 0 0 0 1px #1A1A1A;
+}
+
+.searchIcon {
+  width: 16px;
+  height: 16px;
+  color: #B0ACA5;
+  flex-shrink: 0;
+}
+
+.searchInput {
+  flex: 1;
+  border: none;
+  outline: none;
+  background: transparent;
+  font-size: 14px;
+  font-family: inherit;
+  color: #1A1A1A;
+  min-width: 0;
+}
+
+.searchInput::placeholder {
+  color: #C4C0BA;
+}
+
+.searchClear {
+  width: 20px;
+  height: 20px;
+  padding: 0;
+  border: none;
+  background: #E8E6E1;
+  border-radius: 50%;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  color: #706B63;
+  transition: background 0.15s;
+}
+
+.searchClear:hover {
+  background: #D4D0CA;
+}
+
+.searchClear svg {
+  width: 10px;
+  height: 10px;
+}
+
+/* ═══════════════════════════════════════════════════════════
+   COLOR CHIPS
+   ═══════════════════════════════════════════════════════════ */
+.chipScroll {
+  display: flex;
+  gap: 8px;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+  padding-bottom: 16px;
+}
+
+.chipScroll::-webkit-scrollbar {
+  display: none;
+}
+
+.chip {
+  white-space: nowrap;
+  padding: 7px 14px;
+  font-size: 12px;
+  font-weight: 600;
+  font-family: inherit;
+  border-radius: 20px;
+  border: 1.5px solid #E0DDD8;
+  background: #FFFFFF;
+  color: #706B63;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  flex-shrink: 0;
+}
+
+.chip:hover:not(.chipActive) {
+  border-color: #B0ACA5;
+}
+
+.chipActive {
+  background: #1A1A1A;
+  color: #FFFFFF;
+  border-color: #1A1A1A;
+}
+
+/* ═══════════════════════════════════════════════════════════
+   FABRIC GRID
+   ═══════════════════════════════════════════════════════════ */
+.grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+}
+
+.tile {
+  border: 1.5px solid #E8E6E1;
+  border-radius: 12px;
+  overflow: hidden;
+  cursor: pointer;
+  background: #FFFFFF;
+  padding: 0;
+  font-family: inherit;
+  text-align: left;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.tile:hover:not(.tileSelected) {
+  border-color: #B0ACA5;
+}
+
+.tileSelected {
+  border-color: #1A1A1A;
+  box-shadow: 0 0 0 1px #1A1A1A;
+}
+
+.swatch {
+  aspect-ratio: 1;
+  width: 100%;
+  position: relative;
+}
+
+.checkOverlay {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  width: 24px;
+  height: 24px;
+  background: #1A1A1A;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.checkOverlay svg {
+  width: 12px;
+  height: 12px;
+}
+
+.tileInfo {
+  padding: 8px 10px 10px;
+}
+
+.tileName {
+  font-size: 12px;
+  font-weight: 600;
+  color: #1A1A1A;
+  line-height: 1.3;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.tilePrice {
+  font-size: 11px;
+  color: #706B63;
+  margin-top: 2px;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.oldPrice {
+  text-decoration: line-through;
+  color: #B0ACA5;
+}
+
+/* ═══════════════════════════════════════════════════════════
+   EMPTY STATE
+   ═══════════════════════════════════════════════════════════ */
+.emptyState {
+  text-align: center;
+  padding: 40px 20px;
+}
+
+.emptyIcon {
+  width: 40px;
+  height: 40px;
+  margin: 0 auto 12px;
+  color: #B0ACA5;
+}
+
+.emptyIcon svg {
+  width: 100%;
+  height: 100%;
+}
+
+.emptyText {
+  font-size: 15px;
+  font-weight: 600;
+  color: #706B63;
+  margin-bottom: 4px;
+}
+
+.emptySub {
+  font-size: 13px;
+  color: #B0ACA5;
+}
+
+/* ═══════════════════════════════════════════════════════════
+   SHOW MORE
+   ═══════════════════════════════════════════════════════════ */
+.showMore {
+  display: block;
+  width: 100%;
+  margin-top: 16px;
+  padding: 12px;
+  font-size: 13px;
+  font-weight: 600;
+  font-family: inherit;
+  color: #706B63;
+  background: #FAFAF8;
+  border: 1.5px solid #E0DDD8;
+  border-radius: 10px;
+  cursor: pointer;
+  text-align: center;
+  transition: background 0.15s, border-color 0.15s;
+}
+
+.showMore:hover {
+  background: #F5F3EF;
+  border-color: #B0ACA5;
+}
+
+/* ═══════════════════════════════════════════════════════════
+   SELECTION BANNER
+   ═══════════════════════════════════════════════════════════ */
+.selectionBanner {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: #F0F8F4;
+  border-radius: 12px;
+  padding: 12px 14px;
+  margin-top: 20px;
+  animation: slideUp 0.2s ease;
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.selSwatch {
+  width: 40px;
+  height: 40px;
+  border-radius: 8px;
+  flex-shrink: 0;
+  border: 1px solid rgba(0, 0, 0, 0.06);
+}
+
+.selText {
+  flex: 1;
+  min-width: 0;
+}
+
+.selName {
+  font-size: 14px;
+  font-weight: 600;
+  color: #1A1A1A;
+  line-height: 1.3;
+}
+
+.selDetail {
+  font-size: 12px;
+  color: #2F6B4F;
+  margin-top: 1px;
+}
+
+/* ═══════════════════════════════════════════════════════════
+   CTA BUTTON
+   ═══════════════════════════════════════════════════════════ */
+.cta {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  width: 100%;
+  margin-top: 20px;
+  padding: 16px 24px;
+  font-size: 16px;
+  font-weight: 700;
+  font-family: inherit;
+  color: #FFFFFF;
+  background: #1A1A1A;
+  border: none;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: background 0.15s ease, transform 0.1s ease, opacity 0.15s ease;
+}
+
+.cta:hover:not(:disabled) {
+  background: #333333;
+}
+
+.cta:active:not(:disabled) {
+  transform: scale(0.985);
+}
+
+.ctaDisabled {
+  opacity: 0.35;
+  cursor: not-allowed;
+}
+
+.ctaArrow {
+  width: 14px;
+  height: 14px;
+  flex-shrink: 0;
+}
+
+.ctaHint {
+  font-size: 12px;
+  color: #B0ACA5;
+  text-align: center;
+  margin-top: 8px;
+}
+
+/* ═══════════════════════════════════════════════════════════
+   RESPONSIVE — Desktop (≥768px)
+   ═══════════════════════════════════════════════════════════ */
+@media (min-width: 768px) {
+  .root {
+    padding: 40px 24px 48px;
+  }
+
+  .stepTitle {
+    font-size: 24px;
+  }
+
+  .grid {
+    grid-template-columns: repeat(4, 1fr);
+  }
+
+  .toggleLabel {
+    font-size: 15px;
+  }
+
+  .toggleSub {
+    font-size: 12px;
+  }
+
+  .cta {
+    max-width: 400px;
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  .ctaHint {
+    max-width: 400px;
+    margin-left: auto;
+    margin-right: auto;
+  }
+}

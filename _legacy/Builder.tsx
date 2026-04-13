@@ -1143,7 +1143,7 @@ const Builder: React.FC<BuilderProps> = ({ addToCart, addToSwatches, swatches })
                               setAnalysis(res);
                               trackEvent('visualizer_analysis_complete', { room_style: res.style, suggested_tone: res.suggestedTone });
                           }
-                          setOpenStep(2); 
+                          setOpenStep(1); 
                           trackEvent('visualizer_confirm', { shape: config.shape, is_custom_image: !imageSrc.startsWith('http') });
                       }} 
                       selectedFabric={config.material} 
@@ -1242,7 +1242,7 @@ const Builder: React.FC<BuilderProps> = ({ addToCart, addToSwatches, swatches })
                 config={config}
                 setConfig={setConfig}
                 activeFabricName={config.material?.name}
-                onBrowseFabrics={() => setOpenStep(2)}
+                onBrowseFabrics={() => setOpenStep(1)}
                 fabrics={fabrics}
                 loadingFabrics={isLoadingFabrics}
                 onSelectFabric={(f) => setConfig({ ...config, material: f })}

@@ -57,7 +57,7 @@ export const getFabricUrl = (publicIdOrUrl: string, type: 'thumb' | 'texture') =
     : `${baseUrl}/f_auto,q_auto,w_1000,c_scale/${publicIdOrUrl}`;
 };
 
-export const STEPS = ['step.1', 'step.2', 'step.3', 'step.4', 'step.5', 'step.6', 'step.7'];
+export const STEPS = ['step.1', 'step.2', 'step.3', 'step.4', 'step.5', 'step.6'];
 export const FRACTIONS = ['0', '1/8', '1/4', '3/8', '1/2', '5/8', '3/4', '7/8'];
 
 export const VALANCE_OPTIONS = [
