@@ -98,6 +98,69 @@ function FunnelBar({ label, count, total, prev }: { label: string; count: number
   );
 }
 
+// ─── Step Config Formatter ─────────────────────────────────
+function formatStepData(event: SessionEvent): React.ReactNode | null {
+  const d = event.event_data;
+  if (!d || Object.keys(d).length === 0) return null;
+  const name = event.event_name;
+
+  // Step completed events with config
+  if (name === "bh_step_completed") {
+    const step = d.step || "";
+    if (d.shape) return <span style={{ color: "#0c0c0c" }}>Shape: <strong>{d.shape}</strong></span>;
+    if (d.width && d.height) {
+      const wStr = d.width_fraction && d.width_fraction !== "0" ? `${d.width} ${d.width_fraction}` : `${d.width}`;
+      const hStr = d.height_fraction && d.height_fraction !== "0" ? `${d.height} ${d.height_fraction}` : `${d.height}`;
+      return <span style={{ color: "#0c0c0c" }}>Dimensions: <strong>{wStr}&quot; × {hStr}&quot;</strong>{d.custom_dims ? " (specialty)" : ""}</span>;
+    }
+    if (d.fabric_name) return <span style={{ color: "#0c0c0c" }}>Fabric: <strong>{d.fabric_name}</strong> ({d.fabric_category || d.shade_type || ""})</span>;
+    if (d.mount_type) return <span style={{ color: "#0c0c0c" }}>Mount: <strong>{d.mount_type}</strong></span>;
+    if (d.mount) return <span style={{ color: "#0c0c0c" }}>Mount: <strong>{d.mount}</strong></span>;
+    if (d.control_type) return <span style={{ color: "#0c0c0c" }}>Control: <strong>{d.control_type}</strong>{d.motor_power ? ` (${d.motor_power})` : ""} — {d.control_position || ""} side</span>;
+    if (d.control) return <span style={{ color: "#0c0c0c" }}>Control: <strong>{d.control}</strong></span>;
+    if (d.valance_type) return <span style={{ color: "#0c0c0c" }}>Valance: <strong>{d.valance_type}</strong> | Channels: <strong>{d.side_channels || "none"}</strong> | Roll: <strong>{d.roll_type || "standard"}</strong></span>;
+    if (d.quantity) return <span style={{ color: "#0c0c0c" }}>Quantity: <strong>{d.quantity}</strong></span>;
+    if (d.item_count !== undefined) return <span style={{ color: "#16a34a" }}>Added to Cart: <strong>{d.item_count} item(s)</strong> — ${d.total?.toFixed(2) || "0.00"}</span>;
+  }
+
+  if (name === "bh_price_shown" && d.price) return <span style={{ color: "#c8a165" }}>Price shown: <strong>${d.price}</strong></span>;
+  if (name === "bh_scroll_depth") return <span>Scrolled to <strong>{d.depth}%</strong></span>;
+  if (name === "bh_rage_click") return <span style={{ color: "#ef4444" }}>Rage click on <strong>&lt;{d.target}&gt;</strong> at ({d.x}, {d.y})</span>;
+  if (name === "bh_page_view") return <span>Navigated to <strong>{d.page}{d.search || ""}</strong></span>;
+  if (name === "bh_checkout_started") return <span style={{ color: "#f59e0b" }}>Checkout: <strong>${d.total?.toFixed(2)}</strong> ({d.item_count} items)</span>;
+  if (name === "bh_session_end") return <span>Exit from <strong>{d.exit_page}</strong> — {d.duration_seconds}s total, {d.max_scroll_depth}% scroll</span>;
+
+  // Fallback: show raw but trimmed
+  const raw = JSON.stringify(d);
+  return raw.length > 2 ? <span style={{ color: "#9ca3af" }}>{raw.slice(0, 120)}</span> : null;
+}
+
+const EVENT_ICONS: Record<string, string> = {
+  bh_step_started: "▶",
+  bh_step_completed: "✓",
+  bh_page_view: "📄",
+  bh_scroll_depth: "📜",
+  bh_rage_click: "😤",
+  bh_tab_hidden: "👁",
+  bh_tab_returned: "👁",
+  bh_session_end: "🚪",
+  bh_price_shown: "💰",
+  bh_checkout_started: "🛒",
+  bh_remove_from_cart: "🗑",
+  bh_step_backward: "⬅",
+  bh_builder_abandoned: "❌",
+  bh_swatch_requested: "🎨",
+};
+
+const EVENT_COLORS: Record<string, string> = {
+  bh_step_completed: "#16a34a",
+  bh_rage_click: "#ef4444",
+  bh_session_end: "#6b7280",
+  bh_checkout_started: "#f59e0b",
+  bh_builder_abandoned: "#ef4444",
+  bh_price_shown: "#c8a165",
+};
+
 // ─── Session Detail Modal ──────────────────────────────────
 function SessionDetail({ sessionId, onClose }: { sessionId: string; onClose: () => void }) {
   const [session, setSession] = useState<Session | null>(null);
@@ -115,19 +178,40 @@ function SessionDetail({ sessionId, onClose }: { sessionId: string; onClose: () 
       .catch(() => setLoading(false));
   }, [sessionId]);
 
-  if (loading) return <div style={{ padding: "2rem", textAlign: "center", color: "#6b7280" }}>Loading session...</div>;
-  if (!session) return <div style={{ padding: "2rem", textAlign: "center", color: "#ef4444" }}>Session not found</div>;
+  if (loading) return <div style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,0.5)", zIndex: 1000, display: "flex", justifyContent: "center", alignItems: "center" }}><div style={{ background: "#fff", borderRadius: "0.75rem", padding: "2rem", color: "#6b7280" }}>Loading session...</div></div>;
+  if (!session) return <div style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,0.5)", zIndex: 1000, display: "flex", justifyContent: "center", alignItems: "center" }}><div style={{ background: "#fff", borderRadius: "0.75rem", padding: "2rem", color: "#ef4444" }}>Session not found</div></div>;
+
+  // Extract config summary from step_completed events
+  const configSummary: Record<string, any> = {};
+  for (const ev of events) {
+    if (ev.event_name === "bh_step_completed" && ev.event_data) {
+      const d = ev.event_data;
+      if (d.shape) configSummary.shape = d.shape;
+      if (d.width) {
+        const wStr = d.width_fraction && d.width_fraction !== "0" ? `${d.width} ${d.width_fraction}` : `${d.width}`;
+        const hStr = d.height_fraction && d.height_fraction !== "0" ? `${d.height} ${d.height_fraction}` : `${d.height}`;
+        configSummary.dimensions = `${wStr}" × ${hStr}"`;
+      }
+      if (d.fabric_name) { configSummary.fabric = d.fabric_name; configSummary.fabricCategory = d.fabric_category || d.shade_type || ""; }
+      if (d.mount_type || d.mount) configSummary.mount = d.mount_type || d.mount;
+      if (d.control_type || d.control) { configSummary.control = d.control_type || d.control; configSummary.motorPower = d.motor_power || ""; }
+      if (d.valance_type) { configSummary.valance = d.valance_type; configSummary.sideChannels = d.side_channels || "none"; }
+      if (d.quantity) configSummary.quantity = d.quantity;
+      if (d.item_count !== undefined) configSummary.cartTotal = d.total;
+    }
+  }
+  const hasConfig = Object.keys(configSummary).length > 0;
 
   return (
-    <div style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,0.5)", zIndex: 1000, display: "flex", justifyContent: "center", alignItems: "flex-start", paddingTop: "2rem", overflow: "auto" }}>
-      <div style={{ background: "#fff", borderRadius: "0.75rem", maxWidth: "700px", width: "95%", maxHeight: "85vh", overflow: "auto", padding: "1.5rem" }}>
+    <div style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,0.5)", zIndex: 1000, display: "flex", justifyContent: "center", alignItems: "flex-start", paddingTop: "2rem", overflow: "auto" }} onClick={onClose}>
+      <div style={{ background: "#fff", borderRadius: "0.75rem", maxWidth: "750px", width: "95%", maxHeight: "85vh", overflow: "auto", padding: "1.5rem" }} onClick={(e) => e.stopPropagation()}>
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "1rem" }}>
           <h2 style={{ fontFamily: "Georgia, serif", fontSize: "1.25rem", fontWeight: 700 }}>Session Detail</h2>
           <button onClick={onClose} style={{ background: "none", border: "none", fontSize: "1.5rem", cursor: "pointer", color: "#6b7280" }}>×</button>
         </div>
 
         {/* Session summary */}
-        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "0.75rem", marginBottom: "1.5rem", fontSize: "0.8125rem" }}>
+        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "0.75rem", marginBottom: "1rem", fontSize: "0.8125rem" }}>
           <div><strong>Visitor:</strong> {session.visitor_id.slice(0, 12)}...</div>
           <div><strong>Device:</strong> {session.device_type} / {session.browser}</div>
           <div><strong>Landing:</strong> {session.landing_page}</div>
@@ -151,28 +235,49 @@ function SessionDetail({ sessionId, onClose }: { sessionId: string; onClose: () 
           </div>
         </div>
 
+        {/* Config summary card */}
+        {hasConfig && (
+          <div style={{ background: "#faf9f6", border: "1px solid #e5ddd0", borderRadius: "0.5rem", padding: "1rem", marginBottom: "1rem" }}>
+            <h3 style={{ fontWeight: 700, fontSize: "0.75rem", color: "#c8a165", textTransform: "uppercase", letterSpacing: "0.05em", marginBottom: "0.625rem" }}>Shade Configuration</h3>
+            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "0.5rem", fontSize: "0.8125rem" }}>
+              {configSummary.shape && <div>🔲 Shape: <strong>{configSummary.shape}</strong></div>}
+              {configSummary.dimensions && <div>📏 Dimensions: <strong>{configSummary.dimensions}</strong></div>}
+              {configSummary.fabric && <div>🎨 Fabric: <strong>{configSummary.fabric}</strong> <span style={{ color: "#9ca3af", fontSize: "0.75rem" }}>({configSummary.fabricCategory})</span></div>}
+              {configSummary.mount && <div>🔧 Mount: <strong>{configSummary.mount}</strong></div>}
+              {configSummary.control && <div>⚙️ Control: <strong>{configSummary.control}</strong>{configSummary.motorPower ? <span style={{ color: "#9ca3af" }}> ({configSummary.motorPower})</span> : ""}</div>}
+              {configSummary.valance && <div>🏠 Valance: <strong>{configSummary.valance}</strong> | Channels: <strong>{configSummary.sideChannels}</strong></div>}
+              {configSummary.quantity && <div>🔢 Qty: <strong>{configSummary.quantity}</strong></div>}
+              {configSummary.cartTotal !== undefined && <div>🛒 Cart: <strong>${configSummary.cartTotal?.toFixed(2)}</strong></div>}
+            </div>
+          </div>
+        )}
+
         {/* Event timeline */}
         <h3 style={{ fontWeight: 700, fontSize: "0.875rem", marginBottom: "0.75rem", borderTop: "1px solid #e5ddd0", paddingTop: "1rem" }}>Event Timeline ({events.length} events)</h3>
         <div style={{ maxHeight: "350px", overflow: "auto" }}>
-          {events.map((ev, i) => (
-            <div key={ev.id || i} style={{ display: "flex", gap: "0.75rem", padding: "0.5rem 0", borderBottom: "1px solid #f3f0eb", fontSize: "0.75rem" }}>
-              <div style={{ color: "#9ca3af", minWidth: "65px", fontFamily: "monospace" }}>
-                {new Date(ev.timestamp).toLocaleTimeString("en-US", { hour: "2-digit", minute: "2-digit", second: "2-digit" })}
+          {events.map((ev, i) => {
+            const icon = EVENT_ICONS[ev.event_name] || "•";
+            const color = EVENT_COLORS[ev.event_name] || "#0c0c0c";
+            const formatted = formatStepData(ev);
+            return (
+              <div key={ev.id || i} style={{ display: "flex", gap: "0.75rem", padding: "0.5rem 0", borderBottom: "1px solid #f3f0eb", fontSize: "0.75rem" }}>
+                <div style={{ color: "#9ca3af", minWidth: "65px", fontFamily: "monospace" }}>
+                  {new Date(ev.timestamp).toLocaleTimeString("en-US", { hour: "2-digit", minute: "2-digit", second: "2-digit" })}
+                </div>
+                <div style={{ minWidth: "20px", textAlign: "center" }}>{icon}</div>
+                <div style={{ flex: 1 }}>
+                  <span style={{ fontWeight: 600, color }}>
+                    {ev.event_name.replace("bh_", "")}
+                  </span>
+                  {ev.time_on_step_seconds != null && ev.time_on_step_seconds > 0 && (
+                    <span style={{ color: "#c8a165", marginLeft: "0.5rem", fontWeight: 600 }}>{ev.time_on_step_seconds}s</span>
+                  )}
+                  {ev.page && ev.event_name === "bh_page_view" ? null : ev.page ? <span style={{ color: "#d1d5db", marginLeft: "0.5rem" }}>{ev.page}</span> : null}
+                  {formatted && <div style={{ marginTop: "0.125rem" }}>{formatted}</div>}
+                </div>
               </div>
-              <div style={{ flex: 1 }}>
-                <span style={{ fontWeight: 600, color: ev.event_name.includes("rage") ? "#ef4444" : ev.event_name.includes("purchase") ? "#16a34a" : "#0c0c0c" }}>
-                  {ev.event_name.replace("bh_", "")}
-                </span>
-                {ev.page && <span style={{ color: "#9ca3af", marginLeft: "0.5rem" }}>{ev.page}</span>}
-                {ev.time_on_step_seconds != null && <span style={{ color: "#c8a165", marginLeft: "0.5rem" }}>{ev.time_on_step_seconds}s</span>}
-                {ev.event_data && Object.keys(ev.event_data).length > 0 && (
-                  <div style={{ color: "#6b7280", marginTop: "0.125rem", fontSize: "0.6875rem" }}>
-                    {JSON.stringify(ev.event_data).slice(0, 150)}
-                  </div>
-                )}
-              </div>
-            </div>
-          ))}
+            );
+          })}
         </div>
       </div>
     </div>

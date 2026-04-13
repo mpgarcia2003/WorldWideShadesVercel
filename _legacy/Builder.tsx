@@ -427,11 +427,25 @@ const Builder: React.FC<BuilderProps> = ({ addToCart, addToSwatches, swatches })
     if (prevStepRef.current !== null && openStep !== null && openStep < prevStepRef.current) {
       builderHooks.onStepBackward(prevStepRef.current, openStep, STEPS);
     }
-    // Behavior pipeline: track every step transition (independent from GTM)
+    // Behavior pipeline: track every step transition with config data
     if (openStep !== null && openStep !== prevStepRef.current) {
       const stepName = STEPS[openStep] || `step_${openStep}`;
       if (prevStepRef.current !== null) {
-        bhStepComplete(STEPS[prevStepRef.current] || `step_${prevStepRef.current}`, prevStepRef.current + 1);
+        const prevStep = prevStepRef.current;
+        // Attach relevant config data based on which step was just completed
+        const stepData: Record<string, any> = {};
+        if (prevStep === 0) { stepData.shape = config.shape; }
+        if (prevStep === 1) {
+          stepData.width = config.width; stepData.width_fraction = config.widthFraction;
+          stepData.height = config.height; stepData.height_fraction = config.heightFraction;
+          if (config.customDims && Object.keys(config.customDims).length > 0) stepData.custom_dims = config.customDims;
+        }
+        if (prevStep === 2) { stepData.fabric_name = config.material?.name || ''; stepData.fabric_category = config.material?.category || ''; stepData.shade_type = config.shadeType || ''; }
+        if (prevStep === 3) { stepData.mount_type = config.mountType; }
+        if (prevStep === 4) { stepData.control_type = config.controlType; stepData.motor_power = config.motorPower || ''; stepData.control_position = config.controlPosition || ''; }
+        if (prevStep === 5) { stepData.valance_type = config.valanceType; stepData.side_channels = config.sideChannelType; stepData.roll_type = config.rollType; stepData.bottom_bar = config.bottomBar; }
+        if (prevStep === 6) { stepData.quantity = config.quantity; }
+        bhStepComplete(STEPS[prevStep] || `step_${prevStep}`, prevStep + 1, stepData);
       }
       bhStepStart(stepName, openStep + 1);
     }

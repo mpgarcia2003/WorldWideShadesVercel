@@ -38,8 +38,14 @@ export const builderHooks = {
     });
     bhStepStart("mount", 4);
   },
-  onSizeEntered(w: number, h: number, ..._args: any[]) {
-    bhStepComplete("dimensions_entered", 2, { width: w, height: h });
+  onSizeEntered(w: number, h: number, shape?: any, wFrac?: any, hFrac?: any, ..._args: any[]) {
+    bhStepComplete("dimensions_entered", 2, {
+      width: w,
+      height: h,
+      width_fraction: typeof wFrac === "string" ? wFrac : "0",
+      height_fraction: typeof hFrac === "string" ? hFrac : "0",
+      shape: typeof shape === "string" ? shape : "",
+    });
     bhStepStart("fabric", 3);
   },
   onMountSelected(mount: string, ..._args: any[]) {
