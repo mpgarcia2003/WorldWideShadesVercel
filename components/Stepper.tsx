@@ -293,23 +293,15 @@ const Stepper: React.FC<StepperProps> = ({
   const getStepSummary = (index: number) => {
     switch (index) {
       case 0: return getShapeLabel(config.shape);
-      case 1: 
-        if (config.measureService && config.installService) return t('step.summary.full');
-        if (config.measureService) return t('step.summary.measureOnly');
-        if (config.installService) return t('step.summary.installOnly');
-        const w = (config.widthFraction && config.widthFraction !== '0') ? `${config.width} ${config.widthFraction}` : `${config.width}`;
-        const h = (config.heightFraction && config.heightFraction !== '0') ? `${config.height} ${config.heightFraction}` : `${config.height}`;
-        return config.width > 0 ? `${w}" x ${h}"` : t('step.summary.diy');
       case 1: return config.material ? `${config.material.category} — ${config.material.name.split('|')[0].trim()}` : t('step.summary.allFabrics');
-      case 3: return activeFabricName || t('fabric.selectMaterial');
-      case 4: return t(config.mountType === 'Inside Mount' ? 'mount.inside' : 'mount.outside');
-      case 5: return config.controlType === 'Metal Chain' ? `${t('control.chain')} \u2014 ${config.controlPosition || 'Right'} Side` : t('control.motorized');
-      case 6: {
+      case 2: return t(config.mountType === 'Inside Mount' ? 'mount.inside' : 'mount.outside');
+      case 3: return config.controlType === 'Metal Chain' ? `${t('control.chain')} \u2014 ${config.controlPosition || 'Right'} Side` : t('control.motorized');
+      case 4: {
           const valanceLabel = t(`valance.${config.valanceType}`) || t('step.summary.noValance');
           const sideChannelLabel = config.sideChannelType === 'standard' ? ' + Channels' : '';
           return valanceLabel + sideChannelLabel;
       }
-      case 7: return config.quantity.toString();
+      case 5: return config.quantity.toString();
       default: return "Select";
     }
   };
@@ -322,13 +314,10 @@ const Stepper: React.FC<StepperProps> = ({
   const handleStepConfirmWithTracking = (stepIndex: number) => {
     switch (stepIndex) {
       case 0: trackShapeSelected(config.shape || 'Standard'); break;
-      case 1: trackMeasurementsEntered(config.width, config.height, config.widthFraction, config.heightFraction); break;
-      case 2: // shade type selected (Blackout/Light Filtering) — tracked at selection
+      case 1: // fabric selected — tracked via onSelectFabric + trackFabricSelected
         break;
-      case 3: // fabric selected — tracked via onSelectFabric
-        break;
-      case 4: trackMountSelected(config.mountType || 'Inside Mount'); break;
-      case 5: trackControlSelected(config.controlType || 'Manual', config.motorPower); break;
+      case 2: trackMountSelected(config.mountType || 'Inside Mount'); break;
+      case 3: trackControlSelected(config.controlType || 'Manual', config.motorPower); break;
       default: break;
     }
     if (isLastStep) {
