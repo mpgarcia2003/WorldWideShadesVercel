@@ -153,7 +153,7 @@ export default function ShapeAndSize({
         <div className={styles.measRow}>
           <div className={styles.measDiagram}>
             <img
-              src="https://res.cloudinary.com/dcmlcfynd/image/upload/c_crop,g_center,w_700,h_580/w_400,q_auto,f_auto/v1764525899/Bottom_up_rectangle_jvenzj.webp"
+              src="https://res.cloudinary.com/dcmlcfynd/image/upload/c_crop,g_center,w_780,h_650/w_400,q_auto,f_auto/v1764525899/Bottom_up_rectangle_jvenzj.webp"
               alt="Window measurement diagram showing width and height"
               className={styles.measDiagramImg}
             />
@@ -256,7 +256,7 @@ export default function ShapeAndSize({
               </svg>
             </button>
             <img
-              src="https://res.cloudinary.com/dcmlcfynd/image/upload/c_crop,g_center,w_700,h_580/w_800,q_auto,f_auto/v1764525899/Bottom_up_rectangle_jvenzj.webp"
+              src="https://res.cloudinary.com/dcmlcfynd/image/upload/c_crop,g_center,w_780,h_650/w_800,q_auto,f_auto/v1764525899/Bottom_up_rectangle_jvenzj.webp"
               alt="How to measure your window — width and height diagram"
               className={styles.overlayImg}
             />
