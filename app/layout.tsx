@@ -1,9 +1,8 @@
 import type { Metadata } from "next";
 import Script from "next/script";
 import { DM_Sans, Playfair_Display } from "next/font/google";
-import { AnnouncementBar } from "@/components/shell/AnnouncementBar";
 import { Header } from "@/components/shell/Header";
-import { Footer } from "@/components/shell/Footer";
+import { ShellWrapper } from "@/components/shell/ShellWrapper";
 import { Providers } from "@/components/shared/Providers";
 import { GlobalPhoneTracker } from "@/components/shared/GlobalPhoneTracker";
 import { ExitIntentPopup } from "@/components/shared/ExitIntentPopup";
@@ -44,10 +43,10 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             <GlobalPhoneTracker />
             <BehaviorTracker />
             <ExitIntentPopup page="builder" />
-            <AnnouncementBar />
-            <Header />
-            <main className="flex-1">{children}</main>
-            <Footer />
+            <ShellWrapper>
+              <Header />
+              <main className="flex-1">{children}</main>
+            </ShellWrapper>
           </Providers>
         </div>
       </body>
