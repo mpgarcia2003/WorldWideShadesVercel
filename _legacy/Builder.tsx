@@ -21,6 +21,7 @@ import { notifyAdminSwatchRequest, notifyAdminExitIntent, sendCustomerQuoteEmail
 import { useLanguage } from '../LanguageContext';
 import { trackEvent } from '../utils/analytics';
 import { builderHooks } from '../services/analytics';
+import { bhStepComplete, bhStepStart } from '../lib/tracking/behavior';
 import PrecisionEmailModal from '../components/PrecisionEmailModal';
 
 interface BuilderProps {
@@ -425,6 +426,14 @@ const Builder: React.FC<BuilderProps> = ({ addToCart, addToSwatches, swatches })
   useEffect(() => {
     if (prevStepRef.current !== null && openStep !== null && openStep < prevStepRef.current) {
       builderHooks.onStepBackward(prevStepRef.current, openStep, STEPS);
+    }
+    // Behavior pipeline: track every step transition (independent from GTM)
+    if (openStep !== null && openStep !== prevStepRef.current) {
+      const stepName = STEPS[openStep] || `step_${openStep}`;
+      if (prevStepRef.current !== null) {
+        bhStepComplete(STEPS[prevStepRef.current] || `step_${prevStepRef.current}`, prevStepRef.current + 1);
+      }
+      bhStepStart(stepName, openStep + 1);
     }
     prevStepRef.current = openStep;
   }, [openStep]);

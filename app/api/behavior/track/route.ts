@@ -69,25 +69,43 @@ export async function POST(req: NextRequest) {
       }
 
       // Update session summary
-      const updates: Record<string, any> = { ended_at: new Date().toISOString() };
+      // Always recalculate duration from session start to now
+      const { data: currentSession } = await supabase
+        .from("behavior_sessions")
+        .select("started_at, furthest_builder_step, rage_click_count, pages_viewed")
+        .eq("session_id", sessionId)
+        .single();
+
+      const startedAt = currentSession?.started_at ? new Date(currentSession.started_at).getTime() : Date.now();
+      const updates: Record<string, any> = {
+        ended_at: new Date().toISOString(),
+        duration_seconds: Math.round((Date.now() - startedAt) / 1000),
+      };
+      
+      // Carry forward existing values so we don't lose them
+      let currentFurthest = currentSession?.furthest_builder_step || 0;
+      let currentRageClicks = currentSession?.rage_click_count || 0;
+      let currentPages = currentSession?.pages_viewed || 0;
 
       for (const e of events) {
         if (e.event_name === "bh_step_completed") {
           const stepNum = e.step_number || 0;
-          if (stepNum > (updates.furthest_builder_step || 0)) {
+          if (stepNum > currentFurthest) {
+            currentFurthest = stepNum;
             updates.furthest_builder_step = stepNum;
           }
         }
         if (e.event_name === "bh_session_end") {
-          updates.duration_seconds = e.event_data?.duration_seconds || 0;
           updates.max_scroll_depth = e.event_data?.max_scroll_depth || 0;
           updates.exit_page = e.event_data?.exit_page || "";
         }
         if (e.event_name === "bh_rage_click") {
-          updates.rage_click_count = (updates.rage_click_count || 0) + 1;
+          currentRageClicks++;
+          updates.rage_click_count = currentRageClicks;
         }
         if (e.event_name === "bh_page_view") {
-          updates.pages_viewed = (updates.pages_viewed || 0) + 1;
+          currentPages++;
+          updates.pages_viewed = currentPages;
         }
       }
 
