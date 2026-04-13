@@ -154,9 +154,11 @@ export default function ShapeAndSize({
           <div className={styles.measDiagram}>
             <img
               src="https://res.cloudinary.com/dcmlcfynd/image/upload/c_crop,g_center,w_780,h_650/w_400,q_auto,f_auto/v1764525899/Bottom_up_rectangle_jvenzj.webp"
-              alt="Window measurement diagram showing width and height"
+              alt="Window measurement diagram"
               className={styles.measDiagramImg}
             />
+            <span className={styles.labelWidth}>Width ↔</span>
+            <span className={styles.labelHeight}>Height ↕</span>
           </div>
 
           <div className={styles.measInputs}>

@@ -229,12 +229,43 @@
   border-radius: 8px;
   border: 1px solid #E8E6E1;
   background: #FAFAF8;
+  position: relative;
 }
 
 .measDiagramImg {
   width: 100%;
   height: 100%;
   object-fit: cover;
+}
+
+.labelWidth {
+  position: absolute;
+  top: 8px;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 10px;
+  font-weight: 700;
+  color: #706B63;
+  background: rgba(250, 250, 248, 0.85);
+  padding: 2px 6px;
+  border-radius: 4px;
+  letter-spacing: 0.03em;
+  white-space: nowrap;
+}
+
+.labelHeight {
+  position: absolute;
+  right: 8px;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 10px;
+  font-weight: 700;
+  color: #706B63;
+  background: rgba(250, 250, 248, 0.85);
+  padding: 2px 6px;
+  border-radius: 4px;
+  letter-spacing: 0.03em;
+  white-space: nowrap;
 }
 
 .measDiagram svg {
