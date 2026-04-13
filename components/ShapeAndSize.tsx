@@ -2,7 +2,8 @@
  * ShapeAndSize.tsx
  * ─────────────────────────────────────────────────────────
  * Combined Step 0 — replaces old Step 0 (Shape) + Step 1 (Measurements)
- * Clean layout: shape card → side-by-side inputs → help link → mount note → CTA
+ * Clean layout: shape card → side-by-side inputs → help link → mount note
+ * CTA handled by StickyBottomBar
  */
 
 import React, { useRef, useEffect } from 'react';
@@ -195,16 +196,6 @@ export default function ShapeAndSize({
             WIDTH: {width}{widthFraction ? ` ${widthFraction}` : ''}&quot; &nbsp; HEIGHT: {height}{heightFraction ? ` ${heightFraction}` : ''}&quot;
           </div>
         )}
-
-        {/* ── CTA ── */}
-        <button
-          type="button"
-          className={`${styles.cta} ${!isValid ? styles.ctaDisabled : ''}`}
-          disabled={!isValid}
-          onClick={onConfirm}
-        >
-          Next Step
-        </button>
 
         {/* ── Help Link ── */}
         <div className={styles.helpSection}>
