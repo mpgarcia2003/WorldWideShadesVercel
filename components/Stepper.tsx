@@ -539,7 +539,7 @@ const Stepper: React.FC<StepperProps> = ({
                     <div className="grid grid-cols-2 gap-2">
                         {/* Inside Mount */}
                         <button
-                          onClick={() => { updateConfig('mountType', 'Inside Mount'); setTimeout(() => handleStepConfirmWithTracking(3), 400); }}
+                          onClick={() => { updateConfig('mountType', 'Inside Mount'); setTimeout(() => handleStepConfirmWithTracking(2), 400); }}
                           className={`p-4 border-2 rounded-xl transition-all text-center relative ${
                             config.mountType === 'Inside Mount' ? 'border-[#c8a165] bg-[#faf8f4] shadow-sm' : 'border-gray-200 hover:border-gray-300 bg-white'
                           }`}
@@ -557,7 +557,7 @@ const Stepper: React.FC<StepperProps> = ({
 
                         {/* Outside Mount */}
                         <button
-                          onClick={() => { updateConfig('mountType', 'Outside Mount'); setTimeout(() => handleStepConfirmWithTracking(3), 400); }}
+                          onClick={() => { updateConfig('mountType', 'Outside Mount'); setTimeout(() => handleStepConfirmWithTracking(2), 400); }}
                           className={`p-4 border-2 rounded-xl transition-all text-center relative ${
                             config.mountType === 'Outside Mount' ? 'border-[#c8a165] bg-[#faf8f4] shadow-sm' : 'border-gray-200 hover:border-gray-300 bg-white'
                           }`}
@@ -966,52 +966,7 @@ const Stepper: React.FC<StepperProps> = ({
                 </div>
               )}
 
-              {/* CONTINUE BUTTON — hidden on Step 0, sticky on ALL steps */}
-              {index !== 0 && (() => {
-                const isMeasureStep = false; // Merged into step 0
-                // Skip generic CTA for step 0 when ShapeAndSize renders its own
-                if (index === 0 && (config.shape === 'Standard' && !showSpecialtyShapes)) return null;
-                if (index === 1) return null; // FabricPicker has its own CTA
-                const shapeData = SHAPE_CONFIGS[config.shape as keyof typeof SHAPE_CONFIGS];
-                const hasMeasurements = shapeData?.inputs
-                  ? shapeData.inputs.every((input: any) => {
-                      if (input.key === 'width') return config.width > 0;
-                      if (input.key === 'height') return config.height > 0;
-                      return (config.customDims?.[input.key] || 0) > 0;
-                    })
-                  : config.width > 0 && config.height > 0;
-                const isDisabled = isMeasureStep && !hasMeasurements;
-                return (
-                <div className='sticky bottom-0 z-10 bg-white pt-3 pb-1 -mx-2 px-2 shadow-[0_-8px_16px_rgba(255,255,255,0.9)]'>
-                <button
-                  onClick={() => !isDisabled && handleStepConfirmWithTracking(index)}
-                  disabled={isDisabled}
-                  className={`w-full mt-2 py-3.5 px-4 rounded-xl text-white font-medium text-[14px] tracking-wide transition-all duration-500 flex items-center justify-center gap-2 group/btn ${isLastStep ? 'cta-glow' : ''} ${isDisabled ? 'opacity-40 cursor-not-allowed' : 'hover:shadow-xl active:scale-[0.98]'}`}
-                  style={{ 
-                    background: 'linear-gradient(90deg, #C8A165 0%, #E7D8B8 55%, #C8A165 100%)',
-                    boxShadow: isDisabled ? 'none' : isLastStep ? '0 10px 25px rgba(212, 175, 55, 0.35)' : '0 6px 24px rgba(200, 161, 101, 0.2)',
-                    color: '#1a1a1a'
-                  }}
-                >
-                  <span style={{ fontFamily: "'Playfair Display', Georgia, serif" }}>
-                    {isLastStep ? (isSaleActive() ? `Add My Shade to Cart — ${SALE_CONFIG.discountPercent}% OFF` : 'Add My Shade to Cart') : index === 2 ? 'Choose Your Control Type' : index === 3 ? 'Customize Your Look' : index === 4 ? 'Choose Your Quantity' : 'Continue'}
-                  </span>
-                  <ArrowRight size={15} className={`transition-transform duration-300 ${isDisabled ? '' : 'group-hover/btn:translate-x-1'}`} />
-                </button>
-                {isMeasureStep && (
-                  <p className={`text-center text-[11px] mt-1.5 transition-all duration-300 ${hasMeasurements ? 'text-green-600 font-semibold' : 'text-[#bbb]'}`}>
-                    {hasMeasurements ? 'Looks good 👍' : 'Enter your measurements to continue'}
-                  </p>
-                )}
-                {isLastStep && (
-                  <div className="text-center mt-2 space-y-1">
-                    <p className="text-[11px] text-[#999]">Next: Review your order & checkout securely</p>
-                    <p className="text-[10px] text-[#bbb]">You can edit your order before checkout</p>
-                  </div>
-                )}
-                </div>
-                );
-              })()}
+
             </div>
           </div>
         );

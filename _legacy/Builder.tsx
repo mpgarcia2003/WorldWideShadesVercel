@@ -13,6 +13,7 @@ const getEstimatedDelivery = () => {
 };
 import Visualizer from '../components/Visualizer';
 import Stepper from '../components/Stepper';
+import StickyBottomBar from '../components/StickyBottomBar';
 import ConsultationModal from '../components/ConsultationModal';
 import { ShadeConfig, Fabric, WindowSelection, CartItem, RoomAnalysis, ShapeType } from '../types';
 import { DEFAULT_ROOM_IMAGE, getGridPrice, SHAPE_CONFIGS, VALANCE_OPTIONS, SIDE_CHANNEL_OPTIONS, STEPS, getFabricUrl, isSaleActive, getSalePrice, SALE_CONFIG, MOTOR_PRICES, applyMarkup } from '../constants';
@@ -1270,107 +1271,41 @@ const Builder: React.FC<BuilderProps> = ({ addToCart, addToSwatches, swatches })
               {/* Scroll hint - removed */}
             </div>
 
-            {/* SIMPLIFIED FOOTER — Price left, CTA right */}
-            <div 
-              className="p-4 pb-7 md:pb-4 bg-white fixed md:sticky bottom-0 left-0 right-0 md:left-auto md:right-auto w-full md:w-auto z-[60] md:rounded-xl md:mt-4 shrink-0"
-              style={{ border: '1px solid rgba(20,20,20,0.06)', boxShadow: '0 -8px 30px rgba(0,0,0,0.03)' }}
-            >
-              <div className="">
-                <div className="flex items-center justify-between gap-4">
-                  
-                  {/* Price */}
-                  <div className="shrink-0">
-                    <div className="text-[11px] font-medium text-[#aaa] uppercase tracking-[0.12em]">Total</div>
-                    <div className="flex items-baseline gap-2">
-                      {priceBreakdown.saleActive && priceBreakdown.originalTotal > 0 && (
-                        <div className="text-[14px] font-medium text-[#bbb] line-through" style={{ fontFamily: "'Playfair Display', Georgia, serif" }}>
-                          ${priceBreakdown.originalTotal.toFixed(2)}
-                        </div>
-                      )}
-                      <div className="text-[22px] md:text-[26px] font-medium text-[#1a1a1a]" style={{ fontFamily: "'Playfair Display', Georgia, serif", letterSpacing: '-0.02em' }}>
-                        ${priceBreakdown.total.toFixed(2)}
-                      </div>
-                      {priceBreakdown.saleActive && priceBreakdown.originalTotal > 0 ? (
-                        <div className="text-[11px] font-bold text-green-600 uppercase tracking-wider px-1.5 py-0.5 rounded bg-green-50">
-                          {SALE_CONFIG.discountPercent}% OFF
-                        </div>
-                      ) : (
-                        <div className="text-[11px] font-medium text-[#2d8a4e] uppercase tracking-wider flex items-center gap-1">
-                          <Truck size={12} /> Free Shipping — Arrives {getEstimatedDelivery()}
-                        </div>
-                      )}
-                    </div>
-                    {priceBreakdown.saleActive && priceBreakdown.originalTotal > 0 && (
-                      <div className="text-[12px] font-bold text-green-600 mt-0.5">
-                        You save ${(priceBreakdown.originalTotal - priceBreakdown.total).toFixed(2)}
-                      </div>
-                    )}
-
-                    {priceBreakdown.total > 50 && (
-                      <div className="text-[12px] text-[#999] mt-0.5 flex items-center gap-1">
-                        or <span className="font-medium text-[#6b6bef]">${(priceBreakdown.total / 12).toFixed(2)}/mo</span> with <span className="font-semibold italic text-[#6b6bef]">affirm</span>
-                      </div>
-                    )}
-                  </div>
-                  
-                  {/* Single CTA — context-aware */}
-                  {allStepsComplete && (
-                    <button 
-                      onClick={() => addToCart({
-                        id: `item_${Date.now()}`,
-                        config: { ...config },
-                        unitPrice: priceBreakdown.saleProduct / config.quantity,
-                        installerFee: priceBreakdown.install,
-                        totalPrice: priceBreakdown.total,
-                        timestamp: Date.now(),
-                        visualizerImage: visualizerSnapshot,
-                      })}
-                      disabled={priceBreakdown.total === 0}
-                      className="py-3 px-6 rounded-xl font-medium text-[13px] tracking-wide transition-all duration-300 hover:shadow-xl active:scale-[0.98] flex items-center gap-2 disabled:opacity-30"
-                      style={{ 
-                        background: 'linear-gradient(90deg, #C8A165 0%, #E7D8B8 55%, #C8A165 100%)',
-                        boxShadow: '0 6px 24px rgba(200,161,101,0.2)',
-                        color: '#1a1a1a',
-                        fontFamily: "'Playfair Display', Georgia, serif"
-                      }}
-                    >
-                      <ShoppingCart size={15} /> Add My Shade to Cart{priceBreakdown.saleActive ? ` — ${SALE_CONFIG.discountPercent}% OFF` : ''}
-                    </button>
-                  )}
-                </div>
-
-                {/* Config Summary — compact trust bar */}
-                <div style={{ padding: '10px 16px', fontSize: '12px', display: 'flex', flexWrap: 'wrap', alignItems: 'center', justifyContent: 'center', gap: '6px 16px', borderTop: '1px solid #E8E6E1' }}>
-                  <span className="flex items-center gap-1 text-[#999]">
-                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#c8a165" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>
-                    100% Satisfaction Guarantee
-                  </span>
-                  <span className="text-[#ddd]">|</span>
-                  <a href="tel:+18446742716" className="flex items-center gap-1 text-[#888] hover:text-[#c8a165] transition-colors" style={{ textDecoration: 'none' }}>
-                    <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path></svg>
-                    (844) 674-2716
-                  </a>
-                  <span className="text-[#ddd]">|</span>
-                  <button onClick={() => setIsConsultationOpen(true)} className="text-[#bbb] hover:text-[#c8a165] transition-colors" style={{ background: 'none', border: 'none', cursor: 'pointer', fontSize: '12px', fontFamily: 'inherit' }}>Need help?</button>
-                </div>
-                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px', padding: '6px 16px 8px', flexWrap: 'wrap' }}>
-                  {['VISA', 'MC', 'AMEX', 'PAYPAL'].map(brand => (
-                    <div key={brand} style={{ padding: '2px 6px', borderRadius: '3px', border: '1px solid #ddd', fontSize: '10px', fontWeight: 700, color: '#888', letterSpacing: '0.05em' }}>
-                      {brand}
-                    </div>
-                  ))}
-                  <div style={{ padding: '2px 6px', borderRadius: '3px', border: '1px solid #d8d0e8', background: '#f8f4ff', fontSize: '10px', fontWeight: 700, color: '#7c6bef', fontStyle: 'italic' }}>affirm</div>
-                  <span className="flex items-center gap-1" style={{ fontSize: '11px', color: '#aaa' }}>
-                    <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
-                    SSL Secure
-                  </span>
-                </div>
-              </div>
-            </div>
+            {/* STICKY BOTTOM BAR */}
+            <StickyBottomBar
+              totalPrice={priceBreakdown.total}
+              originalPrice={priceBreakdown.originalTotal}
+              deliveryDate={getEstimatedDelivery()}
+              currentStepIndex={openStep}
+              isStepValid={(() => {
+                if (openStep === null) return allStepsComplete && priceBreakdown.total > 0;
+                if (openStep === 0) return config.width > 0 && config.height > 0;
+                if (openStep === 1) return !!config.material;
+                if (openStep === STEPS.length - 1) return allStepsComplete && priceBreakdown.total > 0;
+                return true;
+              })()}
+              isLastStep={allStepsComplete}
+              onContinue={() => {
+                if (allStepsComplete) {
+                  addToCart({
+                    id: `item_${'${Date.now()}'}`,
+                    config: { ...config },
+                    unitPrice: priceBreakdown.saleProduct / config.quantity,
+                    installerFee: priceBreakdown.install,
+                    totalPrice: priceBreakdown.total,
+                    timestamp: Date.now(),
+                    visualizerImage: visualizerSnapshot,
+                  });
+                } else if (openStep !== null) {
+                  handleConfirmStep(openStep);
+                }
+              }}
+              saleActive={priceBreakdown.saleActive}
+            />
           </div>
       </div>
 
-      <ConsultationModal isOpen={isConsultationOpen} onClose={() => setIsConsultationOpen(false)} />
+            <ConsultationModal isOpen={isConsultationOpen} onClose={() => setIsConsultationOpen(false)} />
 
       {/* EXIT INTENT MODAL — DISABLED, handled by abandoned cart system */}
       {false && (
