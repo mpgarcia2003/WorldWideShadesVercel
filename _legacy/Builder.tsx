@@ -1272,10 +1272,10 @@ const Builder: React.FC<BuilderProps> = ({ addToCart, addToSwatches, swatches })
 
             {/* SIMPLIFIED FOOTER — Price left, CTA right */}
             <div 
-              className="p-4 pb-7 md:pb-4 bg-white fixed md:sticky bottom-0 left-0 right-0 md:left-auto md:right-auto w-full md:w-auto z-[60]"
-              style={{ borderTop: '1px solid rgba(20,20,20,0.06)', boxShadow: '0 -8px 30px rgba(0,0,0,0.03)' }}
+              className="p-4 pb-7 md:pb-4 bg-white fixed md:sticky bottom-0 left-0 right-0 md:left-auto md:right-auto w-full md:w-auto z-[60] md:rounded-xl md:mt-4 shrink-0"
+              style={{ border: '1px solid rgba(20,20,20,0.06)', boxShadow: '0 -8px 30px rgba(0,0,0,0.03)' }}
             >
-              <div className="max-w-md mx-auto">
+              <div className="">
                 <div className="flex items-center justify-between gap-4">
                   
                   {/* Price */}
