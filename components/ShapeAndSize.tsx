@@ -86,6 +86,7 @@ export default function ShapeAndSize({
   return (
     <div className={styles.root}>
       {/* ── Shape Selection (compact, pre-selected) ── */}
+      {/* Step header removed — Stepper accordion already shows it */}
       <div
         className={`${styles.shapeCard} ${
           selectedShape === 'rectangular' ? styles.shapeCardSelected : ''
@@ -150,17 +151,11 @@ export default function ShapeAndSize({
         {/* ── Diagram + Inputs Row ── */}
         <div className={styles.measRow}>
           <div className={styles.measDiagram}>
-            <svg viewBox="0 0 60 60" fill="none">
-              <rect x="8" y="8" width="44" height="44" rx="2" stroke="#B0ACA5" strokeWidth="1" />
-              <line x1="8" y1="4" x2="52" y2="4" stroke="#B0ACA5" strokeWidth="0.75" strokeDasharray="2,2" />
-              <line x1="8" y1="2" x2="8" y2="6" stroke="#B0ACA5" strokeWidth="0.75" />
-              <line x1="52" y1="2" x2="52" y2="6" stroke="#B0ACA5" strokeWidth="0.75" />
-              <text x="30" y="3" textAnchor="middle" fontSize="5" fill="#9C9A94" fontFamily="sans-serif">W</text>
-              <line x1="56" y1="8" x2="56" y2="52" stroke="#B0ACA5" strokeWidth="0.75" strokeDasharray="2,2" />
-              <line x1="54" y1="8" x2="58" y2="8" stroke="#B0ACA5" strokeWidth="0.75" />
-              <line x1="54" y1="52" x2="58" y2="52" stroke="#B0ACA5" strokeWidth="0.75" />
-              <text x="58" y="32" fontSize="5" fill="#9C9A94" fontFamily="sans-serif">H</text>
-            </svg>
+            <img
+              src="https://res.cloudinary.com/dcmlcfynd/image/upload/w_240,q_auto,f_auto/v1764525899/Bottom_up_rectangle_jvenzj.webp"
+              alt="Window measurement diagram showing width and height"
+              className={styles.measDiagramImg}
+            />
           </div>
 
           <div className={styles.measInputs}>
