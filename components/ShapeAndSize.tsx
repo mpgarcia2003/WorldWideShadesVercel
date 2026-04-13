@@ -4,7 +4,7 @@
  * Combined Step 0 — replaces old Step 0 (Shape) + Step 1 (Measurements)
  */
 
-import React, { useRef, useEffect } from 'react';
+import React, { useRef, useEffect, useState } from 'react';
 import styles from './ShapeAndSize.module.css';
 
 interface ShapeAndSizeProps {
@@ -52,6 +52,7 @@ export default function ShapeAndSize({
   const widthInputRef = useRef<HTMLInputElement>(null);
   const heightInputRef = useRef<HTMLInputElement>(null);
 
+  const [showMeasureGuide, setShowMeasureGuide] = useState(false);
   const isValid = width.trim() !== '' && height.trim() !== '';
 
   useEffect(() => {
@@ -129,7 +130,7 @@ export default function ShapeAndSize({
           <button
             type="button"
             className={styles.measGuideLink}
-            onClick={onHowToMeasure}
+            onClick={() => setShowMeasureGuide(true)}
           >
             How to measure ›
           </button>
@@ -152,7 +153,7 @@ export default function ShapeAndSize({
         <div className={styles.measRow}>
           <div className={styles.measDiagram}>
             <img
-              src="https://res.cloudinary.com/dcmlcfynd/image/upload/w_240,q_auto,f_auto/v1764525899/Bottom_up_rectangle_jvenzj.webp"
+              src="https://res.cloudinary.com/dcmlcfynd/image/upload/w_400,q_auto,f_auto/v1764525899/Bottom_up_rectangle_jvenzj.webp"
               alt="Window measurement diagram showing width and height"
               className={styles.measDiagramImg}
             />
@@ -243,6 +244,25 @@ export default function ShapeAndSize({
       </button>
       {!isValid && (
         <div className={styles.ctaHint}>Enter your measurements to continue</div>
+      )}
+
+      {/* ── Measure Guide Overlay ── */}
+      {showMeasureGuide && (
+        <div className={styles.overlay} onClick={() => setShowMeasureGuide(false)}>
+          <div className={styles.overlayContent} onClick={(e) => e.stopPropagation()}>
+            <button className={styles.overlayClose} onClick={() => setShowMeasureGuide(false)}>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" width="20" height="20">
+                <line x1="18" y1="6" x2="6" y2="18" /><line x1="6" y1="6" x2="18" y2="18" />
+              </svg>
+            </button>
+            <img
+              src="https://res.cloudinary.com/dcmlcfynd/image/upload/w_800,q_auto,f_auto/v1764525899/Bottom_up_rectangle_jvenzj.webp"
+              alt="How to measure your window — width and height diagram"
+              className={styles.overlayImg}
+            />
+            <p className={styles.overlayCaption}>Measure the width and height of your window opening in inches. We precision-cut to 1/8".</p>
+          </div>
+        </div>
       )}
     </div>
   );
