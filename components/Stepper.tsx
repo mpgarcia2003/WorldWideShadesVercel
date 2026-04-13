@@ -5,6 +5,7 @@ import { STEPS, FRACTIONS, getInstallerForZip, SHAPE_CONFIGS, VALANCE_OPTIONS, S
 import FabricSuggestions from './FabricSuggestions';
 import { useLanguage } from '../LanguageContext';
 import { trackEvent } from '../utils/analytics';
+import ShapeAndSize from './ShapeAndSize';
 import { trackShapeSelected, trackMeasurementsEntered, trackFabricSelected, trackMountSelected, trackControlSelected, trackBuilderComplete, trackSelectItem, trackPhoneClick } from '../lib/gtm/events';
 
 interface StepperProps {
@@ -414,347 +415,96 @@ const Stepper: React.FC<StepperProps> = ({
             {/* Step content - ALL existing content preserved exactly */}
             <div className="px-2 pb-4 pt-1 border-t border-gray-50 animate-in fade-in slide-in-from-top-1">
               {index === 0 && (
-                  <div className="pt-2 space-y-4">
-                      {/* ── CRO: QUALIFICATION HEADER ── */}
-                      <div className="text-center">
-                        <h3 className="text-[18px] font-normal text-[#1a1a1a] mb-0.5" style={{ fontFamily: "'Playfair Display', Georgia, serif", letterSpacing: '-0.01em' }}>
-                          Let's match your window shape
-                        </h3>
-                        <p className="text-[12px] text-[#94a3b8]">
-                          Select the option that looks closest to your window
-                        </p>
-                      </div>
-
-                      {/* ── CRO: DOMINANT STANDARD CARD ── */}
-                      <div
-                        className={`rounded-2xl cursor-pointer transition-all duration-300 ${shapeFlash ? 'ring-4 ring-green-400/50 scale-[1.01]' : ''}`}
-                        style={{
-                          border: shapeFlash ? '2px solid #22c55e' : '2px solid #c8a165',
-                          background: shapeFlash ? 'linear-gradient(180deg, #f0fdf4 0%, #fdfbf7 100%)' : 'linear-gradient(180deg, #fdfbf7 0%, #faf8f4 100%)',
-                          padding: '16px 20px 20px',
-                          boxShadow: '0 8px 32px rgba(200,161,101,0.12), 0 2px 8px rgba(200,161,101,0.06)',
-                          position: 'relative',
-                        }}
-                        onClick={() => updateConfig('shape', 'Standard' as ShapeType)}
-                      >
-                        {/* Recommended Badge */}
-                        <div
-                          className="absolute left-1/2 -translate-x-1/2 px-3.5 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-[0.12em] text-white whitespace-nowrap"
-                          style={{
-                            top: -11,
-                            background: 'linear-gradient(135deg, #c8a165, #b8914f)',
-                            boxShadow: '0 2px 8px rgba(200,161,101,0.3)',
+                  <div className="pt-2">
+                    {config.shape === 'Standard' && !showSpecialtyShapes ? (
+                      <>
+                        <ShapeAndSize
+                          onConfirm={() => handleStepConfirmWithTracking(0)}
+                          onSelectSpecialty={() => { setShowSpecialtyShapes(true); trackEvent('specialty_shapes_expanded', {}); }}
+                          onProService={handleShowProPath}
+                          onHowToMeasure={() => {
+                            const guideEl = document.getElementById('measuring-guide-trigger');
+                            if (guideEl) guideEl.click();
                           }}
-                        >
-                          ✦ Recommended for 90% of Homes
+                          selectedShape="rectangular"
+                          width={config.width ? String(config.width) : ''}
+                          height={config.height ? String(config.height) : ''}
+                          widthFraction={config.widthFraction || ''}
+                          heightFraction={config.heightFraction || ''}
+                          onWidthChange={(v) => handleMeasurementChange('width', Number(v) || 0)}
+                          onHeightChange={(v) => handleMeasurementChange('height', Number(v) || 0)}
+                          onWidthFractionChange={(v) => handleFractionChange('width', v)}
+                          onHeightFractionChange={(v) => handleFractionChange('height', v)}
+                        />
+                      </>
+                    ) : showSpecialtyShapes ? (
+                      <div className="space-y-3">
+                        <div className="text-center mb-2">
+                          <h3 className="text-[18px] font-normal text-[#1a1a1a] mb-0.5" style={{ fontFamily: "'Playfair Display', Georgia, serif", letterSpacing: '-0.01em' }}>
+                            Select your window shape
+                          </h3>
+                          <button
+                            onClick={() => { updateConfig('shape', 'Standard' as ShapeType); setShowSpecialtyShapes(false); }}
+                            className="text-[12px] text-[#c8a165] hover:underline mt-1"
+                          >
+                            ← Back to Rectangular
+                          </button>
                         </div>
-
-                        {/* Shape + Title */}
-                        <div className="flex items-center gap-3 mb-3 mt-1">
-                          <div className="w-[56px] h-[56px] rounded-xl bg-white flex items-center justify-center shrink-0" style={{ border: '1px solid #ece8e0' }}>
-                            <img
-                              src={SHAPE_CONFIGS['Standard' as ShapeType].mask}
-                              className="w-10 h-10 object-contain"
-                              alt="Standard"
-                            />
-                          </div>
-                          <div>
-                            <h4 className="text-[20px] font-normal text-[#1a1a1a] mb-0" style={{ fontFamily: "'Playfair Display', Georgia, serif", letterSpacing: '-0.01em' }}>
-                              My window is rectangular
-                            </h4>
-                            <p className="text-[12px] text-[#8b8b8b]">Recommended for most homes</p>
-                          </div>
-                        </div>
-
-                        {/* Trust Bullets — 2-column grid */}
-                        <div className="grid grid-cols-2 gap-x-3 gap-y-1.5 mb-3">
-                          {[
-                            { text: 'Most affordable option', icon: <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#c8a165" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg> },
-                            { text: 'Ships in 7 business days', icon: <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#c8a165" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="1" y="3" width="15" height="13"/><polygon points="16 8 20 8 23 11 23 16 16 16 16 8"/><circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/></svg> },
-                            { text: 'Blackout & Light Filtering', icon: <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#c8a165" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg> },
-                            { text: 'Motorization available', icon: <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#c8a165" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg> },
-                            { text: 'Sizes up to 24 feet wide', icon: <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#c8a165" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 3H3v7h18V3z"/><path d="M21 14H3v7h18v-7z"/></svg> },
-                            { text: '100% satisfaction guarantee', icon: <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#c8a165" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg> },
-                          ].map((bullet, i) => (
-                            <div key={i} className="flex items-center gap-2">
-                              <span className="shrink-0">{bullet.icon}</span>
-                              <span className="text-[12px] text-[#555] font-medium leading-tight">{bullet.text}</span>
-                            </div>
+                        <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
+                          {Object.keys(SHAPE_CONFIGS).filter(k => k !== 'Standard').map((shapeKey) => (
+                            <button
+                              key={shapeKey}
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                updateConfig('shape', shapeKey as ShapeType);
+                                setShowSpecialtyShapes(false);
+                                trackEvent('shape_select', { shape_name: shapeKey });
+                              }}
+                              className={`group flex flex-col items-center justify-center p-3 rounded-xl border-2 transition-all duration-300 min-h-[110px] ${
+                                config.shape === shapeKey
+                                ? 'border-[#c8a165] bg-[#faf8f4]'
+                                : 'border-gray-100 hover:border-gray-200 bg-white'
+                              }`}
+                            >
+                              <div className="relative w-14 h-14 mb-1.5 p-1.5 rounded-lg bg-[#f5f3ec] transition-colors">
+                                <img
+                                  src={SHAPE_CONFIGS[shapeKey as ShapeType].mask}
+                                  className={`w-full h-full object-contain transition-opacity ${config.shape === shapeKey ? 'opacity-100' : 'opacity-80'}`}
+                                />
+                              </div>
+                              <span className="text-[10px] font-black text-center leading-tight uppercase tracking-wider text-slate-700 group-hover:text-slate-900">
+                                {getShapeLabel(shapeKey)}
+                              </span>
+                            </button>
                           ))}
                         </div>
-
-                        {/* Price Anchor */}
-                        <div className="flex items-center justify-between px-3.5 py-2 rounded-xl bg-white mb-3" style={{ border: '1px solid #ece8e0' }}>
-                          <div>
-                            <div className="text-[10px] text-[#aaa] font-semibold uppercase tracking-[0.1em]">Starting at</div>
-                            <StartingAt shape="Standard" />
-                          </div>
-                          <div className="px-2.5 py-1 rounded-md text-[10px] font-bold text-green-600 uppercase tracking-[0.06em]" style={{ background: '#f0fdf4', border: '1px solid #bbf7d0' }}>
-                            Best Value
-                          </div>
-                        </div>
-
-                        {/* CTA Button */}
-                        <button
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            updateConfig('shape', 'Standard' as ShapeType);
-                            trackEvent('shape_select', { shape_name: 'Standard' });
-                            setShapeFlash(true);
-                            setTimeout(() => setShapeFlash(false), 500);
-                            setTimeout(() => onAutoAdvance(0), 600);
-                          }}
-                          className="w-full py-3.5 rounded-xl font-medium text-[15px] tracking-wide transition-all duration-300 hover:shadow-xl active:scale-[0.98] flex items-center justify-center gap-2"
-                          style={{
-                            background: 'linear-gradient(90deg, #C8A165 0%, #E7D8B8 55%, #C8A165 100%)',
-                            boxShadow: '0 6px 24px rgba(200,161,101,0.2)',
-                            color: '#1a1a1a',
-                            fontFamily: "'Playfair Display', Georgia, serif",
-                          }}
-                        >
-                          Yes, This Is My Window <ArrowRight size={15} />
-                        </button>
                       </div>
-
-                      {/* ── CRO: SPECIALTY TRIGGER (Card — visible) ── */}
-                      <div
-                        className="rounded-2xl cursor-pointer transition-all duration-300 mt-2"
-                        style={{
-                          border: showSpecialtyShapes ? '2px solid #c8a165' : '2px solid #e8e5de',
-                          background: showSpecialtyShapes ? '#fdfbf7' : '#fff',
-                          padding: '16px 20px',
-                          boxShadow: '0 4px 16px rgba(0,0,0,0.04)',
-                        }}
-                        onClick={() => {
-                          if (!showSpecialtyShapes) trackEvent('specialty_shapes_expanded', {});
-                          setShowSpecialtyShapes(!showSpecialtyShapes);
-                        }}
-                      >
-                        {/* Shape + Title */}
-                        <div className="flex items-center gap-3 mb-2">
-                          <div className="w-[56px] h-[56px] rounded-xl bg-[#f9f7f3] flex items-center justify-center shrink-0" style={{ border: '1px solid #ece8e0' }}>
-                            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#c8a165" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-                              <polygon points="12 2 22 22 2 22" />
-                            </svg>
-                          </div>
-                          <div>
-                            <h4 className="text-[18px] font-normal text-[#1a1a1a] mb-0" style={{ fontFamily: "'Playfair Display', Georgia, serif", letterSpacing: '-0.01em' }}>
-                              My window is a unique shape
-                            </h4>
-                            <p className="text-[12px] text-[#8b8b8b]">Triangle, angled, arched & more</p>
-                          </div>
-                        </div>
-
-                        {/* CTA */}
-                        <button
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            if (!showSpecialtyShapes) trackEvent('specialty_shapes_expanded', {});
-                            setShowSpecialtyShapes(!showSpecialtyShapes);
-                          }}
-                          className="w-full py-3 rounded-xl font-medium text-[14px] tracking-wide transition-all duration-300 flex items-center justify-center gap-2"
-                          style={{
-                            background: showSpecialtyShapes ? 'linear-gradient(90deg, #C8A165 0%, #E7D8B8 55%, #C8A165 100%)' : '#f5f3ec',
-                            color: showSpecialtyShapes ? '#1a1a1a' : '#666',
-                            border: showSpecialtyShapes ? 'none' : '1px solid #e8e5de',
-                          }}
-                        >
-                          {showSpecialtyShapes ? 'Select Your Shape Below' : 'Show My Options'} <ArrowRight size={14} />
-                        </button>
-
-                        {/* ── CRO: SPECIALTY SECTION (Accordion) ── */}
-                        <div
-                          className="transition-all duration-500 ease-out"
-                          style={{
-                            maxHeight: showSpecialtyShapes ? '800px' : '0px',
-                            overflow: 'hidden',
-                            opacity: showSpecialtyShapes ? 1 : 0,
-                          }}
-                        >
-                          <div className="pt-4">
-                            {/* Specialty Shapes Grid */}
-                            <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
-                              {Object.keys(SHAPE_CONFIGS).filter(k => k !== 'Standard').map((shapeKey) => (
-                                <button
-                                  key={shapeKey}
-                                  onClick={(e) => {
-                                    e.stopPropagation();
-                                    updateConfig('shape', shapeKey as ShapeType);
-                                    trackEvent('shape_select', { shape_name: shapeKey });
-                                    setTimeout(() => onAutoAdvance(0), 400);
-                                  }}
-                                  className={`group flex flex-col items-center justify-center p-3 rounded-xl border-2 transition-all duration-300 min-h-[110px] ${
-                                    config.shape === shapeKey
-                                    ? 'border-[#c8a165] bg-[#faf8f4]'
-                                    : 'border-gray-100 hover:border-gray-200 bg-white'
-                                  }`}
-                                >
-                                  <div className="relative w-14 h-14 mb-1.5 p-1.5 rounded-lg bg-[#f5f3ec] transition-colors">
-                                    <img
-                                      src={SHAPE_CONFIGS[shapeKey as ShapeType].mask}
-                                      className={`w-full h-full object-contain transition-opacity ${config.shape === shapeKey ? 'opacity-100' : 'opacity-80'}`}
-                                    />
-                                  </div>
-                                  <span className="text-[10px] font-black text-center leading-tight uppercase tracking-wider text-slate-700 group-hover:text-slate-900">
-                                    {getShapeLabel(shapeKey)}
-                                  </span>
-                                  <StartingAt shape={shapeKey} />
-                                </button>
-                              ))}
+                    ) : (
+                      /* Specialty shape selected — show measurements with existing MeasurementInputs */
+                      <div className="space-y-3">
+                        <div className="flex items-center justify-between mb-2">
+                          <div className="flex items-center gap-2">
+                            <div className="w-10 h-10 rounded-lg bg-[#f5f3ec] flex items-center justify-center p-1.5">
+                              <img src={SHAPE_CONFIGS[config.shape]?.mask} className="w-full h-full object-contain" />
+                            </div>
+                            <div>
+                              <div className="text-[14px] font-semibold text-[#1a1a1a]">{getShapeLabel(config.shape)}</div>
+                              <button onClick={() => setShowSpecialtyShapes(true)} className="text-[11px] text-[#c8a165] hover:underline">Change shape</button>
                             </div>
                           </div>
                         </div>
+                        <div className="text-center mb-1">
+                          <h3 className="text-[16px] font-normal text-[#1a1a1a]" style={{ fontFamily: "'Playfair Display', Georgia, serif" }}>
+                            Enter your window measurements
+                          </h3>
+                        </div>
+                        <MeasurementInputs shapeData={shapeData} config={config} handleMeasurementChange={handleMeasurementChange} handleFractionChange={handleFractionChange} t={t} />
                       </div>
-
-                      {/* ── MICRO TRUST ── */}
-                      <div className="flex flex-col items-center gap-1.5 mt-4 mb-1">
-                        <span className="text-[11px] text-[#777] flex items-center gap-1.5">
-                          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#22c55e" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M20 6L9 17l-5-5"/></svg>
-                          Custom-built for your exact window
-                        </span>
-                        <span className="text-[11px] text-[#777] flex items-center gap-1.5">
-                          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#22c55e" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M20 6L9 17l-5-5"/></svg>
-                          We review your measurements before production
-                        </span>
-                      </div>
+                    )}
                   </div>
               )}
 
               {index === 1 && (
-                <div className="space-y-3 pt-2">
-                  {config.installer ? (
-                    <div className="space-y-3">
-                       <div className="bg-slate-900 text-white rounded-xl p-4 shadow-sm border border-white/10 relative overflow-hidden print:border-slate-200 print:bg-white print:text-slate-900">
-                          <div className="flex items-center gap-3 relative z-10">
-                              <div className="w-10 h-10 rounded-full flex items-center justify-center text-white font-black text-sm shrink-0" style={{ backgroundColor: '#c8a165' }}>
-                                 {config.installer?.name.charAt(0)}
-                              </div>
-                              <div className="flex-1 min-w-0">
-                                  <div className="flex items-center gap-1.5">
-                                      <h4 className="font-black text-white text-sm truncate print:text-slate-900">{config.installer?.name}</h4>
-                                      <CheckCircle size={10} className="text-green-500" />
-                                  </div>
-                                  <div className="flex items-center gap-2 mt-0.5">
-                                      <span className="flex items-center gap-0.5 text-yellow-400 font-black text-[9px]">
-                                         <Star size={10} fill="currentColor" /> {config.installer?.rating}
-                                      </span>
-                                      <span className="text-[8px] font-bold text-slate-400 uppercase tracking-wider">{config.installer?.location}</span>
-                                  </div>
-                              </div>
-                              <button onClick={() => setConfig({...config, installer: null})} className="p-1.5 bg-white/10 rounded-lg hover:bg-white/20 transition-colors print:hidden"><MapPin size={14} /></button>
-                          </div>
-                       </div>
-
-                       <div className="space-y-2">
-                          <button onClick={() => updateServices(false, false, true)} className={`w-full text-left p-3 rounded-xl border-2 transition-all flex items-center justify-between ${(!config.measureService && !config.installService) ? 'border-[#c8a165] bg-[#faf8f4]' : 'border-gray-100 hover:border-gray-200'}`}>
-                             <div>
-                                <div className="text-xs font-black uppercase tracking-wider">DIY - No Pro Service</div>
-                                <div className="text-[12px] text-slate-400">I'll measure and install myself</div>
-                             </div>
-                             <span className="text-xs font-black text-green-600">FREE</span>
-                          </button>
-
-                          <button onClick={() => updateServices(true, false, false)} className={`w-full text-left p-3 rounded-xl border-2 transition-all flex items-center justify-between ${(config.measureService && !config.installService) ? 'border-[#c8a165] bg-[#faf8f4]' : 'border-gray-100 hover:border-gray-200'}`}>
-                             <div>
-                                <div className="text-xs font-black uppercase tracking-wider">Pro Measure Only</div>
-                                <div className="text-[12px] text-slate-400">100% Fit Guarantee • I'll install</div>
-                             </div>
-                             <span className="text-xs font-black text-slate-900">${config.installer?.fees.measure}</span>
-                          </button>
-
-                          <button onClick={() => updateServices(false, true, false)} className={`w-full text-left p-3 rounded-xl border-2 transition-all flex items-center justify-between ${(!config.measureService && config.installService) ? 'border-[#c8a165] bg-[#faf8f4]' : 'border-gray-100 hover:border-gray-200'}`}>
-                             <div>
-                                <div className="text-xs font-black uppercase tracking-wider">Pro Install Only</div>
-                                <div className="text-[12px] text-slate-400">I'll measure • Pro installs</div>
-                             </div>
-                             <span className="text-xs font-black text-slate-900">${config.installer?.fees.installPerUnit}/unit</span>
-                          </button>
-
-                          <button onClick={() => updateServices(true, true, false)} className={`w-full text-left p-3 rounded-xl border-2 transition-all relative ${ (config.measureService && config.installService) ? 'border-[#c8a165] bg-[#faf8f4]' : 'border-gray-100 hover:border-gray-200'}`}>
-                             <div className="absolute -top-2 left-3 text-white text-[10px] font-black px-2 py-0.5 rounded uppercase" style={{ backgroundColor: '#c8a165' }}>Recommended</div>
-                             <div className="flex items-center justify-between">
-                                <div>
-                                   <div className="text-xs font-black uppercase tracking-wider">Full Pro Service</div>
-                                   <div className="text-[12px] text-slate-400">100% Fit Guarantee • Hands-free</div>
-                                </div>
-                                <div className="text-right">
-                                   <div className="text-xs font-black text-slate-900">${config.installer?.fees.measure} + ${config.installer?.fees.installPerUnit}/unit</div>
-                                </div>
-                             </div>
-                          </button>
-                       </div>
-                       {!config.measureService && <MeasurementInputs shapeData={shapeData} config={config} handleMeasurementChange={handleMeasurementChange} handleFractionChange={handleFractionChange} t={t} />}
-                    </div>
-                  ) : showProPath ? (
-                    <div className="border rounded-xl p-4 relative animate-in zoom-in-95 duration-200" style={{ backgroundColor: '#faf8f4', borderColor: '#e8dcc8' }}>
-                       <button onClick={handleResetToPathSelection} className="absolute top-2 right-2 text-[#c8a165] hover:text-[#a8844d] transition-colors"><X size={16} /></button>
-                       <h3 className="text-[16px] font-normal text-[#1a1a1a] mb-1" style={{ fontFamily: "'Playfair Display', Georgia, serif" }}>
-                         Let's find a pro in your area
-                       </h3>
-                       <p className="text-[10px] font-medium text-[#999] uppercase tracking-widest mb-3">{t('pro.serviceAreaCheck')}</p>
-                       <div className="relative">
-                           <input type="text" maxLength={5} value={config.zipCode} onChange={handleZipChange} autoFocus placeholder={t('pro.zipPlaceholder')} className="w-full border-2 p-3 rounded-lg outline-none font-bold text-base shadow-sm" style={{ borderColor: '#e8dcc8' }} />
-                           <div className="absolute right-3 top-1/2 -translate-y-1/2" style={{ color: '#c8a165' }}><Search size={18} /></div>
-                       </div>
-                    </div>
-                  ) : isDIYSelected ? (
-                    <div className="space-y-3">
-                       <div className="text-center mb-1">
-                         <h3 className="text-[16px] font-normal text-[#1a1a1a]" style={{ fontFamily: "'Playfair Display', Georgia, serif" }}>
-                           Just enter your window size
-                         </h3>
-                         <p className="text-[12px] text-[#94a3b8] mt-0.5">Almost there — just your size</p>
-                       </div>
-                       <div className="flex justify-between items-center">
-                          <h3 className="text-[10px] font-black text-slate-400 uppercase tracking-widest">{t('step.summary.diy')}</h3>
-                          <button onClick={handleShowProPath} className="text-[9px] font-black uppercase hover:underline" style={{ color: '#c8a165' }}>Pro Service?</button>
-                       </div>
-                       <MeasurementInputs shapeData={shapeData} config={config} handleMeasurementChange={handleMeasurementChange} handleFractionChange={handleFractionChange} t={t} />
-                    </div>
-                  ) : (
-                    <div className="space-y-2">
-                       {/* Step 2 Header */}
-                       <div className="text-center mb-2">
-                         <h3 className="text-[18px] font-normal text-[#1a1a1a] mb-0.5" style={{ fontFamily: "'Playfair Display', Georgia, serif", letterSpacing: '-0.01em' }}>
-                           How would you like to get your measurements?
-                         </h3>
-                         <p className="text-[12px] text-[#94a3b8]">
-                           Choose the option that works best for you
-                         </p>
-                       </div>
-
-                       {/* DIY Option */}
-                       <button onClick={handleSwitchToDIYPath} className="w-full text-left p-4 border-2 border-[#c8a165] rounded-xl hover:border-[#c8a165] transition-all bg-[#fdfbf7] shadow-sm relative">
-                          <div className="absolute -top-2.5 left-3 text-white text-[9px] font-bold px-2 py-0.5 rounded-full uppercase tracking-wider" style={{ background: 'linear-gradient(135deg, #c8a165, #b8914f)' }}>
-                            Most customers choose this
-                          </div>
-                          <div className="flex justify-between items-center mb-1 mt-1">
-                             <div className="flex items-center gap-2">
-                                <Wrench size={16} className="text-[#c8a165]" />
-                                <span className="text-[14px] font-semibold text-[#1a1a1a]" style={{ fontFamily: "'Playfair Display', Georgia, serif" }}>{t('pro.handleMyself')}</span>
-                             </div>
-                             <span className="text-[10px] font-bold text-green-600 uppercase tracking-widest bg-green-50 px-2 py-0.5 rounded-full border border-green-200">{t('common.free')}</span>
-                          </div>
-                          <p className="text-[12px] text-[#777] leading-tight font-medium">{t('pro.diyDesc')}</p>
-                       </button>
-
-                       {/* Pro Option */}
-                       <button onClick={handleShowProPath} className="w-full text-left p-4 border-2 rounded-xl hover:border-[#d4b07a] transition-all bg-white shadow-sm relative" style={{ borderColor: '#e8e5de' }}>
-                          <div className="absolute -top-2.5 right-3 text-[9px] font-bold px-2 py-0.5 rounded-full uppercase tracking-wider text-[#8b6d3f] bg-[#f5f0e6] border border-[#e8dcc8]">
-                            Recommended for best fit
-                          </div>
-                          <div className="flex items-center gap-2 mb-1 mt-1">
-                             <UserCheck size={16} style={{ color: '#c8a165' }} />
-                             <span className="text-[14px] font-semibold text-[#1a1a1a]" style={{ fontFamily: "'Playfair Display', Georgia, serif" }}>{t('pro.getHelp')}</span>
-                          </div>
-                          <p className="text-[12px] text-[#777] leading-tight font-medium">We measure & install — {t('pro.fitGuarantee')}</p>
-                       </button>
-                    </div>
-                  )}
-                </div>
-              )}
-
-              {index === 2 && (
                 <div className="space-y-3 pt-2">
                     {/* Step 3 Header */}
                     <div className="text-center mb-1">
@@ -769,7 +519,7 @@ const Stepper: React.FC<StepperProps> = ({
                     <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
                         {/* BLACKOUT — first, Most Popular */}
                         <button 
-                          onClick={() => { updateConfig('shadeType', 'Blackout'); setTimeout(() => handleStepConfirmWithTracking(2), 400); }} 
+                          onClick={() => { updateConfig('shadeType', 'Blackout'); setTimeout(() => handleStepConfirmWithTracking(1), 400); }} 
                           className={`p-4 border-2 rounded-xl transition-all flex flex-col items-center justify-center gap-2 text-center group relative ${
                               config.shadeType === 'Blackout' 
                               ? 'border-[#c8a165] bg-[#faf8f4] shadow-md' 
@@ -796,7 +546,7 @@ const Stepper: React.FC<StepperProps> = ({
 
                         {/* LIGHT FILTERING — second */}
                         <button 
-                          onClick={() => { updateConfig('shadeType', 'Light Filtering'); setTimeout(() => handleStepConfirmWithTracking(2), 400); }} 
+                          onClick={() => { updateConfig('shadeType', 'Light Filtering'); setTimeout(() => handleStepConfirmWithTracking(1), 400); }} 
                           className={`p-4 border-2 rounded-xl transition-all flex flex-col items-center justify-center gap-2 text-center group relative ${
                               config.shadeType === 'Light Filtering' 
                               ? 'border-[#c8a165] bg-[#faf8f4] shadow-md' 
@@ -820,7 +570,7 @@ const Stepper: React.FC<StepperProps> = ({
 
                         {/* ALL FABRICS — third */}
                         <button 
-                          onClick={() => { updateConfig('shadeType', 'All'); setTimeout(() => handleStepConfirmWithTracking(2), 400); }} 
+                          onClick={() => { updateConfig('shadeType', 'All'); setTimeout(() => handleStepConfirmWithTracking(1), 400); }} 
                           className={`p-4 border-2 rounded-xl transition-all flex flex-col items-center justify-center gap-2 text-center group relative ${
                               config.shadeType === 'All' 
                               ? 'border-[#c8a165] bg-[#faf8f4] shadow-md' 
@@ -844,9 +594,9 @@ const Stepper: React.FC<StepperProps> = ({
                 </div>
               )}
 
-              {index === 3 && <div className="pt-2"><FabricSuggestions loading={loadingFabrics} fabrics={fabrics} onSelect={(f) => { onSelectFabric(f); trackFabricSelected(f.name, f.category, f.priceGroup); setTimeout(() => onAutoAdvance(3), 400); }} selectedId={config.material?.id} width={config.width} height={config.height} widthFraction={config.widthFraction} heightFraction={config.heightFraction} onAddSwatch={onAddSwatch} requestedSwatches={requestedSwatches} analysis={analysis} config={config} /></div>}
+              {index === 2 && <div className="pt-2"><FabricSuggestions loading={loadingFabrics} fabrics={fabrics} onSelect={(f) => { onSelectFabric(f); trackFabricSelected(f.name, f.category, f.priceGroup); setTimeout(() => onAutoAdvance(2), 400); }} selectedId={config.material?.id} width={config.width} height={config.height} widthFraction={config.widthFraction} heightFraction={config.heightFraction} onAddSwatch={onAddSwatch} requestedSwatches={requestedSwatches} analysis={analysis} config={config} /></div>}
 
-              {index === 4 && (
+              {index === 3 && (
                 <div className="space-y-3 pt-2">
                     {/* Step 5 Header */}
                     <div className="text-center mb-1">
@@ -865,7 +615,7 @@ const Stepper: React.FC<StepperProps> = ({
                     <div className="grid grid-cols-2 gap-2">
                         {/* Inside Mount */}
                         <button
-                          onClick={() => { updateConfig('mountType', 'Inside Mount'); setTimeout(() => handleStepConfirmWithTracking(4), 400); }}
+                          onClick={() => { updateConfig('mountType', 'Inside Mount'); setTimeout(() => handleStepConfirmWithTracking(3), 400); }}
                           className={`p-4 border-2 rounded-xl transition-all text-center relative ${
                             config.mountType === 'Inside Mount' ? 'border-[#c8a165] bg-[#faf8f4] shadow-sm' : 'border-gray-200 hover:border-gray-300 bg-white'
                           }`}
@@ -883,7 +633,7 @@ const Stepper: React.FC<StepperProps> = ({
 
                         {/* Outside Mount */}
                         <button
-                          onClick={() => { updateConfig('mountType', 'Outside Mount'); setTimeout(() => handleStepConfirmWithTracking(4), 400); }}
+                          onClick={() => { updateConfig('mountType', 'Outside Mount'); setTimeout(() => handleStepConfirmWithTracking(3), 400); }}
                           className={`p-4 border-2 rounded-xl transition-all text-center relative ${
                             config.mountType === 'Outside Mount' ? 'border-[#c8a165] bg-[#faf8f4] shadow-sm' : 'border-gray-200 hover:border-gray-300 bg-white'
                           }`}
@@ -902,7 +652,7 @@ const Stepper: React.FC<StepperProps> = ({
                 </div>
               )}
 
-              {index === 5 && (
+              {index === 4 && (
                 <div className="space-y-4 pt-2">
                     {/* Step 6 Header */}
                     <div className="text-center mb-1">
@@ -1073,7 +823,7 @@ const Stepper: React.FC<StepperProps> = ({
                 </div>
               )}
 
-              {index === 6 && (
+              {index === 5 && (
                 <div className="space-y-6 pt-2">
                     {/* Step 7 Header */}
                     <div className="text-center mb-1">
@@ -1244,7 +994,7 @@ const Stepper: React.FC<StepperProps> = ({
                 </div>
               )}
               
-              {index === 7 && (
+              {index === 6 && (
                 <div className="space-y-4 pt-2">
                   {/* Quantity header */}
                   <div className="text-center mb-1">
@@ -1294,7 +1044,9 @@ const Stepper: React.FC<StepperProps> = ({
 
               {/* CONTINUE BUTTON — hidden on Step 0, sticky on ALL steps */}
               {index !== 0 && (() => {
-                const isMeasureStep = index === 1;
+                const isMeasureStep = false; // Merged into step 0
+                // Skip generic CTA for step 0 when ShapeAndSize renders its own
+                if (index === 0 && (config.shape === 'Standard' && !showSpecialtyShapes)) return null;
                 const shapeData = SHAPE_CONFIGS[config.shape as keyof typeof SHAPE_CONFIGS];
                 const hasMeasurements = shapeData?.inputs
                   ? shapeData.inputs.every((input: any) => {
@@ -1317,7 +1069,7 @@ const Stepper: React.FC<StepperProps> = ({
                   }}
                 >
                   <span style={{ fontFamily: "'Playfair Display', Georgia, serif" }}>
-                    {isLastStep ? (isSaleActive() ? `Add My Shade to Cart — ${SALE_CONFIG.discountPercent}% OFF` : 'Add My Shade to Cart') : index === 1 ? 'Choose My Fabric' : index === 2 ? 'Choose Fabric' : index === 4 ? 'Choose Your Control Type' : index === 5 ? 'Customize Your Look' : index === 6 ? 'Choose Your Quantity' : 'Continue'}
+                    {isLastStep ? (isSaleActive() ? `Add My Shade to Cart — ${SALE_CONFIG.discountPercent}% OFF` : 'Add My Shade to Cart') : index === 1 ? 'Choose Fabric' : index === 3 ? 'Choose Your Control Type' : index === 4 ? 'Customize Your Look' : index === 5 ? 'Choose Your Quantity' : 'Continue'}
                   </span>
                   <ArrowRight size={15} className={`transition-transform duration-300 ${isDisabled ? '' : 'group-hover/btn:translate-x-1'}`} />
                 </button>

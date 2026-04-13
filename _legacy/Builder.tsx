@@ -1143,7 +1143,7 @@ const Builder: React.FC<BuilderProps> = ({ addToCart, addToSwatches, swatches })
                               setAnalysis(res);
                               trackEvent('visualizer_analysis_complete', { room_style: res.style, suggested_tone: res.suggestedTone });
                           }
-                          setOpenStep(3); 
+                          setOpenStep(2); 
                           trackEvent('visualizer_confirm', { shape: config.shape, is_custom_image: !imageSrc.startsWith('http') });
                       }} 
                       selectedFabric={config.material} 
@@ -1221,13 +1221,13 @@ const Builder: React.FC<BuilderProps> = ({ addToCart, addToSwatches, swatches })
               {/* Progress header */}
               <div className="text-center py-3 px-2">
                 <div className="text-[12px] font-medium uppercase tracking-[0.18em] mb-1.5" style={{ color: '#c8a165' }}>
-                  Step {Math.min(completedSteps.size + 1, 3)} of 3 — Get your price
+                  Step {Math.min(completedSteps.size + 1, 2)} of 2 — Get your price
                 </div>
                 <div className="h-1 rounded-full overflow-hidden" style={{ backgroundColor: '#f0ece4' }}>
                   <div 
                     className="h-full rounded-full transition-all duration-700 ease-out"
                     style={{ 
-                      width: `${(Math.min(completedSteps.size + 1, 3) / 3) * 100}%`,
+                      width: `${(Math.min(completedSteps.size + 1, 2) / 2) * 100}%`,
                       background: 'linear-gradient(90deg, #c8a165, #E7D8B8, #c8a165)',
                       backgroundSize: '200% 100%',
                       animation: completedSteps.size > 0 ? 'shimmer 2s ease-in-out infinite' : 'none'
@@ -1242,7 +1242,7 @@ const Builder: React.FC<BuilderProps> = ({ addToCart, addToSwatches, swatches })
                 config={config}
                 setConfig={setConfig}
                 activeFabricName={config.material?.name}
-                onBrowseFabrics={() => setOpenStep(3)}
+                onBrowseFabrics={() => setOpenStep(2)}
                 fabrics={fabrics}
                 loadingFabrics={isLoadingFabrics}
                 onSelectFabric={(f) => setConfig({ ...config, material: f })}
