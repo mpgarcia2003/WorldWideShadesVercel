@@ -211,7 +211,7 @@ export default function ShapeAndSize({
           <p className={styles.helpText}>
             Need help measuring? To view our step-by-step instructions,{' '}
             <a
-              href="/blog/how-to-measure-windows-roller-shades"
+              href="/WWS-Window-Measuring-Guide.pdf"
               target="_blank"
               rel="noopener noreferrer"
               className={styles.helpLink}
