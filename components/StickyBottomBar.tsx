@@ -54,9 +54,9 @@ export default function StickyBottomBar({
       <div className={styles.info}>
         <div className={styles.priceRow}>
           {saleActive && originalPrice > 0 && (
-            <span className={styles.oldPrice}>${originalPrice.toLocaleString('en-US', { minimumFractionDigits: 2 })}</span>
+            <span className={styles.oldPrice}>${originalPrice.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
           )}
-          <span className={styles.price}>${totalPrice.toLocaleString('en-US', { minimumFractionDigits: 2 })}</span>
+          <span className={styles.price}>${totalPrice.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
           {saleActive && originalPrice > 0 && (
             <span className={styles.saleBadge}>{SALE_CONFIG.discountPercent}% OFF</span>
           )}

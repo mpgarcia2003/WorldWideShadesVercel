@@ -1281,14 +1281,14 @@ const Builder: React.FC<BuilderProps> = ({ addToCart, addToSwatches, swatches })
                 if (openStep === null) return allStepsComplete && priceBreakdown.total > 0;
                 if (openStep === 0) return config.width > 0 && config.height > 0;
                 if (openStep === 1) return !!config.material;
-                if (openStep === STEPS.length - 1) return allStepsComplete && priceBreakdown.total > 0;
+                if (openStep === STEPS.length - 1) return priceBreakdown.total > 0;
                 return true;
               })()}
-              isLastStep={allStepsComplete}
+              isLastStep={openStep === STEPS.length - 1}
               onContinue={() => {
-                if (allStepsComplete) {
+                if (openStep === STEPS.length - 1) {
                   addToCart({
-                    id: `item_${'${Date.now()}'}`,
+                    id: `item_${Date.now()}`,
                     config: { ...config },
                     unitPrice: priceBreakdown.saleProduct / config.quantity,
                     installerFee: priceBreakdown.install,
