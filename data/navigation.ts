@@ -25,7 +25,7 @@ export const NAV_ITEMS: NavItem[] = [
           { label: "Bathroom", href: "/rooms/bathroom" },
         ]},
       ],
-      featured: { title: "Easter Sale — 40% Off", description: "All custom shades on sale. 700+ fabrics. Free shipping.", href: "/builder", image: "/images/sale-featured.jpg" },
+      featured: { title: "Spring Sale — Up to 50% Off", description: "All custom shades on sale. 700+ fabrics. Free shipping.", href: "/builder", image: "/images/sale-featured.jpg" },
     },
   },
   { label: "Fabrics", href: "/fabrics" },
@@ -64,6 +64,7 @@ export const FOOTER_LINKS = {
     { label: "FAQ", href: "/faq" },
     { label: "Contact Us", href: "/contact" },
     { label: "Track Your Order", href: "/track-order" },
+    { label: "Returns & Guarantee", href: "/returns" },
     { label: "My Account", href: "/account" },
   ]},
   company: { title: "Company", links: [

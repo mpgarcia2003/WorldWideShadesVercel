@@ -34,6 +34,7 @@ export function Footer() {
           <div className="flex items-center gap-4 text-xs text-white/40">
             <Link href="/privacy" className="hover:text-white/60 transition-colors">Privacy</Link>
             <Link href="/terms" className="hover:text-white/60 transition-colors">Terms</Link>
+            <Link href="/returns" className="hover:text-white/60 transition-colors">Returns</Link>
           </div>
         </div>
       </div>
