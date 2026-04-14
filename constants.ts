@@ -257,7 +257,10 @@ export const getPriceFromTable = (
   const w = widthIdx === -1 ? 9 : Math.max(0, Math.min(widthIdx, 9));
   const h = heightIdx === -1 ? 9 : Math.max(0, Math.min(heightIdx, 9));
   
-  return Math.round(table[h][w] * PRICE_MARKUP);
+  // Posted price = (cost + $50) × 2, where cost = table × 0.35
+  // Simplifies to: table × 0.70 + 100
+  // Then 50% off sale gives: table × 0.35 + 50 = cost + $50
+  return Math.round(table[h][w] * 0.70 + 100);
 };
 
 export const getGridPrice = (group: string, width: number, height: number, shape: ShapeType = 'Standard') => {

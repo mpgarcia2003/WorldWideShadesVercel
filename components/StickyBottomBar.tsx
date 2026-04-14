@@ -14,7 +14,7 @@ import { isSaleActive, SALE_CONFIG } from '../constants';
 
 const CTA_LABELS: Record<number, string> = {
   0: 'Choose My Shade',
-  1: 'Continue to Installation',
+  1: 'Enter Measurements',
   2: 'Choose Control Type',
   3: 'Customize Your Look',
   4: 'Choose Quantity',

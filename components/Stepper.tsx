@@ -292,8 +292,8 @@ const Stepper: React.FC<StepperProps> = ({
 
   const getStepSummary = (index: number) => {
     switch (index) {
-      case 0: return getShapeLabel(config.shape);
-      case 1: return config.material ? `${config.material.category} — ${config.material.name.split('|')[0].trim()}` : t('step.summary.allFabrics');
+      case 0: return config.material ? `${config.material.category} — ${config.material.name.split('|')[0].trim()}` : t('step.summary.allFabrics');
+      case 1: return getShapeLabel(config.shape);
       case 2: return t(config.mountType === 'Inside Mount' ? 'mount.inside' : 'mount.outside');
       case 3: return config.controlType === 'Metal Chain' ? `${t('control.chain')} \u2014 ${config.controlPosition || 'Right'} Side` : t('control.motorized');
       case 4: {
@@ -313,9 +313,9 @@ const Stepper: React.FC<StepperProps> = ({
   // GTM: Fire step-specific tracking events
   const handleStepConfirmWithTracking = (stepIndex: number) => {
     switch (stepIndex) {
-      case 0: trackShapeSelected(config.shape || 'Standard'); break;
-      case 1: // fabric selected — tracked via onSelectFabric + trackFabricSelected
+      case 0: // fabric selected — tracked via onSelectFabric + trackFabricSelected
         break;
+      case 1: trackShapeSelected(config.shape || 'Standard'); break;
       case 2: trackMountSelected(config.mountType || 'Inside Mount'); break;
       case 3: trackControlSelected(config.controlType || 'Manual', config.motorPower); break;
       default: break;
@@ -404,12 +404,12 @@ const Stepper: React.FC<StepperProps> = ({
 
             {/* Step content - ALL existing content preserved exactly */}
             <div className="px-2 pb-4 pt-1 border-t border-gray-50 animate-in fade-in slide-in-from-top-1">
-              {index === 0 && (
+              {index === 1 && (
                   <div className="pt-2">
                     {config.shape === 'Standard' && !showSpecialtyShapes ? (
                       <>
                         <ShapeAndSize
-                          onConfirm={() => handleStepConfirmWithTracking(0)}
+                          onConfirm={() => handleStepConfirmWithTracking(1)}
                           onSelectSpecialty={() => { setShowSpecialtyShapes(true); trackEvent('specialty_shapes_expanded', {}); }}
                           onProService={handleShowProPath}
                           onHowToMeasure={() => {
@@ -494,7 +494,7 @@ const Stepper: React.FC<StepperProps> = ({
                   </div>
               )}
 
-              {index === 1 && (
+              {index === 0 && (
                 <div className="pt-2">
                   <FabricPicker
                     fabrics={fabrics}
@@ -513,7 +513,7 @@ const Stepper: React.FC<StepperProps> = ({
                       setConfig(newConfig);
                     }}
                     onFabricSelect={(f) => { onSelectFabric(f); trackFabricSelected(f.name, f.category, f.priceGroup); }}
-                    onConfirm={() => handleStepConfirmWithTracking(1)}
+                    onConfirm={() => handleStepConfirmWithTracking(0)}
                     onAddSwatch={onAddSwatch}
                     requestedSwatches={requestedSwatches}
                   />

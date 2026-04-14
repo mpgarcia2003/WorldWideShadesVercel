@@ -1308,8 +1308,8 @@ const Builder: React.FC<BuilderProps> = ({ addToCart, addToSwatches, swatches })
               currentStepIndex={openStep}
               isStepValid={(() => {
                 if (openStep === null) return allStepsComplete && priceBreakdown.total > 0;
-                if (openStep === 0) return config.width > 0 && config.height > 0;
-                if (openStep === 1) return !!config.material;
+                if (openStep === 0) return !!config.material;
+                if (openStep === 1) return config.width > 0 && config.height > 0;
                 if (openStep === STEPS.length - 1) return priceBreakdown.total > 0;
                 return true;
               })()}
