@@ -14,8 +14,8 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "Invalid amount" }, { status: 400 });
     }
 
-    // Create a PaymentIntent with automatic payment methods
-    // This enables Apple Pay, Google Pay, Link, and other wallets
+    // automatic_payment_methods enables ALL payment methods configured in Stripe Dashboard:
+    // Cards, Apple Pay, Google Pay, Klarna, Amazon Pay, Link, etc.
     const paymentIntent = await stripe.paymentIntents.create({
       amount: Math.round(amount), // amount in cents
       currency: "usd",
