@@ -1246,7 +1246,7 @@ const Builder: React.FC<BuilderProps> = ({ addToCart, addToSwatches, swatches })
               {/* Progress header */}
               <div className="text-center py-3 px-2">
                 <div className="text-[12px] font-medium uppercase tracking-[0.18em] mb-1.5" style={{ color: '#c8a165' }}>
-                  Step {Math.min(completedSteps.size + 1, 2)} of 2 — Get your price
+                  Step {Math.min((openStep ?? 0) + 1, STEPS.length)} of {STEPS.length} — Build Your Custom Shade
                 </div>
                 {isSaleActive() && (
                   <div className="text-[11px] font-bold text-green-600 mt-0.5">
@@ -1257,7 +1257,7 @@ const Builder: React.FC<BuilderProps> = ({ addToCart, addToSwatches, swatches })
                   <div 
                     className="h-full rounded-full transition-all duration-700 ease-out"
                     style={{ 
-                      width: `${(Math.min(completedSteps.size + 1, 2) / 2) * 100}%`,
+                      width: `${(Math.min((openStep ?? 0) + 1, STEPS.length) / STEPS.length) * 100}%`,
                       background: 'linear-gradient(90deg, #c8a165, #E7D8B8, #c8a165)',
                       backgroundSize: '200% 100%',
                       animation: completedSteps.size > 0 ? 'shimmer 2s ease-in-out infinite' : 'none'
