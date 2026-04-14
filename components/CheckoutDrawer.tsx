@@ -531,7 +531,7 @@ const CheckoutDrawer: React.FC<CheckoutDrawerProps> = ({
                         {isProcessing ? (
                           <><Loader2 className="animate-spin" size={20} /> Processing...</>
                         ) : (
-                          <>{isSaleActive() ? `Checkout Securely — ${SALE_CONFIG.discountPercent}% OFF` : 'Checkout Securely'} <ExternalLink size={20} /></>
+                          <>{isSaleActive() ? `Checkout Securely — ${SALE_CONFIG.maxDiscount}% OFF` : 'Checkout Securely'} <ExternalLink size={20} /></>
                         )}
                     </button>
                     {/* Reassurance */}
