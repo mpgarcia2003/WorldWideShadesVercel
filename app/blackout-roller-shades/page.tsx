@@ -7,7 +7,7 @@ const PRODUCT_SCHEMA = {
   "@context": "https://schema.org",
   "@type": "Product",
   "name": "Custom Blackout Roller Shades",
-  "description": "100% light-blocking custom blackout roller shades built to your exact window measurements. Available in 200+ premium blackout fabrics from leading mills including Phifer, Ferrari, and Mermet. Factory-direct pricing from $250. Ships in approximately 7 business days. Made in USA.",
+  "description": "100% light-blocking custom blackout roller shades built to your exact window measurements. Available in 200+ premium blackout fabrics from leading mills including Phifer, Ferrari, and Mermet. Up to 50% off — from $145. Ships in approximately 7 business days. Made in USA.",
   "brand": { "@type": "Brand", "name": "World Wide Shades" },
   "manufacturer": { "@type": "Organization", "name": "World Wide Shades", "url": "https://worldwideshades.com" },
   "url": "https://worldwideshades.com/blackout-roller-shades",
@@ -18,8 +18,8 @@ const PRODUCT_SCHEMA = {
   "offers": {
     "@type": "AggregateOffer",
     "priceCurrency": "USD",
-    "lowPrice": "250",
-    "highPrice": "900",
+    "lowPrice": "145",
+    "highPrice": "700",
     "offerCount": "200",
     "availability": "https://schema.org/InStock",
     "deliveryLeadTime": { "@type": "QuantitativeValue", "value": "7", "unitCode": "DAY" },
@@ -48,7 +48,7 @@ const FAQ_SCHEMA = {
     { "@type": "Question", "name": "How dark do blackout roller shades actually get?", "acceptedAnswer": { "@type": "Answer", "text": "World Wide Shades blackout roller shades block 100% of light when properly installed. The key is a custom fit — shades built to your exact window dimensions with minimal gaps on the sides. With an inside-mount shade and optional light-blocking side channels, you achieve near-total darkness." }},
     { "@type": "Question", "name": "What is the difference between blackout and room darkening shades?", "acceptedAnswer": { "@type": "Answer", "text": "Blackout shades block 100% of light using an opaque backing layer woven into the fabric. Room darkening shades typically block 95-99% of light, allowing a slight glow around the edges. For bedrooms, nurseries, and media rooms where complete darkness is essential, blackout roller shades are the recommended choice." }},
     { "@type": "Question", "name": "Do light-colored blackout fabrics still block all light?", "acceptedAnswer": { "@type": "Answer", "text": "Yes. The blackout layer is a separate backing woven into the fabric. A white or cream fabric with blackout backing blocks the same 100% of light as a dark charcoal. You choose the face color for aesthetics — the blackout performance is identical regardless of color." }},
-    { "@type": "Question", "name": "How much do custom blackout roller shades cost?", "acceptedAnswer": { "@type": "Answer", "text": "Custom blackout roller shades from World Wide Shades start at $250 for small windows (bathrooms, sidelights), $300-$600 for standard bedroom and living room windows, and $400-$900 for large windows like sliding doors and panoramic windows. Factory-direct pricing saves approximately 40% compared to showroom prices." }},
+    { "@type": "Question", "name": "How much do custom blackout roller shades cost?", "acceptedAnswer": { "@type": "Answer", "text": "Custom blackout roller shades from World Wide Shades start at $145 for small windows (with our 50% off Spring Sale), $180-$350 for standard bedroom and living room windows, and $250-$500 for large windows like sliding doors and panoramic windows. Factory-direct pricing saves up to 50% compared to showroom prices." }},
     { "@type": "Question", "name": "How long does shipping take for custom blackout shades?", "acceptedAnswer": { "@type": "Answer", "text": "World Wide Shades ships custom blackout roller shades in approximately 7 business days from order confirmation. Most traditional custom shade brands take 3-4 weeks. Shipping is free to all US addresses via FedEx." }},
     { "@type": "Question", "name": "Can you get blackout roller shades for bedroom windows?", "acceptedAnswer": { "@type": "Answer", "text": "Yes — bedrooms are the most popular use case for blackout roller shades. Custom-fit blackout shades eliminate light gaps that standard off-the-shelf shades leave around edges. Options include cordless (child-safe) and motorized versions. For nurseries, all fabrics are OEKO-TEX certified." }}
   ]
@@ -131,7 +131,7 @@ p,li{text-wrap:pretty;max-width:72ch}
 .promo a{text-decoration:underline;font-weight:700}
 
 /* ===== HERO ===== */
-.hero{position:relative;overflow:hidden;padding:clamp(3rem,8vw,6rem) 0 clamp(3rem,6vw,5rem);background:linear-gradient(165deg,#1A1916 0%,#0F0F0D 40%,#131210 100%)}
+.hero{position:relative;overflow:hidden;padding:clamp(1.5rem,4vw,3rem) 0 clamp(2rem,4vw,4rem);background:linear-gradient(165deg,#1A1916 0%,#0F0F0D 40%,#131210 100%)}
 .hero__grid{display:grid;grid-template-columns:1fr 1fr;gap:clamp(2rem,4vw,4rem);align-items:center}
 .hero__content{max-width:560px}
 .hero__eyebrow{margin-bottom:1.25rem}
@@ -292,7 +292,10 @@ const BODY_HTML = `<section class="hero" id="top">
         <p class="hero__sub">Blackout window shades built to your exact measurements — down to ⅛". No light gaps. 200+ premium fabrics. Factory-direct pricing. Delivered in 7 days.</p>
         <div class="hero__actions">
           <a href="/builder?type=blackout" class="btn btn--gold btn--large">Design Your Blackout Shades</a>
-          <a href="/swatches" class="btn btn--outline btn--large">Order Free Swatches</a>
+          <a href="tel:+18446742716" class="btn btn--outline btn--large">Call (844) 674-2716</a>
+        </div>
+        <div style="margin-bottom:1.5rem;display:inline-flex;align-items:center;gap:0.5rem;background:rgba(201,169,110,0.12);border:1px solid rgba(201,169,110,0.25);border-radius:8px;padding:0.625rem 1rem">
+          <span style="font-size:0.8125rem;font-weight:600;color:var(--gold)">Spring Sale — Up to 50% Off — Ends April 18</span>
         </div>
         <div class="hero__trust">
           <div class="hero__trust-item">
@@ -314,10 +317,10 @@ const BODY_HTML = `<section class="hero" id="top">
         </div>
       </div>
       <div class="hero__image">
-        <img src="https://images.unsplash.com/photo-1616594039964-ae9021a400a0?w=800&q=80&auto=format" alt="Dark modern bedroom with custom blackout roller shades fully drawn, creating complete darkness for optimal sleep" width="800" height="1000" loading="eager">
+        <img src="https://images.unsplash.com/photo-1616594039964-ae9021a400a0?w=800&q=80&auto=format" alt="Dark modern bedroom with custom blackout roller shades fully drawn, creating complete darkness for optimal sleep" width="800" height="1000" loading="eager" fetchpriority="high">
         <div class="hero__price-anchor">
-          <div class="t-xs">Starting From</div>
-          <div class="price">$250 <span>/ window</span></div>
+          <div class="t-xs">Spring Sale — 50% Off</div>
+          <div class="price"><span style="text-decoration:line-through;color:var(--text-faint);font-size:1rem;font-weight:400;margin-right:0.375rem">$290</span>$145 <span>/ window</span></div>
         </div>
       </div>
     </div>
@@ -341,7 +344,7 @@ const BODY_HTML = `<section class="hero" id="top">
         <div class="stats__label">Blackout Fabrics</div>
       </div>
       <div class="stats__item">
-        <div class="stats__value">From $250</div>
+        <div class="stats__value">From $145</div>
         <div class="stats__label">Factory Direct</div>
       </div>
     </div>
@@ -396,7 +399,7 @@ const BODY_HTML = `<section class="hero" id="top">
             <svg class="ps-item__icon" viewBox="0 0 24 24" fill="none" stroke="var(--gold)" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
             <div class="ps-item__content">
               <h4>Factory-direct pricing</h4>
-              <p>No showroom markup. No middleman. Custom blackout roller shades from $250 — delivered to your door.</p>
+              <p>No showroom markup. No middleman. Custom blackout roller shades from $145 with our Spring Sale — delivered to your door.</p>
             </div>
           </div>
           <div class="ps-item">
@@ -503,7 +506,7 @@ const BODY_HTML = `<section class="hero" id="top">
         </thead>
         <tbody>
           <tr class="highlight"><td>Custom Sizing</td><td>✓ To ⅛" precision</td><td>✓ Limited sizes</td><td>✗ Standard only</td></tr>
-          <tr class="highlight"><td>Pricing</td><td><strong>From $250</strong></td><td>$350–$500+</td><td>$30–$80 (not custom)</td></tr>
+          <tr class="highlight"><td>Pricing</td><td><strong>From $145 (50% Off)</strong></td><td>$350–$500+</td><td>$30–$80 (not custom)</td></tr>
           <tr class="highlight"><td>Blackout Fabrics</td><td><strong>200+</strong></td><td>30–80</td><td>5–15</td></tr>
           <tr class="highlight"><td>Shipping Speed</td><td><strong>~7 Days</strong></td><td>3–4 Weeks</td><td>2–5 Days (stock only)</td></tr>
           <tr class="highlight"><td>Free Swatches</td><td>✓</td><td>Sometimes</td><td>✗</td></tr>
@@ -528,7 +531,7 @@ const BODY_HTML = `<section class="hero" id="top">
     <div class="pricing__grid">
       <div class="price-card">
         <div class="price-card__name">Small Windows</div>
-        <div class="price-card__range">$250 – $350</div>
+        <div class="price-card__range">$145 – $250</div>
         <div class="price-card__desc">Bathrooms, Home Offices, Sidelights</div>
         <div class="price-card__features">
           <div class="price-card__feature"><svg class="check-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg> Custom-built to your specs</div>
@@ -541,7 +544,7 @@ const BODY_HTML = `<section class="hero" id="top">
       </div>
       <div class="price-card price-card--featured">
         <div class="price-card__name">Standard Windows</div>
-        <div class="price-card__range gold">$300 – $600</div>
+        <div class="price-card__range gold">$150 – $300</div>
         <div class="price-card__desc">Bedrooms, Living Rooms, Nurseries</div>
         <div class="price-card__features">
           <div class="price-card__feature"><svg class="check-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg> Custom-built to your specs</div>
@@ -554,7 +557,7 @@ const BODY_HTML = `<section class="hero" id="top">
       </div>
       <div class="price-card">
         <div class="price-card__name">Large Windows</div>
-        <div class="price-card__range">$400 – $900</div>
+        <div class="price-card__range">$200 – $450</div>
         <div class="price-card__desc">Sliding Doors, Panoramic, Media Rooms</div>
         <div class="price-card__features">
           <div class="price-card__feature"><svg class="check-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg> Custom-built to your specs</div>
@@ -587,7 +590,7 @@ const BODY_HTML = `<section class="hero" id="top">
       <span class="fabric-logo">Copaco</span>
     </div>
     <div style="text-align:center;margin-top:2rem">
-      <a href="/swatches" class="btn btn--outline">Order Free Swatches</a>
+      <a href="/swatches" class="btn btn--outline">Order Free Fabric Swatches</a>
     </div>
   </div>
 </section>
@@ -698,7 +701,7 @@ const BODY_HTML = `<section class="hero" id="top">
           How much do custom blackout roller shades cost?
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
         </button>
-        <div class="faq-a"><div class="faq-a__inner">Custom blackout roller shades from World Wide Shades start at $250 for small windows (bathrooms, sidelights), $300–$600 for standard bedroom and living room windows, and $400–$900 for large windows like sliding doors and panoramic windows. Factory-direct pricing saves approximately 40% compared to showroom prices. All prices include free shipping and our 100% Fit Guarantee.</div></div>
+        <div class="faq-a"><div class="faq-a__inner">Custom blackout roller shades from World Wide Shades start at $145 for small windows (with our 50% off Spring Sale), $180–$350 for standard bedroom and living room windows, and $250–$500 for large windows like sliding doors and panoramic windows. Factory-direct pricing saves up to 50% compared to showroom prices. All prices include free shipping and our 100% Fit Guarantee.</div></div>
       </div>
       <div class="faq-item">
         <button class="faq-q" aria-expanded="false">
@@ -741,7 +744,7 @@ const BODY_HTML = `<section class="hero" id="top">
     </div>
     <div style="display:flex;flex-wrap:wrap;justify-content:center;gap:0.75rem;margin-top:2rem">
       <a href="/builder?type=blackout" class="btn btn--gold btn--large">Design Your Blackout Shades</a>
-      <a href="/swatches" class="btn btn--outline btn--large">Order Free Swatches</a>
+      <a href="tel:+18446742716" class="btn btn--outline btn--large">Call (844) 674-2716</a>
     </div>
     <div class="final-cta__badges">
       <span class="badge">100% Fit Guarantee</span>

@@ -23,6 +23,16 @@ const nextConfig: NextConfig = {
     }
     return config;
   },
+  async redirects() {
+    return [
+      {
+        source: '/:path*',
+        has: [{ type: 'host', value: 'www.worldwideshades.com' }],
+        destination: 'https://worldwideshades.com/:path*',
+        permanent: true,
+      },
+    ];
+  },
   async headers() {
     return [
       {
