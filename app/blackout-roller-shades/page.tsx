@@ -276,6 +276,18 @@ const CSS = `/* ===== SCOPED BASE (no global reset — site handles that) ===== 
 
 /* ===== BACK TO TOP ===== */
 .btt{position:fixed;bottom:1.5rem;right:1.5rem;width:44px;height:44px;background:var(--gold);color:#0F0F0D;border-radius:50%;display:flex;align-items:center;justify-content:center;opacity:0;pointer-events:none;transition:opacity 300ms,transform 300ms;z-index:90;box-shadow:0 4px 16px rgba(0,0,0,0.3)}
+
+/* ===== STICKY MOBILE CTA ===== */
+.mobile-sticky{display:none}
+@media(max-width:768px){
+  .mobile-sticky{display:flex;position:fixed;bottom:0;left:0;right:0;z-index:95;align-items:center;justify-content:space-between;padding:0.75rem 1rem;background:linear-gradient(135deg,#0F0F0D 0%,#1A1916 100%);border-top:1px solid var(--gold);box-shadow:0 -4px 20px rgba(0,0,0,0.4);gap:0.75rem}
+  .mobile-sticky__price{font-size:0.75rem;color:var(--text-muted);line-height:1.3}
+  .mobile-sticky__price strong{display:block;font-size:1.125rem;font-weight:700;color:var(--gold);letter-spacing:-0.01em}
+  .mobile-sticky__price s{color:var(--text-faint);font-size:0.75rem;font-weight:400;margin-right:0.25rem}
+  .mobile-sticky__cta{flex-shrink:0;padding:0.75rem 1.25rem;background:var(--gold);color:#0F0F0D;border-radius:6px;font-size:0.875rem;font-weight:700;text-decoration:none;white-space:nowrap}
+  .btt{bottom:5rem}
+  body{padding-bottom:4rem}
+}
 .btt.show{opacity:1;pointer-events:auto}
 .btt:hover{transform:scale(1.1)}`;
 
@@ -753,6 +765,15 @@ const BODY_HTML = `<section class="hero" id="top">
     <p class="t-small" style="text-align:center;color:var(--text-faint);margin-top:1.5rem">Questions? Call us at <a href="tel:+18446742716" style="color:var(--gold)">(844) 674-2716</a></p>
   </div>
 </section>
+
+<!-- STICKY MOBILE CTA -->
+<div class="mobile-sticky">
+  <div class="mobile-sticky__price">
+    Blackout Shades
+    <strong><s>$290</s> From $145</strong>
+  </div>
+  <a href="/builder?type=blackout" class="mobile-sticky__cta">Design Yours →</a>
+</div>
 
 <!-- FOOTER -->
 <button class="btt" aria-label="Back to top" onclick="window.scrollTo({top:0,behavior:'smooth'})">
