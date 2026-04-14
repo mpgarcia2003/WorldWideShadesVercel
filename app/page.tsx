@@ -211,7 +211,7 @@ export default function HomepagePage() {
         <div className="relative z-10 container-site section-padding flex flex-col items-center gap-6 px-4">
           {/* Badge */}
           <div className="inline-flex items-center gap-2 bg-gold/20 border border-gold/40 rounded-full px-5 py-1.5 text-xs font-sans font-bold tracking-widest text-gold uppercase">
-            40% OFF&nbsp;·&nbsp;LIMITED TIME
+            Up to 50% OFF&nbsp;·&nbsp;LIMITED TIME
           </div>
 
           {/* H1 */}
@@ -304,7 +304,7 @@ export default function HomepagePage() {
           <div className="grid md:grid-cols-3 gap-6">
             {[
               {
-                badge: "40% Off",
+                badge: "50% Off",
                 badgeColor: "bg-gold text-dark",
                 image: "https://images.unsplash.com/photo-1651336259530-362bce65fffe?auto=format&fit=crop&w=800&q=80",
                 imageAlt: "Dark bedroom with blackout roller shades",
@@ -314,7 +314,7 @@ export default function HomepagePage() {
                 href: "/blackout-roller-shades",
               },
               {
-                badge: "40% Off",
+                badge: "50% Off",
                 badgeColor: "bg-gold text-dark",
                 image: "https://ecosmartshades.com/wp-content/uploads/Roller-White-Living-Room-800.jpg",
                 imageAlt: "Bright living room with light filtering roller shades",
