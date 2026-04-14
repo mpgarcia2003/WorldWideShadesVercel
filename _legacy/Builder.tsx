@@ -564,6 +564,33 @@ const Builder: React.FC<BuilderProps> = ({ addToCart, addToSwatches, swatches })
     } catch {}
   }, []);
 
+  // Auto-select fabric from URL param (?fabric=fab_585) — waits for fabrics to load
+  useEffect(() => {
+    if (fabrics.length === 0) return;
+    try {
+      const params = new URLSearchParams(window.location.search);
+      const fabricParam = params.get('fabric');
+      if (fabricParam) {
+        const match = fabrics.find(f => f.id === fabricParam);
+        if (match) {
+          setConfig(prev => ({ ...prev, material: match, shadeType: match.category }));
+          trackEvent('fabric_preselected', { fabric_id: match.id, fabric_name: match.name, source: 'url_param' });
+        }
+      }
+      // Pre-fill measurements from URL params (?width=48&height=72)
+      const widthParam = params.get('width');
+      const heightParam = params.get('height');
+      if (widthParam || heightParam) {
+        setConfig(prev => ({
+          ...prev,
+          ...(widthParam ? { width: Number(widthParam) || 0 } : {}),
+          ...(heightParam ? { height: Number(heightParam) || 0 } : {}),
+        }));
+        trackEvent('dimensions_preselected', { width: widthParam, height: heightParam, source: 'url_param' });
+      }
+    } catch {}
+  }, [fabrics]);
+
   const priceBreakdown = useMemo(() => {
     if (config.isMeasurementOnly && config.installer) {
       const p = 24.99;
