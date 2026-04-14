@@ -16,7 +16,7 @@ import Stepper from '../components/Stepper';
 import StickyBottomBar from '../components/StickyBottomBar';
 import ConsultationModal from '../components/ConsultationModal';
 import { ShadeConfig, Fabric, WindowSelection, CartItem, RoomAnalysis, ShapeType } from '../types';
-import { DEFAULT_ROOM_IMAGE, getGridPrice, SHAPE_CONFIGS, VALANCE_OPTIONS, SIDE_CHANNEL_OPTIONS, STEPS, getFabricUrl, isSaleActive, getSalePrice, SALE_CONFIG, MOTOR_PRICES, applyMarkup } from '../constants';
+import { DEFAULT_ROOM_IMAGE, getGridPrice, SHAPE_CONFIGS, VALANCE_OPTIONS, SIDE_CHANNEL_OPTIONS, STEPS, getFabricUrl, isSaleActive, getSalePrice, getSaleShadePrice, getSaleAccessoryPrice, SALE_CONFIG, MOTOR_PRICES, applyMarkup } from '../constants';
 import { getDynamicFabrics, saveSwatchRequest, saveQuoteConfig, loadQuoteConfig } from '../utils/storage';
 import { notifyAdminSwatchRequest, notifyAdminExitIntent, sendCustomerQuoteEmail } from '../utils/email';
 import { useLanguage } from '../LanguageContext';
@@ -288,14 +288,9 @@ const Builder: React.FC<BuilderProps> = ({ addToCart, addToSwatches, swatches })
   const { t } = useLanguage();
   const [path, setPath] = useState<null | 'build' | 'swatch'>(() => {
     try {
-      if (typeof window !== 'undefined') {
-        // Check URL for ?path=swatch
-        const params = new URLSearchParams(window.location.search);
-        if (params.get('path') === 'swatch') return 'swatch';
-        return 'build';
-      }
+      if (typeof window !== 'undefined' && localStorage.getItem('wws_editing_item')) return 'build';
     } catch {}
-    return 'build';
+    return null;
   });
   const [imageSrc, setImageSrc] = useState(DEFAULT_ROOM_IMAGE);
   const [selection, setSelection] = useState<WindowSelection | null>(null);
@@ -541,23 +536,6 @@ const Builder: React.FC<BuilderProps> = ({ addToCart, addToSwatches, swatches })
     } catch (e) { /* ignore storage errors */ }
   }, [config]);
 
-
-  // Read shade type preference from URL params (Option A)
-  useEffect(() => {
-    try {
-      const params = new URLSearchParams(window.location.search);
-      const typeParam = params.get('type');
-      if (typeParam) {
-        const shadeType = typeParam.toLowerCase() === 'blackout' ? 'Blackout' : 
-                          typeParam.toLowerCase() === 'lightfiltering' ? 'Light Filtering' : null;
-        if (shadeType) {
-          setConfig(prev => ({ ...prev, shadeType }));
-          trackEvent('shade_type_preselected', { shade_type: shadeType, source: 'url_param' });
-        }
-      }
-    } catch {}
-  }, []);
-
   useEffect(() => {
     if (config.shape === 'Standard') setImageSrc(DEFAULT_ROOM_IMAGE);
     else {
@@ -621,8 +599,10 @@ const Builder: React.FC<BuilderProps> = ({ addToCart, addToSwatches, swatches })
     const bannerOption = SIDE_CHANNEL_OPTIONS.find(s => s.id === config.sideChannelType);
     const sideChannelPrice = applyMarkup((bannerOption?.pricePerFoot || 0)) * (h / 12) * 2;
 
-    const unitPrice = basePrice + motorAddons + valancePrice + sideChannelPrice;
-    const productTotal = unitPrice * config.quantity;
+    // Split shade vs accessory pricing for different discount tiers
+    const shadeTotal = basePrice * config.quantity;
+    const accessoryTotal = (motorAddons + valancePrice + sideChannelPrice) * config.quantity;
+    const productTotal = shadeTotal + accessoryTotal;
 
     let installCost = 0;
     if (config.installer) {
@@ -637,7 +617,9 @@ const Builder: React.FC<BuilderProps> = ({ addToCart, addToSwatches, swatches })
     }
     
     const saleActive = isSaleActive();
-    const saleProductTotal = saleActive ? getSalePrice(productTotal) : productTotal;
+    const saleShade = saleActive ? getSaleShadePrice(shadeTotal) : shadeTotal;
+    const saleAccessory = saleActive ? getSaleAccessoryPrice(accessoryTotal) : accessoryTotal;
+    const saleProductTotal = saleShade + saleAccessory;
 
     return { 
       product: productTotal, 
@@ -961,7 +943,7 @@ const Builder: React.FC<BuilderProps> = ({ addToCart, addToSwatches, swatches })
             >
               <div className="text-[11px] font-medium text-[#c8a165] uppercase tracking-[0.2em] mb-1">{t('sale.reason')}</div>
               <div className="text-[28px] md:text-[34px] font-normal text-white" style={{ fontFamily: "'Playfair Display', Georgia, serif", letterSpacing: '-0.02em' }}>
-                {SALE_CONFIG.discountPercent}% Off Everything
+                Up to {SALE_CONFIG.maxDiscount}% Off
               </div>
               <div className="text-[11px] text-[#999] mt-1">{t('sale.ends')}</div>
             </div>
@@ -983,7 +965,7 @@ const Builder: React.FC<BuilderProps> = ({ addToCart, addToSwatches, swatches })
             </p>
             {isSaleActive() && (
               <p className="text-[13px] md:text-[14px] font-semibold text-[#c0593a] mt-2">
-                Save up to {SALE_CONFIG.discountPercent}% vs retail — factory direct
+                Save up to {SALE_CONFIG.maxDiscount}% vs retail — factory direct
               </p>
             )}
           </div>

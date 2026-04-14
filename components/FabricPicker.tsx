@@ -88,7 +88,7 @@ export default function FabricPicker({
   const getPrice = (fabric: Fabric) => {
     if (!hasDims) return null;
     const raw = getGridPrice(fabric.priceGroup, dimW, dimH);
-    return isSaleActive() ? Math.round(raw * (1 - SALE_CONFIG.discountPercent / 100)) : raw;
+    return isSaleActive() ? Math.round(raw * (1 - SALE_CONFIG.shadeDiscount / 100)) : raw;
   };
 
   const getOriginalPrice = (fabric: Fabric) => {

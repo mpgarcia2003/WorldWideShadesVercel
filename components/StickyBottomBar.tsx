@@ -45,7 +45,7 @@ export default function StickyBottomBar({
   const stepIdx = currentStepIndex ?? 0;
   const label = CTA_LABELS[stepIdx] || 'Continue';
   const ctaLabel = isLastStep && saleActive
-    ? `${label} — ${SALE_CONFIG.discountPercent}% OFF`
+    ? `${label} — ${SALE_CONFIG.maxDiscount}% OFF`
     : label;
 
   return (
@@ -58,7 +58,7 @@ export default function StickyBottomBar({
           )}
           <span className={styles.price}>${totalPrice.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
           {saleActive && originalPrice > 0 && (
-            <span className={styles.saleBadge}>{SALE_CONFIG.discountPercent}% OFF</span>
+            <span className={styles.saleBadge}>Up to {SALE_CONFIG.maxDiscount}% OFF</span>
           )}
         </div>
         <div className={styles.meta}>

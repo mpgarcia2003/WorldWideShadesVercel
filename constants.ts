@@ -5,7 +5,9 @@ export const COMPANY_NAME = "World Wide Shades";
 // ─── SALE CONFIGURATION ───────────────────────────
 export const SALE_CONFIG = {
   active: true,
-  discountPercent: 40,
+  shadeDiscount: 50,       // 50% off shades (fabric + base price)
+  accessoryDiscount: 40,   // 40% off motorization & accessories
+  maxDiscount: 50,         // for "Up to X% Off" display
   endDate: new Date('2026-04-18T23:59:59-04:00'), // Apr 18, 2026 EDT
   reason: 'Spring Into Shade Sale',
 };
@@ -15,9 +17,19 @@ export const isSaleActive = () => {
   return new Date() <= SALE_CONFIG.endDate;
 };
 
-export const getSalePrice = (originalPrice: number) => {
+export const getSaleShadePrice = (originalPrice: number) => {
   if (!isSaleActive()) return originalPrice;
-  return originalPrice * (1 - SALE_CONFIG.discountPercent / 100);
+  return originalPrice * (1 - SALE_CONFIG.shadeDiscount / 100);
+};
+
+export const getSaleAccessoryPrice = (originalPrice: number) => {
+  if (!isSaleActive()) return originalPrice;
+  return originalPrice * (1 - SALE_CONFIG.accessoryDiscount / 100);
+};
+
+// Default getSalePrice uses shade discount (for backward compat & starting prices)
+export const getSalePrice = (originalPrice: number) => {
+  return getSaleShadePrice(originalPrice);
 };
 
 // ─── PRICE MARKUP (25% increase) ──────────────────
