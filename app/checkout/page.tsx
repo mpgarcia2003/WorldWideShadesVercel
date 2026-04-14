@@ -391,7 +391,7 @@ function OrderSummary({
 
   // Calculate savings from sale discount
   const saleActive = isSaleActive();
-  const salePercent = SALE_CONFIG.discountPercent;
+  const salePercent = SALE_CONFIG.maxDiscount;
   const retailTotal = saleActive ? cart.reduce((sum, item) => sum + (item.totalPrice / (1 - salePercent / 100)), 0) : subtotal;
   const saleSavings = retailTotal - subtotal;
 
@@ -428,7 +428,7 @@ function OrderSummary({
               <PricingRow label={`Subtotal (${cart.reduce((s, i) => s + (i.config.quantity || 1), 0)} item${cart.length > 1 ? "s" : ""})`} value={fmt(subtotal)} />
               {saleActive && saleSavings > 0 && (
                 <div style={{ display: "flex", justifyContent: "space-between", marginBottom: "0.5rem" }}>
-                  <span style={{ color: "#16a34a", fontWeight: 600 }}>{salePercent}% Sale Savings</span>
+                  <span style={{ color: "#16a34a", fontWeight: 600 }}>Sale Savings (Up to {salePercent}% Off)</span>
                   <span style={{ color: "#16a34a", fontWeight: 600 }}>-{fmt(saleSavings)}</span>
                 </div>
               )}
@@ -655,7 +655,7 @@ export default function CheckoutPage() {
   const subtotal = cart.reduce((sum, item) => sum + item.totalPrice, 0);
   const discount = promoApplied ? promoDiscount : 0;
   const adjustedTotal = subtotal - discount;
-  const _salePercent = SALE_CONFIG.discountPercent;
+  const _salePercent = SALE_CONFIG.maxDiscount;
   const _retailTotal = isSaleActive() ? cart.reduce((sum, item) => sum + (item.totalPrice / (1 - _salePercent / 100)), 0) : subtotal;
   const _saleSavings = _retailTotal - subtotal;
 
