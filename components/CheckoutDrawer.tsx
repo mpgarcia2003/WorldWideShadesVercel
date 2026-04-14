@@ -511,7 +511,7 @@ const CheckoutDrawer: React.FC<CheckoutDrawerProps> = ({
                     {/* Savings reinforcement */}
                     {isSaleActive() && cartTotal > 0 && (
                       <div className="text-[12px] font-bold text-green-600 text-center">
-                        You saved ${(cartTotal * SALE_CONFIG.discountPercent / (100 - SALE_CONFIG.discountPercent)).toFixed(2)} today
+                        You saved ${(cartTotal * SALE_CONFIG.maxDiscount / (100 - SALE_CONFIG.maxDiscount)).toFixed(2)} today
                       </div>
                     )}
                     {/* Shipping line */}
