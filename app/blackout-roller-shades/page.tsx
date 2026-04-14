@@ -291,7 +291,7 @@ const BODY_HTML = `<section class="hero" id="top">
         <h1 class="t-hero">Custom Blackout<br>Roller Shades</h1>
         <p class="hero__sub">Blackout window shades built to your exact measurements — down to ⅛". No light gaps. 200+ premium fabrics. Factory-direct pricing. Delivered in 7 days.</p>
         <div class="hero__actions">
-          <a href="/builder" class="btn btn--gold btn--large">Design Your Blackout Shades</a>
+          <a href="/builder?type=blackout" class="btn btn--gold btn--large">Design Your Blackout Shades</a>
           <a href="/swatches" class="btn btn--outline btn--large">Order Free Swatches</a>
         </div>
         <div class="hero__trust">
@@ -427,7 +427,7 @@ const BODY_HTML = `<section class="hero" id="top">
         <div class="room-card__content">
           <h3>Blackout Shades for Bedroom</h3>
           <p>Complete darkness for better sleep. Block sunrise, street lamps, and all ambient light. Wake up when you choose — not when the sun decides.</p>
-          <a href="/builder" class="btn btn--gold">Build for Bedroom</a>
+          <a href="/builder?type=blackout" class="btn btn--gold">Build for Bedroom</a>
         </div>
       </div>
       <div class="room-card">
@@ -436,7 +436,7 @@ const BODY_HTML = `<section class="hero" id="top">
         <div class="room-card__content">
           <h3>Blackout Shades for Nursery</h3>
           <p>Daytime naps in true darkness. Cordless for child safety. OEKO-TEX certified fabrics — nothing harmful near your baby.</p>
-          <a href="/builder" class="btn btn--gold">Build for Nursery</a>
+          <a href="/builder?type=blackout" class="btn btn--gold">Build for Nursery</a>
         </div>
       </div>
       <div class="room-card">
@@ -445,7 +445,7 @@ const BODY_HTML = `<section class="hero" id="top">
         <div class="room-card__content">
           <h3>Blackout Shades for Media Room</h3>
           <p>Zero-glare environment for cinema-quality viewing. Pair with motorization — close everything with Alexa before movie night.</p>
-          <a href="/builder" class="btn btn--gold">Build for Media Room</a>
+          <a href="/builder?type=blackout" class="btn btn--gold">Build for Media Room</a>
         </div>
       </div>
     </div>
@@ -537,7 +537,7 @@ const BODY_HTML = `<section class="hero" id="top">
           <div class="price-card__feature"><svg class="check-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg> Hardware included</div>
           <div class="price-card__feature"><svg class="check-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg> Motorized upgrade available</div>
         </div>
-        <a href="/builder" class="btn btn--outline">Get Your Exact Price</a>
+        <a href="/builder?type=blackout" class="btn btn--outline">Get Your Exact Price</a>
       </div>
       <div class="price-card price-card--featured">
         <div class="price-card__name">Standard Windows</div>
@@ -550,7 +550,7 @@ const BODY_HTML = `<section class="hero" id="top">
           <div class="price-card__feature"><svg class="check-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg> Hardware included</div>
           <div class="price-card__feature"><svg class="check-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg> Motorized upgrade available</div>
         </div>
-        <a href="/builder" class="btn btn--gold">Get Your Exact Price</a>
+        <a href="/builder?type=blackout" class="btn btn--gold">Get Your Exact Price</a>
       </div>
       <div class="price-card">
         <div class="price-card__name">Large Windows</div>
@@ -563,7 +563,7 @@ const BODY_HTML = `<section class="hero" id="top">
           <div class="price-card__feature"><svg class="check-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg> Hardware included</div>
           <div class="price-card__feature"><svg class="check-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg> Motorized upgrade available</div>
         </div>
-        <a href="/builder" class="btn btn--outline">Get Your Exact Price</a>
+        <a href="/builder?type=blackout" class="btn btn--outline">Get Your Exact Price</a>
       </div>
     </div>
     <p class="t-small" style="text-align:center;color:var(--text-faint);margin-top:1.25rem">Financing available with Affirm at checkout. Subject to credit approval.</p>
@@ -740,7 +740,7 @@ const BODY_HTML = `<section class="hero" id="top">
       <p class="t-body" style="color:var(--text-muted);margin-top:0.75rem">Custom blackout roller shades — built to your exact window — delivered in 7 days.</p>
     </div>
     <div style="display:flex;flex-wrap:wrap;justify-content:center;gap:0.75rem;margin-top:2rem">
-      <a href="/builder" class="btn btn--gold btn--large">Design Your Blackout Shades</a>
+      <a href="/builder?type=blackout" class="btn btn--gold btn--large">Design Your Blackout Shades</a>
       <a href="/swatches" class="btn btn--outline btn--large">Order Free Swatches</a>
     </div>
     <div class="final-cta__badges">

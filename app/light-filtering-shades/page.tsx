@@ -236,7 +236,7 @@ export default function LightFilteringRollerShadesPage() {
           {/* CTAs */}
           <div className="flex flex-col sm:flex-row gap-4 mt-2">
             <a
-              href="/builder"
+              href="/builder?type=lightfiltering"
               className="inline-block bg-gold text-dark font-sans font-semibold text-base px-8 py-4 rounded-sm hover:bg-gold-dark transition-colors duration-200"
             >
               Design Your Light Filtering Shades
@@ -432,7 +432,7 @@ export default function LightFilteringRollerShadesPage() {
               </ol>
 
               <a
-                href="/builder"
+                href="/builder?type=lightfiltering"
                 className="inline-block self-start bg-dark text-white font-sans font-semibold text-sm px-8 py-4 rounded-sm hover:bg-dark-soft transition-colors duration-200 mt-2"
               >
                 Try the AI Visualizer
@@ -516,7 +516,7 @@ export default function LightFilteringRollerShadesPage() {
                     {room.body}
                   </p>
                   <a
-                    href="/builder"
+                    href="/builder?type=lightfiltering"
                     className="inline-block mt-2 text-center border border-gold text-gold font-sans font-semibold text-sm px-6 py-3 rounded-sm hover:bg-gold hover:text-dark transition-colors duration-200"
                   >
                     {room.cta}
@@ -626,7 +626,7 @@ export default function LightFilteringRollerShadesPage() {
 
           <div className="text-center mt-12">
             <a
-              href="/builder"
+              href="/builder?type=lightfiltering"
               className="inline-block bg-gold text-dark font-sans font-semibold text-sm px-10 py-4 rounded-sm hover:bg-gold-dark transition-colors duration-200"
             >
               Start Designing
@@ -844,7 +844,7 @@ export default function LightFilteringRollerShadesPage() {
                 </p>
 
                 <a
-                  href="/builder"
+                  href="/builder?type=lightfiltering"
                   className={`block text-center font-sans font-semibold text-sm px-6 py-3 rounded-sm transition-colors duration-200 mt-auto ${
                     card.popular
                       ? "bg-gold text-dark hover:bg-gold-dark"
@@ -984,7 +984,7 @@ export default function LightFilteringRollerShadesPage() {
 
           <div className="text-center">
             <a
-              href="/builder"
+              href="/builder?type=lightfiltering"
               className="inline-block bg-dark text-white font-sans font-semibold text-sm px-10 py-4 rounded-sm hover:bg-dark-soft transition-colors duration-200"
             >
               Build Your Motorized Shade
@@ -1093,7 +1093,7 @@ export default function LightFilteringRollerShadesPage() {
           </p>
 
           <a
-            href="/builder"
+            href="/builder?type=lightfiltering"
             className="inline-block bg-gold text-dark font-sans font-semibold text-base px-10 py-4 rounded-sm hover:bg-gold-dark transition-colors duration-200 mt-2"
           >
             Design Your Light Filtering Shades

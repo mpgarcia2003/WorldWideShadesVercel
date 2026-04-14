@@ -288,9 +288,14 @@ const Builder: React.FC<BuilderProps> = ({ addToCart, addToSwatches, swatches })
   const { t } = useLanguage();
   const [path, setPath] = useState<null | 'build' | 'swatch'>(() => {
     try {
-      if (typeof window !== 'undefined' && localStorage.getItem('wws_editing_item')) return 'build';
+      if (typeof window !== 'undefined') {
+        // Check URL for ?path=swatch
+        const params = new URLSearchParams(window.location.search);
+        if (params.get('path') === 'swatch') return 'swatch';
+        return 'build';
+      }
     } catch {}
-    return null;
+    return 'build';
   });
   const [imageSrc, setImageSrc] = useState(DEFAULT_ROOM_IMAGE);
   const [selection, setSelection] = useState<WindowSelection | null>(null);
@@ -535,6 +540,23 @@ const Builder: React.FC<BuilderProps> = ({ addToCart, addToSwatches, swatches })
       localStorage.setItem('wws_builder_config', JSON.stringify(toSave));
     } catch (e) { /* ignore storage errors */ }
   }, [config]);
+
+
+  // Read shade type preference from URL params (Option A)
+  useEffect(() => {
+    try {
+      const params = new URLSearchParams(window.location.search);
+      const typeParam = params.get('type');
+      if (typeParam) {
+        const shadeType = typeParam.toLowerCase() === 'blackout' ? 'Blackout' : 
+                          typeParam.toLowerCase() === 'lightfiltering' ? 'Light Filtering' : null;
+        if (shadeType) {
+          setConfig(prev => ({ ...prev, shadeType }));
+          trackEvent('shade_type_preselected', { shade_type: shadeType, source: 'url_param' });
+        }
+      }
+    } catch {}
+  }, []);
 
   useEffect(() => {
     if (config.shape === 'Standard') setImageSrc(DEFAULT_ROOM_IMAGE);
