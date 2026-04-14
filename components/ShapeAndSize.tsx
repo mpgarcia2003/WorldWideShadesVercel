@@ -225,9 +225,9 @@ export default function ShapeAndSize({
         {/* ── Pro Link ── */}
         <div className={styles.measProLink}>
           Not comfortable measuring?{' '}
-          <button type="button" className={styles.proLinkBtn} onClick={onProService}>
-            Have a pro do it →
-          </button>
+          <a href="tel:+18446742716" className={styles.proLinkBtn}>
+            Call (844) 674-2716 — we'll guide you →
+          </a>
         </div>
       </div>
     </div>
