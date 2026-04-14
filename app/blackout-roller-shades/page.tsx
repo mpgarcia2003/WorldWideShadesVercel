@@ -54,16 +54,14 @@ const FAQ_SCHEMA = {
   ]
 };
 
-const CSS = `/* ===== RESET & BASE ===== */
-*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
-html{-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale;text-rendering:optimizeLegibility;scroll-behavior:smooth;scroll-padding-top:80px}
-body{min-height:100dvh;line-height:1.6;font-family:'DM Sans',system-ui,-apple-system,sans-serif;color:#E8E4DD;background:#0F0F0D}
-img,svg{display:block;max-width:100%;height:auto}
-a{color:inherit;text-decoration:none}
-button{cursor:pointer;background:none;border:none;font:inherit;color:inherit}
-ul,ol{list-style:none}
-h1,h2,h3,h4,h5,h6{text-wrap:balance;line-height:1.15}
-p,li{text-wrap:pretty;max-width:72ch}
+const CSS = `/* ===== SCOPED BASE (no global reset — site handles that) ===== */
+.wws-bo{line-height:1.6;font-family:'DM Sans',system-ui,-apple-system,sans-serif;color:#E8E4DD;background:#0F0F0D}
+.wws-bo img,.wws-bo svg{display:block;max-width:100%;height:auto}
+.wws-bo a{color:inherit;text-decoration:none}
+.wws-bo button{cursor:pointer;background:none;border:none;font:inherit;color:inherit}
+.wws-bo ul,.wws-bo ol{list-style:none}
+.wws-bo h1,.wws-bo h2,.wws-bo h3,.wws-bo h4,.wws-bo h5,.wws-bo h6{text-wrap:balance;line-height:1.15;margin:0}
+.wws-bo p,.wws-bo li{text-wrap:pretty;max-width:72ch}
 
 /* ===== COLORS ===== */
 :root{
@@ -809,7 +807,7 @@ export default function BlackoutRollerShadesPage() {
       <style dangerouslySetInnerHTML={{ __html: CSS }} />
       <div
         ref={containerRef}
-        className="blackout-lp"
+        className="blackout-lp wws-bo"
         style={{ background: "#0F0F0D", color: "#E8E4DD" }}
         dangerouslySetInnerHTML={{ __html: BODY_HTML }}
       />
