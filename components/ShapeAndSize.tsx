@@ -101,7 +101,7 @@ export default function ShapeAndSize({
           </div>
           <div className={styles.shapeInfo}>
             <div className={styles.shapeName}>Rectangular</div>
-            <div className={styles.shapeSub}>90% of homes · Starting at $116</div>
+            <div className={styles.shapeSub}>90% of homes · Starting at $104</div>
           </div>
           <div className={styles.shapeCheck}>
             <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="2.5">

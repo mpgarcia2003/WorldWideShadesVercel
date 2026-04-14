@@ -13,11 +13,11 @@ import styles from './StickyBottomBar.module.css';
 import { isSaleActive, SALE_CONFIG } from '../constants';
 
 const CTA_LABELS: Record<number, string> = {
-  0: 'Choose My Shade',
-  1: 'Enter Measurements',
+  0: 'Continue to Measurements',
+  1: 'Continue to Installation',
   2: 'Choose Control Type',
   3: 'Customize Your Look',
-  4: 'Choose Quantity',
+  4: 'Review & Add to Cart',
   5: 'Add My Shade to Cart',
 };
 
