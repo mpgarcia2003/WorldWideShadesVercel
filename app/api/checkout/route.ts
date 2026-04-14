@@ -14,16 +14,19 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "Invalid amount" }, { status: 400 });
     }
 
-    // Create a PaymentIntent
+    // Create a PaymentIntent with automatic payment methods
+    // This enables Apple Pay, Google Pay, Link, and other wallets
     const paymentIntent = await stripe.paymentIntents.create({
       amount: Math.round(amount), // amount in cents
       currency: "usd",
       receipt_email: email || undefined,
+      automatic_payment_methods: {
+        enabled: true,
+      },
       metadata: {
         order_source: "worldwideshades.com",
         ...(metadata || {}),
       },
-      payment_method_types: ["card"],
     });
 
     return NextResponse.json({
