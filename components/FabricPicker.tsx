@@ -75,8 +75,15 @@ export default function FabricPicker({
       const q = debouncedQuery.toLowerCase().trim();
       list = list.filter(f => f.name.toLowerCase().includes(q));
     }
+    // Sort by price: cheapest first
+    list.sort((a, b) => {
+      if (hasDims) {
+        return getGridPrice(a.priceGroup, dimW, dimH) - getGridPrice(b.priceGroup, dimW, dimH);
+      }
+      return (a.priceGroup || 'Z').localeCompare(b.priceGroup || 'Z');
+    });
     return list;
-  }, [fabrics, activeFilter, debouncedQuery]);
+  }, [fabrics, activeFilter, debouncedQuery, hasDims, dimW, dimH]);
 
   const visibleFabrics = filtered.slice(0, visibleCount);
   const hasMore = visibleCount < filtered.length;
@@ -236,19 +243,6 @@ export default function FabricPicker({
         </div>
       )}
 
-      {/* ── CTA ── */}
-      <button
-        type="button"
-        className={`${styles.cta} ${!selectedId ? styles.ctaDisabled : ''}`}
-        disabled={!selectedId}
-        onClick={onConfirm}
-      >
-        Continue to Installation
-        <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="2" className={styles.ctaArrow}>
-          <polyline points="6,3 12,8 6,13" />
-        </svg>
-      </button>
-      {!selectedId && <div className={styles.ctaHint}>Select a fabric to continue</div>}
     </div>
   );
 }
