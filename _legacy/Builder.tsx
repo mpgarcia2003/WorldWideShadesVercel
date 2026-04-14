@@ -739,6 +739,18 @@ const Builder: React.FC<BuilderProps> = ({ addToCart, addToSwatches, swatches })
         visualizerImage: visualizerSnapshot,
       });
       setOpenStep(null);
+      trackEvent('add_to_cart', {
+        currency: 'USD',
+        value: priceBreakdown.total,
+        items: [{
+          item_id: config.material?.id || 'custom_shade',
+          item_name: config.material?.name || 'Custom Shade',
+          item_category: config.material?.category || 'Roller Shade',
+          item_variant: config.shape || 'Standard',
+          price: priceBreakdown.total,
+          quantity: config.quantity || 1,
+        }],
+      });
       trackEvent('step_confirmed', { step_number: stepIndex + 1, step_name: STEPS[stepIndex] });
       return;
     }
