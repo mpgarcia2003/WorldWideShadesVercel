@@ -17,7 +17,7 @@ const ROOM_IMAGE = "https://res.cloudinary.com/dcmlcfynd/image/upload/v176358028
 
 // Standard rectangle selection (calibrated from Visualizer.tsx)
 const SEL = { x: 0.257, y: 0.158, w: 0.540, h: 0.393 };
-const TEXTURE_SCALE = 0.15;
+const TEXTURE_SCALE = 0.10; // Adjusted for 800px output to match website smoothness (site uses 0.15 at ~550px)
 const WHITE_UNDERLAY = 0.85;
 
 interface ProductDef {
@@ -128,7 +128,7 @@ function renderProduct(
   roomImg: HTMLImageElement,
   textureCanvas: HTMLCanvasElement,
   category: "Blackout" | "Light Filtering",
-  outputWidth = 1200
+  outputWidth = 800
 ): string {
   const aspect = roomImg.naturalHeight / roomImg.naturalWidth;
   const W = outputWidth;
