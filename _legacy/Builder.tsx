@@ -288,9 +288,13 @@ const Builder: React.FC<BuilderProps> = ({ addToCart, addToSwatches, swatches })
   const { t } = useLanguage();
   const [path, setPath] = useState<null | 'build' | 'swatch'>(() => {
     try {
-      if (typeof window !== 'undefined' && localStorage.getItem('wws_editing_item')) return 'build';
+      if (typeof window !== 'undefined') {
+        const params = new URLSearchParams(window.location.search);
+        if (params.get('path') === 'swatch') return 'swatch';
+        return 'build';
+      }
     } catch {}
-    return null;
+    return 'build';
   });
   const [imageSrc, setImageSrc] = useState(DEFAULT_ROOM_IMAGE);
   const [selection, setSelection] = useState<WindowSelection | null>(null);
@@ -543,6 +547,22 @@ const Builder: React.FC<BuilderProps> = ({ addToCart, addToSwatches, swatches })
         if (shapeConfig && shapeConfig.mask) setImageSrc(shapeConfig.mask);
     }
   }, [config.shape]);
+
+  // Read shade type preference from URL params (?type=blackout or ?type=lightfiltering)
+  useEffect(() => {
+    try {
+      const params = new URLSearchParams(window.location.search);
+      const typeParam = params.get('type');
+      if (typeParam) {
+        const shadeType = typeParam.toLowerCase() === 'blackout' ? 'Blackout' :
+                          typeParam.toLowerCase() === 'lightfiltering' ? 'Light Filtering' : null;
+        if (shadeType) {
+          setConfig(prev => ({ ...prev, shadeType }));
+          trackEvent('shade_type_preselected', { shade_type: shadeType, source: 'url_param' });
+        }
+      }
+    } catch {}
+  }, []);
 
   const priceBreakdown = useMemo(() => {
     if (config.isMeasurementOnly && config.installer) {
@@ -1228,6 +1248,11 @@ const Builder: React.FC<BuilderProps> = ({ addToCart, addToSwatches, swatches })
                 <div className="text-[12px] font-medium uppercase tracking-[0.18em] mb-1.5" style={{ color: '#c8a165' }}>
                   Step {Math.min(completedSteps.size + 1, 2)} of 2 — Get your price
                 </div>
+                {isSaleActive() && (
+                  <div className="text-[11px] font-bold text-green-600 mt-0.5">
+                    Save up to {SALE_CONFIG.maxDiscount}% — Factory Direct Pricing
+                  </div>
+                )}
                 <div className="h-1 rounded-full overflow-hidden" style={{ backgroundColor: '#f0ece4' }}>
                   <div 
                     className="h-full rounded-full transition-all duration-700 ease-out"
