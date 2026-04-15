@@ -22,6 +22,7 @@ interface ServerPurchaseData {
     quantity: number;
   }>;
   userEmail?: string;
+  clientId?: string; // Real GA4 client_id from browser for attribution stitching
 }
 
 export async function trackServerPurchase(data: ServerPurchaseData) {
@@ -33,14 +34,15 @@ export async function trackServerPurchase(data: ServerPurchaseData) {
 
   const url = `https://www.google-analytics.com/mp/collect?measurement_id=${GA4_MEASUREMENT_ID}&api_secret=${apiSecret}`;
 
-  const clientId = `server.${data.transactionId.replace(/[^a-zA-Z0-9]/g, "").slice(0, 10)}.${Date.now()}`;
+  // Use real browser client_id if available, otherwise generate a synthetic one
+  const clientId = data.clientId || `server.${data.transactionId.replace(/[^a-zA-Z0-9]/g, "").slice(0, 10)}.${Date.now()}`;
 
   const payload = {
     client_id: clientId,
     non_personalized_ads: false,
     events: [
       {
-        name: "purchase_server",
+        name: "purchase",
         params: {
           transaction_id: data.transactionId,
           value: data.value,

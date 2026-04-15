@@ -605,6 +605,24 @@ export default function CheckoutPage() {
   const [isProcessing, setIsProcessing] = useState(false);
   const [clientSecret, setClientSecret] = useState<string | null>(null);
   const [stripeError, setStripeError] = useState("");
+  const [gaClientId, setGaClientId] = useState<string | null>(null);
+
+  // Capture GA4 client_id for server-side attribution stitching
+  useEffect(() => {
+    try {
+      const w = window as any;
+      if (w.gtag) {
+        w.gtag('get', 'G-1RHH50R34P', 'client_id', (id: string) => {
+          if (id) setGaClientId(id);
+        });
+      }
+      // Fallback: read from GA cookie
+      if (!gaClientId) {
+        const match = document.cookie.match(/_ga=GA\d+\.\d+\.(.+)/);
+        if (match) setGaClientId(match[1]);
+      }
+    } catch {}
+  }, []);
 
   // Load cart from localStorage
   useEffect(() => {
@@ -641,7 +659,7 @@ export default function CheckoutPage() {
       body: JSON.stringify({
         amount: amountInCents,
         email: email || undefined,
-        metadata: { items: cart.length.toString() },
+        metadata: { items: cart.length.toString(), ga_client_id: gaClientId || '' },
       }),
     })
       .then((res) => res.json())
