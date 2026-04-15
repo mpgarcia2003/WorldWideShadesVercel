@@ -247,22 +247,7 @@ const CheckoutDrawer: React.FC<CheckoutDrawerProps> = ({
           onCheckout();
       }
 
-      // GA4 Event: begin_checkout
-      trackEvent('begin_checkout', { 
-        value: cartTotal, 
-        currency: 'USD', 
-        items: cart.map(item => ({
-          item_id: item.config.material?.id || 'custom-shade',
-          item_name: item.config.material?.name || 'Custom Shade',
-          price: item.unitPrice,
-          quantity: item.config.quantity,
-          fabric: item.config.material?.name || 'Unknown',
-          shape: item.config.shape,
-          shade_type: item.config.shadeType,
-          control_type: item.config.controlType,
-          mount_type: item.config.mountType
-        }))
-      });
+      // begin_checkout fires on /checkout page via lib/gtm/events.ts (no duplicate here)
 
       try {
         // Redirect to custom checkout page
