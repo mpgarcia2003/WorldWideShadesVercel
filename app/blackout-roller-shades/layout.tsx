@@ -1,18 +1,40 @@
 import type { Metadata } from "next";
-import { SITE } from "@/lib/constants";
 
 export const metadata: Metadata = {
-  title: "Custom Blackout Roller Shades | 100% Light Blocking Window Shades",
-  description: "Custom blackout roller shades built to your exact windows. 200+ premium blackout fabrics, factory-direct pricing from $250. Ships in 7 days. 100% Fit Guarantee. Made in USA.",
-  alternates: { canonical: `https://${SITE.domain}/blackout-roller-shades` },
-  openGraph: {
-    title: "Custom Blackout Roller Shades | World Wide Shades",
-    description: "100% light-blocking blackout window shades, custom-built to your exact measurements. 200+ premium fabrics. Ships in 7 days. From $250.",
-    type: "website",
-    url: `https://${SITE.domain}/blackout-roller-shades`,
+  title: "Custom Blackout Roller Shades | 50% Off | World Wide Shades",
+  description:
+    "100% light-blocking custom blackout roller shades built to your exact window measurements. 200+ premium fabrics from Phifer, Ferrari & Mermet. Up to 50% off — from $145. Free shipping.",
+  alternates: {
+    canonical: "https://www.worldwideshades.com/blackout-roller-shades",
+  },
+  other: {
+    // Preload hero image so browser starts downloading before JS bundle executes
+    "link-preload": "true",
   },
 };
 
-export default function BlackoutLayout({ children }: { children: React.ReactNode }) {
-  return <>{children}</>;
+export default function BlackoutLayout({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
+  return (
+    <>
+      {/* Preload hero image — tells browser to start downloading immediately in the initial HTML */}
+      {/* Mobile gets 400w, desktop gets 800w */}
+      <link
+        rel="preload"
+        as="image"
+        href="https://res.cloudinary.com/dcmlcfynd/image/upload/f_auto,q_auto,w_400/v1776277846/photo-1616594039964-ae9021a400a0_o7co15.jpg"
+        media="(max-width: 768px)"
+      />
+      <link
+        rel="preload"
+        as="image"
+        href="https://res.cloudinary.com/dcmlcfynd/image/upload/f_auto,q_auto,w_800/v1776277846/photo-1616594039964-ae9021a400a0_o7co15.jpg"
+        media="(min-width: 769px)"
+      />
+      {children}
+    </>
+  );
 }

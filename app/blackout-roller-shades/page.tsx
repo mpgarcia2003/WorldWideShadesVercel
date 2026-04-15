@@ -327,7 +327,7 @@ const BODY_HTML = `<section class="hero" id="top">
         </div>
       </div>
       <div class="hero__image">
-        <img src="https://res.cloudinary.com/dcmlcfynd/image/upload/f_auto,q_auto,w_800/v1776277846/photo-1616594039964-ae9021a400a0_o7co15.jpg" alt="Dark modern bedroom with custom blackout roller shades fully drawn, creating complete darkness for optimal sleep" width="800" height="1000" loading="eager" fetchpriority="high">
+        <img src="https://res.cloudinary.com/dcmlcfynd/image/upload/f_auto,q_auto,w_800/v1776277846/photo-1616594039964-ae9021a400a0_o7co15.jpg" srcset="https://res.cloudinary.com/dcmlcfynd/image/upload/f_auto,q_auto,w_400/v1776277846/photo-1616594039964-ae9021a400a0_o7co15.jpg 400w, https://res.cloudinary.com/dcmlcfynd/image/upload/f_auto,q_auto,w_800/v1776277846/photo-1616594039964-ae9021a400a0_o7co15.jpg 800w" sizes="(max-width: 768px) 100vw, 50vw" alt="Dark modern bedroom with custom blackout roller shades fully drawn, creating complete darkness for optimal sleep" width="800" height="1000" loading="eager" fetchpriority="high">
         <div class="hero__price-anchor">
           <div class="t-xs">Spring Sale — 50% Off</div>
           <div class="price"><span style="text-decoration:line-through;color:var(--text-faint);font-size:1rem;font-weight:400;margin-right:0.375rem">$290</span>$145 <span>/ window</span></div>
