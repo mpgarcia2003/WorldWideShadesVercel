@@ -11,7 +11,7 @@ const PRODUCT_SCHEMA = {
   "brand": { "@type": "Brand", "name": "World Wide Shades" },
   "manufacturer": { "@type": "Organization", "name": "World Wide Shades", "url": "https://worldwideshades.com" },
   "url": "https://worldwideshades.com/blackout-roller-shades",
-  "image": "https://worldwideshades.com/images/blackout-roller-shades-hero.jpg",
+  "image": "https://res.cloudinary.com/dcmlcfynd/image/upload/f_auto,q_auto,w_800/v1776277846/photo-1616594039964-ae9021a400a0_o7co15.jpg",
   "category": "Blackout Window Shades",
   "material": "Premium Blackout Fabric",
   "countryOfOrigin": "US",
@@ -327,7 +327,7 @@ const BODY_HTML = `<section class="hero" id="top">
         </div>
       </div>
       <div class="hero__image">
-        <img src="https://images.unsplash.com/photo-1616594039964-ae9021a400a0?w=800&q=80&auto=format" alt="Dark modern bedroom with custom blackout roller shades fully drawn, creating complete darkness for optimal sleep" width="800" height="1000" loading="eager" fetchpriority="high">
+        <img src="https://res.cloudinary.com/dcmlcfynd/image/upload/f_auto,q_auto,w_800/v1776277846/photo-1616594039964-ae9021a400a0_o7co15.jpg" alt="Dark modern bedroom with custom blackout roller shades fully drawn, creating complete darkness for optimal sleep" width="800" height="1000" loading="eager" fetchpriority="high">
         <div class="hero__price-anchor">
           <div class="t-xs">Spring Sale — 50% Off</div>
           <div class="price"><span style="text-decoration:line-through;color:var(--text-faint);font-size:1rem;font-weight:400;margin-right:0.375rem">$290</span>$145 <span>/ window</span></div>
