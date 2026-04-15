@@ -668,7 +668,7 @@ export default function CheckoutPage() {
         else setStripeError(data.error || "Could not initialize payment.");
       })
       .catch(() => setStripeError("Could not connect to payment server."));
-  }, [loaded, cart, promoApplied, promoDiscount]); // re-create if promo changes
+  }, [loaded, cart, promoApplied, promoDiscount, gaClientId]); // include gaClientId so metadata updates when it resolves
 
   const subtotal = cart.reduce((sum, item) => sum + item.totalPrice, 0);
   const discount = promoApplied ? promoDiscount : 0;

@@ -21,7 +21,6 @@ import { getDynamicFabrics, saveSwatchRequest, saveQuoteConfig, loadQuoteConfig 
 import { notifyAdminSwatchRequest, notifyAdminExitIntent, sendCustomerQuoteEmail } from '../utils/email';
 import { useLanguage } from '../LanguageContext';
 import { trackEvent } from '../utils/analytics';
-import { trackAddToCart, buildGTMItem } from '../lib/gtm/events';
 import { builderHooks } from '../services/analytics';
 import { bhStepComplete, bhStepStart } from '../lib/tracking/behavior';
 import PrecisionEmailModal from '../components/PrecisionEmailModal';
@@ -740,32 +739,7 @@ const Builder: React.FC<BuilderProps> = ({ addToCart, addToSwatches, swatches })
         visualizerImage: visualizerSnapshot,
       });
       setOpenStep(null);
-      // GA4 Enhanced Ecommerce add_to_cart (proper GTM format)
-      const gtmItem = buildGTMItem(config, priceBreakdown.total);
-      trackAddToCart([gtmItem], priceBreakdown.total);
-
-      // First-party backup — bypasses ad blockers
-      try {
-        let gaClientId = '';
-        const gaCookie = document.cookie.match(/_ga=GA\d+\.\d+\.(.+)/);
-        if (gaCookie) gaClientId = gaCookie[1];
-        if (gaClientId) {
-          fetch('/api/track', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-              event_name: 'add_to_cart',
-              client_id: gaClientId,
-              params: {
-                currency: 'USD',
-                value: priceBreakdown.total,
-                items: [{ item_id: gtmItem.item_id, item_name: gtmItem.item_name, price: gtmItem.price, quantity: gtmItem.quantity }],
-              },
-            }),
-          }).catch(() => {}); // Fire and forget
-        }
-      } catch {}
-
+      // Tracking handled by app/builder/page.tsx::addToCart wrapper
       trackEvent('step_confirmed', { step_number: stepIndex + 1, step_name: STEPS[stepIndex] });
       return;
     }

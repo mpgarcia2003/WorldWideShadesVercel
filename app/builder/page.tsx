@@ -83,6 +83,28 @@ export default function BuilderPage() {
     const gtmItem = buildGTMItem(item.config, item.totalPrice);
     trackAddToCart([gtmItem], item.totalPrice);
 
+    // First-party backup — bypasses ad blockers
+    try {
+      let gaClientId = '';
+      const gaCookie = document.cookie.match(/_ga=GA\d+\.\d+\.(.+)/);
+      if (gaCookie) gaClientId = gaCookie[1];
+      if (gaClientId) {
+        fetch('/api/track', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            event_name: 'add_to_cart',
+            client_id: gaClientId,
+            params: {
+              currency: 'USD',
+              value: item.totalPrice,
+              items: [{ item_id: gtmItem.item_id, item_name: gtmItem.item_name, price: gtmItem.price, quantity: gtmItem.quantity }],
+            },
+          }),
+        }).catch(() => {}); // Fire and forget
+      }
+    } catch {}
+
     trackEvent('add_to_cart', {
       currency: 'USD', value: item.totalPrice,
       items: [{ item_id: item.config.material?.id || 'custom-shade', item_name: item.config.material?.name || 'Custom Shade', price: item.unitPrice, quantity: item.config.quantity }],
