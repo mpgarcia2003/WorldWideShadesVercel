@@ -73,7 +73,7 @@ const CSS = `/* ===== SCOPED BASE (no global reset — site handles that) ===== 
   --bg-card:#161513;
   --text:#E8E4DD;
   --text-muted:#9B9690;
-  --text-faint:#6B6660;
+  --text-faint:#8A8480;
   --border:#2A2825;
   --border-light:#3A3835;
   --green:#5BA665;
@@ -168,7 +168,7 @@ const CSS = `/* ===== SCOPED BASE (no global reset — site handles that) ===== 
 .ps-list{display:flex;flex-direction:column;gap:1.25rem;margin-top:1.5rem}
 .ps-item{display:flex;gap:0.75rem}
 .ps-item__icon{width:24px;height:24px;flex-shrink:0;margin-top:0.125rem}
-.ps-item__content h4{font-size:0.9375rem;font-weight:600;margin-bottom:0.25rem}
+.ps-item__content h3{font-size:0.9375rem;font-weight:600;margin-bottom:0.25rem}
 .ps-item__content p{font-size:0.875rem;color:var(--text-muted);line-height:1.55}
 @media(max-width:768px){.problem-solution__grid{grid-template-columns:1fr}}
 
@@ -375,21 +375,21 @@ const BODY_HTML = `<section class="hero" id="top">
           <div class="ps-item">
             <svg class="ps-item__icon" viewBox="0 0 24 24" fill="none" stroke="#A0645A" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
             <div class="ps-item__content">
-              <h4>Light gaps ruin "blackout"</h4>
+              <h3>Light gaps ruin "blackout"</h3>
               <p>Stock blackout window shades never fit right — they're sized for standard windows, not yours. Light bleeds around every edge.</p>
             </div>
           </div>
           <div class="ps-item">
             <svg class="ps-item__icon" viewBox="0 0 24 24" fill="none" stroke="#A0645A" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
             <div class="ps-item__content">
-              <h4>Showroom quotes are brutal</h4>
+              <h3>Showroom quotes are brutal</h3>
               <p>$350–$500 per window just for the privilege of a custom quote. Then 3–4 weeks to wait.</p>
             </div>
           </div>
           <div class="ps-item">
             <svg class="ps-item__icon" viewBox="0 0 24 24" fill="none" stroke="#A0645A" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
             <div class="ps-item__content">
-              <h4>No way to preview</h4>
+              <h3>No way to preview</h3>
               <p>Buying blackout roller shades online is risky — colors and textures look different on screen versus in your room.</p>
             </div>
           </div>
@@ -401,21 +401,21 @@ const BODY_HTML = `<section class="hero" id="top">
           <div class="ps-item">
             <svg class="ps-item__icon" viewBox="0 0 24 24" fill="none" stroke="var(--gold)" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
             <div class="ps-item__content">
-              <h4>Built to your exact window</h4>
+              <h3>Built to your exact window</h3>
               <p>Every blackout roller shade is precision-cut to ⅛" of your measurements. No gaps. No glow. No compromise.</p>
             </div>
           </div>
           <div class="ps-item">
             <svg class="ps-item__icon" viewBox="0 0 24 24" fill="none" stroke="var(--gold)" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
             <div class="ps-item__content">
-              <h4>Factory-direct pricing</h4>
+              <h3>Factory-direct pricing</h3>
               <p>No showroom markup. No middleman. Custom blackout roller shades from $145 with our Spring Sale — delivered to your door.</p>
             </div>
           </div>
           <div class="ps-item">
             <svg class="ps-item__icon" viewBox="0 0 24 24" fill="none" stroke="var(--gold)" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
             <div class="ps-item__content">
-              <h4>AI Room Visualizer</h4>
+              <h3>AI Room Visualizer</h3>
               <p>Upload a photo of your window. See your chosen fabric and color rendered in your actual room before you order.</p>
             </div>
           </div>
