@@ -268,6 +268,53 @@ const CSS = `/* ===== SCOPED BASE (no global reset — site handles that) ===== 
 .fabric-logos{display:flex;flex-wrap:wrap;gap:0.75rem;margin-top:1.5rem}
 .fabric-logo{padding:0.5rem 1rem;border:1px solid var(--border);border-radius:8px;font-size:0.75rem;font-weight:600;color:var(--text-muted);letter-spacing:0.02em}
 
+/* ===== BUYER STEPS ===== */
+.buyer-steps{background:linear-gradient(180deg,var(--bg-elevated) 0%,var(--bg) 100%);border-bottom:1px solid var(--border);padding:clamp(2.5rem,5vw,4rem) 0}
+.buyer-steps__grid{display:grid;grid-template-columns:1fr 1fr;gap:clamp(2rem,4vw,3rem);align-items:center}
+.buyer-steps__list{display:flex;flex-direction:column;gap:1rem;margin-top:1.5rem}
+.buyer-step{display:flex;align-items:flex-start;gap:1rem}
+.buyer-step__num{width:36px;height:36px;border-radius:50%;background:var(--gold);color:#0F0F0D;display:flex;align-items:center;justify-content:center;font-size:0.875rem;font-weight:700;flex-shrink:0}
+.buyer-step__text h3{font-size:0.9375rem;font-weight:600;margin-bottom:0.125rem}
+.buyer-step__text p{font-size:0.8125rem;color:var(--text-muted);line-height:1.5}
+.urgency-badge{display:inline-flex;align-items:center;gap:0.5rem;background:rgba(201,169,110,0.08);border:1px solid rgba(201,169,110,0.2);border-radius:8px;padding:0.75rem 1rem;margin-top:1.5rem}
+.urgency-badge svg{width:18px;height:18px;color:var(--gold);flex-shrink:0}
+.urgency-badge span{font-size:0.8125rem;color:var(--text-muted);line-height:1.4}
+.urgency-badge strong{color:var(--gold)}
+@media(max-width:768px){.buyer-steps__grid{grid-template-columns:1fr}}
+
+/* ===== PRICING QUICK ===== */
+.pricing-quick{padding:clamp(2rem,4vw,3rem) 0}
+.pricing-quick__grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1rem;margin-top:1.5rem}
+.pq-card{background:var(--bg-card);border:1px solid var(--border);border-radius:10px;padding:1.25rem;text-align:center}
+.pq-card__label{font-size:0.75rem;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.04em;font-weight:600;margin-bottom:0.375rem}
+.pq-card__price{font-size:1.5rem;font-weight:700;letter-spacing:-0.02em}
+.pq-card__note{font-size:0.75rem;color:var(--text-faint);margin-top:0.25rem}
+.pq-card--highlight{border-color:var(--gold);background:rgba(201,169,110,0.04)}
+@media(max-width:600px){.pricing-quick__grid{grid-template-columns:1fr}}
+
+/* ===== FIT CHECK ===== */
+.fit-check__grid{display:grid;grid-template-columns:1fr 1fr;gap:clamp(1.5rem,3vw,2.5rem)}
+.fit-card{border-radius:12px;padding:clamp(1.5rem,3vw,2rem)}
+.fit-card--yes{background:rgba(91,166,101,0.06);border:1px solid rgba(91,166,101,0.2)}
+.fit-card--no{background:rgba(160,100,90,0.06);border:1px solid rgba(160,100,90,0.2)}
+.fit-card__list{display:flex;flex-direction:column;gap:0.75rem;margin-top:1.25rem}
+.fit-card__item{display:flex;align-items:flex-start;gap:0.5rem;font-size:0.875rem;color:var(--text-muted);line-height:1.5}
+.fit-card__item svg{width:18px;height:18px;flex-shrink:0;margin-top:0.125rem}
+@media(max-width:768px){.fit-check__grid{grid-template-columns:1fr}}
+
+/* ===== SIDE CHANNELS ===== */
+.sc-grid{display:grid;grid-template-columns:1fr 1fr;gap:clamp(2rem,4vw,3rem);align-items:center;margin-top:2rem}
+.sc-visual{display:grid;grid-template-columns:1fr 1fr;gap:1rem}
+.sc-card{border-radius:12px;padding:1.5rem;text-align:center}
+.sc-card--without{background:var(--bg-card);border:1px solid rgba(160,100,90,0.3)}
+.sc-card--with{background:rgba(201,169,110,0.04);border:1px solid var(--gold)}
+.sc-card__icon{font-size:2.5rem;margin-bottom:0.75rem}
+.sc-card__label{font-size:0.75rem;font-weight:600;text-transform:uppercase;letter-spacing:0.04em;margin-bottom:0.5rem}
+.sc-card--without .sc-card__label{color:#A0645A}
+.sc-card--with .sc-card__label{color:var(--gold)}
+.sc-card__detail{font-size:0.8125rem;color:var(--text-muted);line-height:1.5}
+@media(max-width:768px){.sc-grid{grid-template-columns:1fr}.sc-visual{grid-template-columns:1fr}}
+
 /* ===== SECTION HEADER ===== */
 .section-header{margin-bottom:0;max-width:640px}
 .section-header .t-xs{color:var(--gold);margin-bottom:0.75rem}
@@ -360,6 +407,77 @@ const BODY_HTML = `<section class="hero" id="top">
     </div>
   </div>
 </div>
+
+<!-- BUYER STEPS + URGENCY -->
+<section class="buyer-steps">
+  <div class="container">
+    <div class="buyer-steps__grid">
+      <div>
+        <div class="t-xs" style="color:var(--gold);margin-bottom:0.75rem">How It Works</div>
+        <h2 class="t-section">Get Custom Blackout<br>Shades in Minutes</h2>
+        <div class="buyer-steps__list">
+          <div class="buyer-step">
+            <div class="buyer-step__num">1</div>
+            <div class="buyer-step__text">
+              <h3>Enter your window size</h3>
+              <p>Measure width and height — we build to ⅛" precision</p>
+            </div>
+          </div>
+          <div class="buyer-step">
+            <div class="buyer-step__num">2</div>
+            <div class="buyer-step__text">
+              <h3>Choose your fabric</h3>
+              <p>200+ premium blackout fabrics from Phifer, Ferrari, and Mermet</p>
+            </div>
+          </div>
+          <div class="buyer-step">
+            <div class="buyer-step__num">3</div>
+            <div class="buyer-step__text">
+              <h3>See instant pricing</h3>
+              <p>Your exact price — no hidden fees, no showroom quotes</p>
+            </div>
+          </div>
+          <div class="buyer-step">
+            <div class="buyer-step__num">4</div>
+            <div class="buyer-step__text">
+              <h3>Ships in ~7 business days</h3>
+              <p>Built to order, shipped free via FedEx to your door</p>
+            </div>
+          </div>
+        </div>
+        <div class="urgency-badge">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+          <span><strong>Limited daily production slots.</strong> We build each shade by hand — once today's slots fill, the next batch ships tomorrow.</span>
+        </div>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:1rem">
+        <div class="pricing-quick__grid" style="grid-template-columns:1fr">
+          <div class="pq-card pq-card--highlight">
+            <div class="pq-card__label">Most Orders</div>
+            <div class="pq-card__price gold">$180 – $350</div>
+            <div class="pq-card__note">Standard bedroom &amp; living room windows</div>
+          </div>
+          <div class="pq-card">
+            <div class="pq-card__label">Small Windows</div>
+            <div class="pq-card__price">$145 – $250</div>
+            <div class="pq-card__note">Bathrooms, sidelights, home offices</div>
+          </div>
+          <div class="pq-card">
+            <div class="pq-card__label">Motorized Upgrade</div>
+            <div class="pq-card__price">+$250</div>
+            <div class="pq-card__note">Alexa, Google, HomeKit compatible</div>
+          </div>
+          <div class="pq-card">
+            <div class="pq-card__label">Side Channels (Total Blackout)</div>
+            <div class="pq-card__price">+$15/ft</div>
+            <div class="pq-card__note">Eliminates 100% of edge light gaps</div>
+          </div>
+        </div>
+        <a href="/builder?type=blackout" class="btn btn--gold" style="width:100%;margin-top:0.5rem">Get Your Exact Price →</a>
+      </div>
+    </div>
+  </div>
+</section>
 
 <!-- PROBLEM / SOLUTION -->
 <section class="section reveal" id="why">
@@ -459,6 +577,37 @@ const BODY_HTML = `<section class="hero" id="top">
           <h3>Blackout Shades for Media Room</h3>
           <p>Zero-glare environment for cinema-quality viewing. Pair with motorization — close everything with Alexa before movie night.</p>
           <a href="/builder?type=blackout" class="btn btn--gold">Build for Media Room</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- WHO THIS IS FOR / NOT FOR -->
+<section class="section reveal">
+  <div class="container">
+    <div class="section-header section-header--center" style="margin-bottom:2.5rem">
+      <div class="t-xs">Is This Right For You?</div>
+      <h2 class="t-section">Custom Blackout Shades<br>Are Built For…</h2>
+    </div>
+    <div class="fit-check__grid">
+      <div class="fit-card fit-card--yes">
+        <h3 class="t-subsection" style="color:var(--green)">Perfect If You…</h3>
+        <div class="fit-card__list">
+          <div class="fit-card__item"><svg viewBox="0 0 24 24" fill="none" stroke="var(--green)" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg> Own your home and want premium window treatments</div>
+          <div class="fit-card__item"><svg viewBox="0 0 24 24" fill="none" stroke="var(--green)" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg> Have non-standard or oversized windows</div>
+          <div class="fit-card__item"><svg viewBox="0 0 24 24" fill="none" stroke="var(--green)" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg> Need total darkness for sleep, nurseries, or media rooms</div>
+          <div class="fit-card__item"><svg viewBox="0 0 24 24" fill="none" stroke="var(--green)" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg> Want motorized or smart-home integration</div>
+          <div class="fit-card__item"><svg viewBox="0 0 24 24" fill="none" stroke="var(--green)" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg> Value factory-direct pricing without showroom markup</div>
+        </div>
+      </div>
+      <div class="fit-card fit-card--no">
+        <h3 class="t-subsection" style="color:#A0645A">Not The Best Fit If You…</h3>
+        <div class="fit-card__list">
+          <div class="fit-card__item"><svg viewBox="0 0 24 24" fill="none" stroke="#A0645A" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg> Need a temporary or disposable blackout solution</div>
+          <div class="fit-card__item"><svg viewBox="0 0 24 24" fill="none" stroke="#A0645A" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg> Are looking for the cheapest option under $50</div>
+          <div class="fit-card__item"><svg viewBox="0 0 24 24" fill="none" stroke="#A0645A" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg> Want standard sizes off the shelf today</div>
+          <div class="fit-card__item"><svg viewBox="0 0 24 24" fill="none" stroke="#A0645A" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg> Just need curtains or drapes</div>
         </div>
       </div>
     </div>
@@ -672,6 +821,59 @@ const BODY_HTML = `<section class="hero" id="top">
             <div style="display:flex;align-items:center;gap:0.5rem;font-size:0.8125rem;color:var(--text-muted)"><svg class="check-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg> Sun-tracking automation</div>
           </div>
         </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- SIDE CHANNELS = TOTAL BLACKOUT -->
+<section class="section reveal" style="background:var(--bg-elevated);border-top:1px solid var(--border);border-bottom:1px solid var(--border)">
+  <div class="container">
+    <div class="section-header section-header--center" style="margin-bottom:0">
+      <div class="t-xs">The Secret to True Blackout</div>
+      <h2 class="t-section">Without Side Channels,<br>It's Not Real Blackout</h2>
+      <p style="color:var(--text-muted);margin-top:0.75rem;max-width:600px;margin-left:auto;margin-right:auto">Every blackout shade has a weak point: the edges. Light bleeds around the sides where the shade meets the window frame. Side channels seal that gap completely.</p>
+    </div>
+    <div class="sc-grid">
+      <div class="sc-visual">
+        <div class="sc-card sc-card--without">
+          <div class="sc-card__icon">☀️</div>
+          <div class="sc-card__label">Without Side Channels</div>
+          <div style="font-size:1.75rem;font-weight:700;margin-bottom:0.5rem">~95%</div>
+          <div class="sc-card__detail">Light bleeds around all 4 edges. Visible glow in the room. Not true blackout.</div>
+        </div>
+        <div class="sc-card sc-card--with">
+          <div class="sc-card__icon">🌙</div>
+          <div class="sc-card__label">With Side Channels</div>
+          <div style="font-size:1.75rem;font-weight:700;color:var(--gold);margin-bottom:0.5rem">100%</div>
+          <div class="sc-card__detail">Sealed on all sides. Zero light leakage. Total darkness for sleep, nurseries, and media rooms.</div>
+        </div>
+      </div>
+      <div>
+        <h3 class="t-subsection" style="margin-bottom:1rem">How Side Channels Work</h3>
+        <div style="display:flex;flex-direction:column;gap:0.75rem">
+          <div style="display:flex;align-items:flex-start;gap:0.5rem;font-size:0.875rem;color:var(--text-muted);line-height:1.55">
+            <svg style="width:18px;height:18px;flex-shrink:0;margin-top:0.125rem" viewBox="0 0 24 24" fill="none" stroke="var(--gold)" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
+            U-shaped aluminum tracks mount to each side of the window frame
+          </div>
+          <div style="display:flex;align-items:flex-start;gap:0.5rem;font-size:0.875rem;color:var(--text-muted);line-height:1.55">
+            <svg style="width:18px;height:18px;flex-shrink:0;margin-top:0.125rem" viewBox="0 0 24 24" fill="none" stroke="var(--gold)" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
+            Shade fabric slides inside the channels as it rolls up and down
+          </div>
+          <div style="display:flex;align-items:flex-start;gap:0.5rem;font-size:0.875rem;color:var(--text-muted);line-height:1.55">
+            <svg style="width:18px;height:18px;flex-shrink:0;margin-top:0.125rem" viewBox="0 0 24 24" fill="none" stroke="var(--gold)" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
+            Creates a complete seal — no light can enter from the sides or bottom
+          </div>
+          <div style="display:flex;align-items:flex-start;gap:0.5rem;font-size:0.875rem;color:var(--text-muted);line-height:1.55">
+            <svg style="width:18px;height:18px;flex-shrink:0;margin-top:0.125rem" viewBox="0 0 24 24" fill="none" stroke="var(--gold)" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
+            Available in white, black, or bronze to match your window trim
+          </div>
+        </div>
+        <div style="margin-top:1.5rem;display:flex;align-items:center;gap:1rem">
+          <span style="font-size:1.5rem;font-weight:700;color:var(--gold)">+$15/ft</span>
+          <span style="font-size:0.875rem;color:var(--text-muted)">Added during checkout — most windows = $30–$45 per shade</span>
+        </div>
+        <a href="/builder?type=blackout" class="btn btn--gold" style="margin-top:1.25rem">Build With Side Channels →</a>
       </div>
     </div>
   </div>
