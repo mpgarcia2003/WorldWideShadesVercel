@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import { loadStripe } from "@stripe/stripe-js";
 import { Elements, PaymentElement, useStripe, useElements } from "@stripe/react-stripe-js";
 import { SHAPE_CONFIGS, VALANCE_OPTIONS, SIDE_CHANNEL_OPTIONS, isSaleActive, SALE_CONFIG, getFabricUrl } from "../../constants";
@@ -162,14 +162,29 @@ function StripePaymentForm({
       setErrorMessage(error.message || "Payment failed. Please try again.");
       setIsProcessing(false);
     } else if (paymentIntent && paymentIntent.status === "succeeded") {
-      // Track purchase — THE primary conversion
-      trackPurchase(
-        paymentIntent.id,
-        total,
-        orderData.items?.map((i: any) => ({ item_id: i.fabric_id || "shade", item_name: i.shade_type, item_category: i.shade_type, price: i.total_price, quantity: i.quantity || 1 })) || [],
-        { tax: 0, shipping: 0, coupon: orderData.promo_code || "", discount: orderData.discount || 0 },
-        { email: orderData.email, phone: orderData.phone, firstName: orderData.shipping_first_name, lastName: orderData.shipping_last_name, address: orderData.shipping_address1, city: orderData.shipping_city, state: orderData.shipping_state, zip: orderData.shipping_zip }
-      );
+      // DUAL TRACKING with dedup guard:
+      // - Webhook fires server-side purchase (primary, reliable, no ad blockers)
+      // - Browser fires purchase (backup, better Google Ads attribution via gtag)
+      // - GA4 dedupes by matching transaction_id (paymentIntent.id)
+      //
+      // Guard: window.__wws_purchase_fired prevents browser from firing twice if
+      // React re-renders or user double-clicks submit.
+      try {
+        const w = window as any;
+        if (!w.__wws_purchase_fired) {
+          w.__wws_purchase_fired = true;
+          trackPurchase(
+            paymentIntent.id,
+            total,
+            orderData.items?.map((i: any) => ({ item_id: i.fabric_id || "shade", item_name: i.shade_type, item_category: i.shade_type, price: i.total_price, quantity: i.quantity || 1 })) || [],
+            { tax: 0, shipping: 0, coupon: orderData.promo_code || "", discount: orderData.discount || 0 },
+            { email: orderData.email, phone: orderData.phone, firstName: orderData.shipping_first_name, lastName: orderData.shipping_last_name, address: orderData.shipping_address1, city: orderData.shipping_city, state: orderData.shipping_state, zip: orderData.shipping_zip }
+          );
+        }
+      } catch (e) {
+        console.error('[Checkout] Browser purchase tracking failed:', e);
+        // Non-fatal — webhook will still fire the server-side purchase
+      }
 
       // Save order to Supabase
       let orderNumber = '';
@@ -633,16 +648,40 @@ export default function CheckoutPage() {
     setLoaded(true);
   }, []);
 
-  // Fire begin_checkout when cart loads (1.5s delay for Google Ads Tag to initialize)
+  // Fire begin_checkout ONCE when cart first loads with items (ref prevents re-fire on state changes)
+  const beginCheckoutFiredRef = useRef(false);
   useEffect(() => {
-    if (!loaded || cart.length === 0) return;
-    const timer = setTimeout(() => {
-      const total = cart.reduce((sum, item) => sum + item.totalPrice, 0);
-      const gtmItems = cart.map((item) => buildGTMItem(item.config, item.totalPrice));
-      trackBeginCheckout(gtmItems, total);
-    }, 1500);
-    return () => clearTimeout(timer);
-  }, [loaded, cart.length]);
+    if (!loaded || cart.length === 0 || beginCheckoutFiredRef.current) return;
+    beginCheckoutFiredRef.current = true;
+
+    const total = cart.reduce((sum, item) => sum + item.totalPrice, 0);
+    const gtmItems = cart.map((item) => buildGTMItem(item.config, item.totalPrice));
+    trackBeginCheckout(gtmItems, total);
+
+    // First-party backup — bypasses ad blockers
+    try {
+      let clientIdForTrack = gaClientId || '';
+      if (!clientIdForTrack) {
+        const gaCookie = document.cookie.match(/_ga=GA\d+\.\d+\.(.+)/);
+        if (gaCookie) clientIdForTrack = gaCookie[1];
+      }
+      if (clientIdForTrack) {
+        fetch('/api/track', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            event_name: 'begin_checkout',
+            client_id: clientIdForTrack,
+            params: {
+              currency: 'USD',
+              value: total,
+              items: gtmItems.map((i) => ({ item_id: i.item_id, item_name: i.item_name, price: i.price, quantity: i.quantity })),
+            },
+          }),
+        }).catch(() => {});
+      }
+    } catch {}
+  }, [loaded, cart.length, gaClientId]);
 
   // Create PaymentIntent when cart is loaded
   useEffect(() => {

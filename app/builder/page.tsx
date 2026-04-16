@@ -105,7 +105,7 @@ export default function BuilderPage() {
       }
     } catch {}
 
-    trackEvent('add_to_cart', {
+    trackEvent('add_to_cart_internal', {
       currency: 'USD', value: item.totalPrice,
       items: [{ item_id: item.config.material?.id || 'custom-shade', item_name: item.config.material?.name || 'Custom Shade', price: item.unitPrice, quantity: item.config.quantity }],
     });

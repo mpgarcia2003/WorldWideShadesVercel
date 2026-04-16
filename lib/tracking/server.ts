@@ -32,10 +32,17 @@ export async function trackServerPurchase(data: ServerPurchaseData) {
     return;
   }
 
+  // CRITICAL for GA4 dedup: without a real browser client_id, the server event
+  // won't share session with the browser event, causing double-counted purchases.
+  // If no clientId, skip server event — browser event will be the source of truth.
+  if (!data.clientId) {
+    console.warn(`[Server Tracking] No browser client_id for ${data.transactionId} — skipping server event to avoid dedup mismatch. Browser event will handle tracking.`);
+    return;
+  }
+
   const url = `https://www.google-analytics.com/mp/collect?measurement_id=${GA4_MEASUREMENT_ID}&api_secret=${apiSecret}`;
 
-  // Use real browser client_id if available, otherwise generate a synthetic one
-  const clientId = data.clientId || `server.${data.transactionId.replace(/[^a-zA-Z0-9]/g, "").slice(0, 10)}.${Date.now()}`;
+  const clientId = data.clientId;
 
   const payload = {
     client_id: clientId,
@@ -51,7 +58,6 @@ export async function trackServerPurchase(data: ServerPurchaseData) {
           shipping: data.shipping || 0,
           coupon: data.coupon || "",
           items: data.items,
-          event_source: "server",
         },
       },
     ],
