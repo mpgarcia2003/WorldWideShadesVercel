@@ -1,18 +1,3 @@
-import type { Metadata } from "next";
-
-export const metadata: Metadata = {
-  title: "Custom Blackout Roller Shades | 50% Off | World Wide Shades",
-  description:
-    "100% light-blocking custom blackout roller shades built to your exact window measurements. 200+ premium fabrics from Phifer, Ferrari & Mermet. Up to 50% off — from $145. Free shipping.",
-  alternates: {
-    canonical: "https://www.worldwideshades.com/blackout-roller-shades",
-  },
-  other: {
-    // Preload hero image so browser starts downloading before JS bundle executes
-    "link-preload": "true",
-  },
-};
-
 export default function BlackoutLayout({
   children,
 }: {
@@ -20,8 +5,7 @@ export default function BlackoutLayout({
 }) {
   return (
     <>
-      {/* Preload hero image — tells browser to start downloading immediately in the initial HTML */}
-      {/* Mobile gets 400w, desktop gets 800w */}
+      {/* Preload hero image — browser starts downloading before JS bundle */}
       <link
         rel="preload"
         as="image"
