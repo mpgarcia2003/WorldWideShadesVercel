@@ -83,27 +83,10 @@ export default function BuilderPage() {
     const gtmItem = buildGTMItem(item.config, item.totalPrice);
     trackAddToCart([gtmItem], item.totalPrice);
 
-    // First-party backup — bypasses ad blockers
-    try {
-      let gaClientId = '';
-      const gaCookie = document.cookie.match(/_ga=GA\d+\.\d+\.(.+)/);
-      if (gaCookie) gaClientId = gaCookie[1];
-      if (gaClientId) {
-        fetch('/api/track', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            event_name: 'add_to_cart',
-            client_id: gaClientId,
-            params: {
-              currency: 'USD',
-              value: item.totalPrice,
-              items: [{ item_id: gtmItem.item_id, item_name: gtmItem.item_name, price: gtmItem.price, quantity: gtmItem.quantity }],
-            },
-          }),
-        }).catch(() => {}); // Fire and forget
-      }
-    } catch {}
+    // NOTE: No MP backup for add_to_cart.
+    // If add_to_cart is ever promoted to a primary bidding conversion,
+    // dual-sending (browser + MP) would double-count and corrupt Smart Bidding.
+    // Browser/GTM is the single source of truth for this event.
 
     trackEvent('add_to_cart_internal', {
       currency: 'USD', value: item.totalPrice,

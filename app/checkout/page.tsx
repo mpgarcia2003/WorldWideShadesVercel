@@ -658,29 +658,10 @@ export default function CheckoutPage() {
     const gtmItems = cart.map((item) => buildGTMItem(item.config, item.totalPrice));
     trackBeginCheckout(gtmItems, total);
 
-    // First-party backup — bypasses ad blockers
-    try {
-      let clientIdForTrack = gaClientId || '';
-      if (!clientIdForTrack) {
-        const gaCookie = document.cookie.match(/_ga=GA\d+\.\d+\.(.+)/);
-        if (gaCookie) clientIdForTrack = gaCookie[1];
-      }
-      if (clientIdForTrack) {
-        fetch('/api/track', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            event_name: 'begin_checkout',
-            client_id: clientIdForTrack,
-            params: {
-              currency: 'USD',
-              value: total,
-              items: gtmItems.map((i) => ({ item_id: i.item_id, item_name: i.item_name, price: i.price, quantity: i.quantity })),
-            },
-          }),
-        }).catch(() => {});
-      }
-    } catch {}
+    // NOTE: No MP backup for begin_checkout.
+    // begin_checkout is a primary bidding conversion in Google Ads.
+    // Dual-sending (browser + MP) would double-count and corrupt Smart Bidding.
+    // Browser/GTM is the single source of truth for this event.
   }, [loaded, cart.length, gaClientId]);
 
   // Create PaymentIntent when cart is loaded
