@@ -1,6 +1,11 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createAdminClient } from "@/lib/supabase/client";
 import { sendOrderConfirmation, sendNewOrderAlert } from "@/lib/email/send";
+import Stripe from "stripe";
+
+const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
+  apiVersion: "2023-10-16" as any,
+});
 
 export const dynamic = 'force-dynamic';
 
@@ -54,6 +59,24 @@ export async function GET(req: NextRequest) {
 // POST /api/orders — create new order (from checkout)
 export async function POST(req: NextRequest) {
   const body = await req.json();
+
+  // Security: verify the Stripe PaymentIntent actually succeeded.
+  // Without this, anyone could POST to /api/orders and create fake orders.
+  const piId = body.stripe_payment_intent_id;
+  if (!piId || typeof piId !== 'string' || !piId.startsWith('pi_')) {
+    return NextResponse.json({ error: "Missing or invalid payment intent" }, { status: 400 });
+  }
+
+  try {
+    const paymentIntent = await stripe.paymentIntents.retrieve(piId);
+    if (paymentIntent.status !== 'succeeded') {
+      return NextResponse.json({ error: "Payment not confirmed" }, { status: 402 });
+    }
+  } catch (err: any) {
+    console.error("[Orders API] Stripe verification failed:", err.message);
+    return NextResponse.json({ error: "Payment verification failed" }, { status: 400 });
+  }
+
   const supabase = createAdminClient();
 
   // Generate order number

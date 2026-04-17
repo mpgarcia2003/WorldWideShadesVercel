@@ -1,12 +1,20 @@
 import { NextRequest, NextResponse } from "next/server";
 
 /**
- * First-party tracking backup route
- * Receives add_to_cart and begin_checkout events from the browser,
- * forwards to GA4 via Measurement Protocol.
+ * DEPRECATED — This route is no longer called by any client code.
  * 
- * Because this runs on worldwideshades.com/api/track,
- * ad blockers cannot distinguish it from normal site requests.
+ * It was originally a first-party Measurement Protocol backup for add_to_cart
+ * and begin_checkout events. It was removed because:
+ *   - begin_checkout is a PRIMARY bidding conversion in Google Ads
+ *   - Dual-sending (browser GTM + server MP) double-counted the event
+ *   - Google has no documented dedup for begin_checkout (unlike purchase)
+ *   - This corrupted Smart Bidding optimization
+ * 
+ * DO NOT re-enable this for any event that is imported into Google Ads
+ * as a primary or secondary conversion action.
+ * 
+ * If you need server-side event tracking in the future, use a separate
+ * event name that is NOT imported into Google Ads for bidding.
  */
 
 const GA4_MEASUREMENT_ID = "G-1RHH50R34P";

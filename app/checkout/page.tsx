@@ -191,7 +191,7 @@ function StripePaymentForm({
       try {
         const res = await fetch("/api/orders", {
           method: "POST",
-          headers: { "Content-Type": "application/json", "x-admin-password": "wws-admin-2026" },
+          headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
             ...orderData,
             stripe_payment_intent_id: paymentIntent.id,
