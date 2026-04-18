@@ -7,6 +7,7 @@ import { Providers } from "@/components/shared/Providers";
 import { GlobalPhoneTracker } from "@/components/shared/GlobalPhoneTracker";
 import { ExitIntentPopup } from "@/components/shared/ExitIntentPopup";
 import { BehaviorTracker } from "@/components/shared/BehaviorTracker";
+import { ClarityScript } from "@/components/shared/ClarityScript";
 import { JsonLd } from "@/components/shared/JsonLd";
 import { organizationJsonLd, websiteJsonLd, localBusinessJsonLd } from "@/lib/seo/jsonld";
 import { SITE } from "@/lib/constants";
@@ -38,13 +39,11 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       <body className="font-body antialiased text-dark bg-white">
         <noscript><iframe src={`https://www.googletagmanager.com/ns.html?id=${GTM_ID}`} height="0" width="0" style={{ display: "none", visibility: "hidden" }} /></noscript>
         <Script id="datalayer-init" strategy="beforeInteractive">{`window.dataLayer = window.dataLayer || [];`}</Script>
-        <Script id="clarity" strategy="lazyOnload">
-          {`(function(c,l,a,r,i,t,y){c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)};t=l.createElement(r);t.async=1;t.src="https://www.clarity.ms/tag/"+i;y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y);})(window,document,"clarity","script","wd2vttf1qj");`}
-        </Script>
         <div className="flex min-h-screen flex-col">
           <Providers>
             <GlobalPhoneTracker />
             <BehaviorTracker />
+            <ClarityScript />
             <ExitIntentPopup page="builder" />
             <ShellWrapper>
               <Header />
