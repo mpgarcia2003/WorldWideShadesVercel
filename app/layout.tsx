@@ -38,7 +38,9 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       <body className="font-body antialiased text-dark bg-white">
         <noscript><iframe src={`https://www.googletagmanager.com/ns.html?id=${GTM_ID}`} height="0" width="0" style={{ display: "none", visibility: "hidden" }} /></noscript>
         <Script id="datalayer-init" strategy="beforeInteractive">{`window.dataLayer = window.dataLayer || [];`}</Script>
-        <Script id="clarity" strategy="afterInteractive" src="https://www.clarity.ms/tag/wd2vttf1qj" />
+        <Script id="clarity" strategy="lazyOnload">
+          {`(function(c,l,a,r,i,t,y){c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)};t=l.createElement(r);t.async=1;t.src="https://www.clarity.ms/tag/"+i;y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y);})(window,document,"clarity","script","wd2vttf1qj");`}
+        </Script>
         <div className="flex min-h-screen flex-col">
           <Providers>
             <GlobalPhoneTracker />
