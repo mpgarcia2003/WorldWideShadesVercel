@@ -178,7 +178,12 @@ const Stepper: React.FC<StepperProps> = ({
 
   useEffect(() => {
     if (config.shape !== 'Standard' && config.controlType === 'Metal Chain') {
+      // Specialty shapes default to Motorized (hard-to-reach windows)
       setConfig({ ...config, controlType: 'Motorized' });
+    } else if (config.shape === 'Standard' && config.controlType === 'Motorized') {
+      // Reset to Manual when switching back to Standard — don't force Motorized
+      // on standard rectangles. User can still manually select Motorized.
+      setConfig({ ...config, controlType: 'Metal Chain' });
     }
   }, [config.shape]);
 

@@ -357,7 +357,7 @@ const Builder: React.FC<BuilderProps> = ({ addToCart, addToSwatches, swatches })
           width: isEditing ? (parsed.width || 0) : 0, widthFraction: isEditing ? (parsed.widthFraction || '0') : '0',
           height: isEditing ? (parsed.height || 0) : 0, heightFraction: isEditing ? (parsed.heightFraction || '0') : '0',
           customDims: isEditing ? (parsed.customDims || {}) : {},
-          controlType: parsed.controlType || 'Metal Chain', motorPower: parsed.motorPower || 'Rechargeable', controlPosition: parsed.controlPosition || 'Right',
+          controlType: isEditing ? (parsed.controlType || 'Metal Chain') : 'Metal Chain', motorPower: parsed.motorPower || 'Rechargeable', controlPosition: parsed.controlPosition || 'Right',
           rollType: parsed.rollType || 'Standard', bottomBar: parsed.bottomBar || 'Fabric Wrapped', quantity: isEditing ? (parsed.quantity || 1) : 1, motorizedController: false,
           motorizedHub: false, motorizedCharger: false, sunSensor: false, zipCode: '', installer: null, measureService: true,
           installService: true, isMeasurementOnly: false, valanceType: parsed.valanceType || 'standard', sideChannelType: parsed.sideChannelType || 'none'
