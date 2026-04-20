@@ -14,7 +14,6 @@ const getEstimatedDelivery = () => {
 import Visualizer from '../components/Visualizer';
 import Stepper from '../components/Stepper';
 import StickyBottomBar from '../components/StickyBottomBar';
-import ConsultationModal from '../components/ConsultationModal';
 import { ShadeConfig, Fabric, WindowSelection, CartItem, RoomAnalysis, ShapeType } from '../types';
 import { DEFAULT_ROOM_IMAGE, getGridPrice, SHAPE_CONFIGS, VALANCE_OPTIONS, SIDE_CHANNEL_OPTIONS, STEPS, getFabricUrl, isSaleActive, getSalePrice, getSaleShadePrice, getSaleAccessoryPrice, SALE_CONFIG, MOTOR_PRICES, applyMarkup } from '../constants';
 import { getDynamicFabrics, saveSwatchRequest, saveQuoteConfig, loadQuoteConfig } from '../utils/storage';
@@ -23,7 +22,6 @@ import { useLanguage } from '../LanguageContext';
 import { trackEvent } from '../utils/analytics';
 import { builderHooks } from '../services/analytics';
 import { bhStepComplete, bhStepStart } from '../lib/tracking/behavior';
-import PrecisionEmailModal from '../components/PrecisionEmailModal';
 
 interface BuilderProps {
   addToCart: (item: CartItem) => void;
@@ -305,7 +303,6 @@ const Builder: React.FC<BuilderProps> = ({ addToCart, addToSwatches, swatches })
     } catch {}
     return 0;
   });
-  const [isConsultationOpen, setIsConsultationOpen] = useState(false);
   const [fabrics, setFabrics] = useState<Fabric[]>([]);
   const [isLoadingFabrics, setIsLoadingFabrics] = useState(false);
 
@@ -333,10 +330,6 @@ const Builder: React.FC<BuilderProps> = ({ addToCart, addToSwatches, swatches })
   const [showExitIntent, setShowExitIntent] = useState(false);
   const [exitIntentShown, setExitIntentShown] = useState(false);
   const [exitEmail, setExitEmail] = useState('');
-
-  // Precision email modal state (triggers after fabric selection)
-  const [showPrecisionModal, setShowPrecisionModal] = useState(false);
-  const precisionModalShownRef = useRef(false);
 
   // Scroll hint for step panel
   const [showScrollHint, setShowScrollHint] = useState(true);
@@ -513,9 +506,6 @@ const Builder: React.FC<BuilderProps> = ({ addToCart, addToSwatches, swatches })
       let nextStep = 0;
       while (nextStep < STEPS.length && restored.has(nextStep)) nextStep++;
       setOpenStep(nextStep < STEPS.length ? nextStep : null);
-
-      // Skip precision modal since they came from it
-      precisionModalShownRef.current = true;
 
       trackEvent('quote_recovered', { quote_id: quoteId, shape: q.shape, discount_code: quoteData.discount_code });
 
@@ -756,12 +746,6 @@ const Builder: React.FC<BuilderProps> = ({ addToCart, addToSwatches, swatches })
     }
 
     trackEvent('step_confirmed', { step_number: stepIndex + 1, step_name: STEPS[stepIndex] });
-
-    // Precision Email Modal DISABLED — interrupts build flow, exit intent handles abandoners
-    // if (stepIndex === 3 && !precisionModalShownRef.current) {
-    //   precisionModalShownRef.current = true;
-    //   setTimeout(() => setShowPrecisionModal(true), 600);
-    // }
   };
 
   // When reopening a completed step, remove it from completed
@@ -877,69 +861,6 @@ const Builder: React.FC<BuilderProps> = ({ addToCart, addToSwatches, swatches })
     });
 
     setShowExitIntent(false);
-  };
-
-  // Precision Email Modal submit handler
-  const handlePrecisionEmailSubmit = async (email: string) => {
-    const w = Number(config.width) + parseFraction(config.widthFraction);
-    const h = Number(config.height) + parseFraction(config.heightFraction);
-    const wFrac = config.widthFraction !== '0' ? ` ${config.widthFraction}` : '';
-    const hFrac = config.heightFraction !== '0' ? ` ${config.heightFraction}` : '';
-    const sizeStr = w > 0 ? `${config.width}${wFrac}" x ${config.height}${hFrac}"` : 'Not entered yet';
-
-    const quoteConfig = {
-      shape: config.shape,
-      shadeType: config.shadeType,
-      width: config.width,
-      height: config.height,
-      widthFraction: config.widthFraction,
-      heightFraction: config.heightFraction,
-      customDims: config.customDims,
-      customFracs: config.customFracs,
-      fabricId: config.material?.id,
-      fabricName: config.material?.name,
-      mountType: config.mountType,
-      controlType: config.controlType,
-    };
-
-    // 1. Save to Supabase
-    const result = await saveQuoteConfig(email, quoteConfig, priceBreakdown.product);
-
-    // 2. Send customer email with recovery link + discount
-    if (result) {
-      const recoveryUrl = `${window.location.origin}${window.location.pathname}?quote=${result.quoteId}&utm_source=email&utm_medium=recovery&utm_campaign=precision_save`;
-
-      const emailSent = await sendCustomerQuoteEmail({
-        email,
-        quoteId: result.quoteId,
-        discountCode: result.discountCode,
-        shape: config.shape,
-        fabric: config.material?.name || 'Not selected',
-        size: sizeStr,
-        price: priceBreakdown.product,
-        recoveryUrl,
-      });
-
-      // 3. Track analytics
-      trackEvent('precision_email_captured', {
-        email,
-        shape: config.shape,
-        fabric: config.material?.name,
-        price: priceBreakdown.product,
-        steps_completed: completedSteps.size,
-        quote_id: result.quoteId,
-        email_sent: emailSent,
-      });
-    }
-
-    // 4. Notify admin
-    notifyAdminExitIntent({
-      email,
-      stepsCompleted: completedSteps.size,
-      config,
-      recoveryUrl: result ? `${window.location.origin}${window.location.pathname}?quote=${result.quoteId}&utm_source=email&utm_medium=recovery&utm_campaign=precision_exit` : undefined,
-      price: priceBreakdown.product,
-    });
   };
 
   const getShapeLabel = (s: string) => {
@@ -1362,8 +1283,6 @@ const Builder: React.FC<BuilderProps> = ({ addToCart, addToSwatches, swatches })
           </div>
       </div>
 
-            <ConsultationModal isOpen={isConsultationOpen} onClose={() => setIsConsultationOpen(false)} />
-
       {/* EXIT INTENT MODAL — DISABLED, handled by abandoned cart system */}
       {false && (
         <div className="fixed inset-0 z-[100] flex items-center justify-center" style={{ animation: 'fadeUp 0.3s ease forwards' }}>
@@ -1422,15 +1341,6 @@ const Builder: React.FC<BuilderProps> = ({ addToCart, addToSwatches, swatches })
           </div>
         </div>
       )}
-
-      {/* PRECISION EMAIL MODAL */}
-      <PrecisionEmailModal
-        open={showPrecisionModal}
-        onClose={() => setShowPrecisionModal(false)}
-        onSubmit={handlePrecisionEmailSubmit}
-        shapeLabel={getShapeLabel(config.shape)}
-        showShopPayNote={priceBreakdown.product > 200}
-      />
 
       <style>{`
         @keyframes fadeUp { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: translateY(0); } }

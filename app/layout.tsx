@@ -5,7 +5,6 @@ import { Header } from "@/components/shell/Header";
 import { ShellWrapper } from "@/components/shell/ShellWrapper";
 import { Providers } from "@/components/shared/Providers";
 import { GlobalPhoneTracker } from "@/components/shared/GlobalPhoneTracker";
-import { ExitIntentPopup } from "@/components/shared/ExitIntentPopup";
 import { BehaviorTracker } from "@/components/shared/BehaviorTracker";
 import { ClarityScript } from "@/components/shared/ClarityScript";
 import { JsonLd } from "@/components/shared/JsonLd";
@@ -44,7 +43,6 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             <GlobalPhoneTracker />
             <BehaviorTracker />
             <ClarityScript />
-            <ExitIntentPopup page="builder" />
             <ShellWrapper>
               <Header />
               <main className="flex-1">{children}</main>
