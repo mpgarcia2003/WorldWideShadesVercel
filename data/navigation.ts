@@ -28,7 +28,6 @@ export const NAV_ITEMS: NavItem[] = [
       featured: { title: "Spring Sale — Up to 50% Off", description: "All custom shades on sale. 700+ fabrics. Free shipping.", href: "/builder", image: "/images/sale-featured.jpg" },
     },
   },
-  { label: "Fabrics", href: "/fabrics" },
   {
     label: "How It Works",
     megaMenu: {
