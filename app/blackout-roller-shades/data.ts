@@ -26,7 +26,7 @@ export const HERO = {
   deliveryLine: "Delivered in ~7 days (not 3–4 weeks like showrooms)",
   priceOriginal: "$290",
   priceNow: "From $145",
-  saleBadge: "Spring Sale — Up to 50% Off — Ends April 18",
+  saleBadge: "Spring Sale — Up to 50% Off — Ends April 30",
   primaryCTA: "Get Your Exact Price →",
   secondaryCTA: "Call (844) 674-2716",
   guaranteeLine: "100% Fit Guarantee — Remade free if it doesn't fit",

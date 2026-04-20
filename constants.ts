@@ -8,7 +8,7 @@ export const SALE_CONFIG = {
   shadeDiscount: 50,       // 50% off shades (fabric + base price)
   accessoryDiscount: 40,   // 40% off motorization & accessories
   maxDiscount: 50,         // for "Up to X% Off" display
-  endDate: new Date('2026-04-18T23:59:59-04:00'), // Apr 18, 2026 EDT
+  endDate: new Date('2026-04-30T23:59:59-04:00'), // Apr 30, 2026 EDT
   reason: 'Spring Into Shade Sale',
 };
 
