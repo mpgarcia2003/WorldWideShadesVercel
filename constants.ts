@@ -5,15 +5,27 @@ export const COMPANY_NAME = "World Wide Shades";
 // ─── SALE CONFIGURATION ───────────────────────────
 export const SALE_CONFIG = {
   active: true,
-  shadeDiscount: 50,       // 50% off shades (fabric + base price)
-  accessoryDiscount: 40,   // 40% off motorization & accessories
-  maxDiscount: 50,         // for "Up to X% Off" display
-  endDate: new Date('2026-04-30T23:59:59-04:00'), // Apr 30, 2026 EDT
+  shadeDiscount: 40,       // 40% off retail shade price (preserves ~30%+ margin)
+  accessoryDiscount: 15,   // 15% off motorization & accessories — keeps all motor parts profitable
+  maxDiscount: 40,         // for "Up to X% Off" display
+  endDate: null as Date | null, // No end date — sale runs indefinitely (keep customers guessing)
   reason: 'Spring Into Shade Sale',
+  // PROFIT NOTES (Group B fabric, full retail vs sale):
+  //   36x36: retail $208, sale $124.80, cost $54  → profit $70.80
+  //   60x60: retail $288, sale $172.80, cost $94  → profit $79
+  //   84x60: retail $344, sale $206.40, cost $122 → profit $84
+  //   144x84: retail $855, sale $513,    cost $377 → profit $136
+  // ACCESSORY PROFIT at 15% off (all positive):
+  //   Motor remote:  cost $50,  sale $53.55  → profit $3.55
+  //   Motor hub:     cost $185, sale $196.35 → profit $11.35
+  //   Sun sensor:    cost $150, sale $159.80 → profit $9.80
+  //   Charger:       cost $50,  sale $53.55  → profit $3.55
+  //   Motor base:    cost $250, sale $354.45 → profit $104.45
 };
 
 export const isSaleActive = () => {
   if (!SALE_CONFIG.active) return false;
+  if (!SALE_CONFIG.endDate) return true; // No end date = always active while flagged on
   return new Date() <= SALE_CONFIG.endDate;
 };
 
