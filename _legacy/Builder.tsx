@@ -717,12 +717,17 @@ const Builder: React.FC<BuilderProps> = ({ addToCart, addToSwatches, swatches })
     const valanceOption = VALANCE_OPTIONS.find(v => v.id === config.valanceType);
     const bannerOption = SIDE_CHANNEL_OPTIONS.find(s => s.id === config.sideChannelType);
 
-    // PER-SHADE: each shade has its own motor inside the roller. Multiplied by quantity.
+    // PER-SHADE MOTOR BASE: each shade has its own motor inside the roller. Multiplied by quantity.
+    // Motor base has SPECIAL sale pricing (flat $250 from .original, not the 15% accessory discount).
     const motorBasePerShade = config.controlType === 'Motorized' && config.shape === 'Standard'
-      ? MOTOR_PRICES.base.marked
+      ? MOTOR_PRICES.base.marked    // retail $417
+      : 0;
+    const motorBaseSalePerShade = config.controlType === 'Motorized' && config.shape === 'Standard'
+      ? MOTOR_PRICES.base.original  // flat sale $250
       : 0;
 
-    // PER-ORDER: one remote/hub/sensor/charger per household. Charged ONCE regardless of quantity.
+    // PER-ORDER ACCESSORIES: one remote/hub/sensor/charger per household. Charged ONCE regardless of quantity.
+    // These DO get the standard 15% accessory discount via getSaleAccessoryPrice.
     // Per the UI copy: "One remote controls up to 5 shades." Same logic for hub/sensor/charger.
     const motorAddonsPerOrder = config.controlType === 'Motorized'
       ? (config.motorizedController ? MOTOR_PRICES.remote.marked : 0)
@@ -731,13 +736,13 @@ const Builder: React.FC<BuilderProps> = ({ addToCart, addToSwatches, swatches })
       + (config.sunSensor ? MOTOR_PRICES.sunSensor.marked : 0)
       : 0;
 
-    // Per-shade price helper — base + valance + side channels + per-shade motor portion only.
-    // The per-order accessories (remote/hub/etc) are added once at the bottom, NOT here.
+    // Per-shade price helper — base shade + valance + side channels.
+    // Motor base handled separately (special sale price). Per-order accessories added once at the bottom.
     const computeShadeCost = (shadeWidth: number, shadeHeight: number) => {
       const base = getGridPrice(config.material!.priceGroup, shadeWidth, shadeHeight, config.shape);
       const valance = applyMarkup((valanceOption?.pricePerInch || 0)) * shadeWidth;
       const channels = applyMarkup((bannerOption?.pricePerFoot || 0)) * (shadeHeight / 12) * 2;
-      return { shade: base, accessory: motorBasePerShade + valance + channels };
+      return { shade: base, accessory: valance + channels };
     };
 
     let shadeRaw = 0;
@@ -755,10 +760,15 @@ const Builder: React.FC<BuilderProps> = ({ addToCart, addToSwatches, swatches })
       accessoryRaw = single.accessory;
     }
 
-    // Apply quantity multiplier to per-shade items, then add per-order accessories ONCE.
+    // Apply quantity multipliers and combine. Three buckets get different sale treatment:
+    //   - shade: 40% off via getSaleShadePrice
+    //   - motor base: flat $250 per shade via .original (custom sale, not %-based)
+    //   - accessories (valance/channels + per-order remote/hub/sensor/charger): 15% off via getSaleAccessoryPrice
     const shadeTotal = shadeRaw * config.quantity;
+    const motorBaseTotal = motorBasePerShade * config.quantity;
+    const motorBaseSaleTotal = motorBaseSalePerShade * config.quantity;
     const accessoryTotal = accessoryRaw * config.quantity + motorAddonsPerOrder;
-    const productTotal = shadeTotal + accessoryTotal;
+    const productTotal = shadeTotal + motorBaseTotal + accessoryTotal;
 
     let installCost = 0;
     if (config.installer) {
@@ -774,8 +784,9 @@ const Builder: React.FC<BuilderProps> = ({ addToCart, addToSwatches, swatches })
     
     const saleActive = isSaleActive();
     const saleShade = saleActive ? getSaleShadePrice(shadeTotal) : shadeTotal;
+    const saleMotorBase = saleActive ? motorBaseSaleTotal : motorBaseTotal;
     const saleAccessory = saleActive ? getSaleAccessoryPrice(accessoryTotal) : accessoryTotal;
-    const saleProductTotal = saleShade + saleAccessory;
+    const saleProductTotal = saleShade + saleMotorBase + saleAccessory;
 
     return { 
       product: productTotal, 
@@ -897,11 +908,11 @@ const Builder: React.FC<BuilderProps> = ({ addToCart, addToSwatches, swatches })
       const valanceOption = VALANCE_OPTIONS.find(v => v.id === config.valanceType);
       const bannerOption = SIDE_CHANNEL_OPTIONS.find(s => s.id === config.sideChannelType);
 
-      // PER-SHADE: motor base goes into each shade.
+      // PER-SHADE: motor base goes into each shade. Retail $417, flat sale $250.
       const motorBasePerShade = config.controlType === 'Motorized' && config.shape === 'Standard'
         ? MOTOR_PRICES.base.marked
         : 0;
-      // PER-ORDER: remote/hub/sensor/charger charged once.
+      // PER-ORDER: remote/hub/sensor/charger charged once, get standard 15% accessory discount.
       const motorAddonsPerOrder = config.controlType === 'Motorized'
         ? (config.motorizedController ? MOTOR_PRICES.remote.marked : 0)
         + (config.motorizedHub ? MOTOR_PRICES.hub.marked : 0)
