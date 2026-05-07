@@ -14,6 +14,7 @@ const getEstimatedDelivery = () => {
 import Visualizer from '../components/Visualizer';
 import Stepper from '../components/Stepper';
 import StickyBottomBar from '../components/StickyBottomBar';
+import BuilderRightRail from '../components/BuilderRightRail';
 import { ShadeConfig, Fabric, WindowSelection, CartItem, RoomAnalysis, ShapeType } from '../types';
 import { DEFAULT_ROOM_IMAGE, getGridPrice, SHAPE_CONFIGS, VALANCE_OPTIONS, SIDE_CHANNEL_OPTIONS, STEPS, getFabricUrl, isSaleActive, getSalePrice, getSaleShadePrice, getSaleAccessoryPrice, SALE_CONFIG, MOTOR_PRICES, applyMarkup, FREIGHT_CHARGE, FREIGHT_WIDTH_THRESHOLD } from '../constants';
 import { getDynamicFabrics, saveSwatchRequest, saveQuoteConfig, loadQuoteConfig } from '../utils/storage';
@@ -1314,7 +1315,7 @@ const Builder: React.FC<BuilderProps> = ({ addToCart, addToSwatches, swatches })
       <div className="max-w-screen-2xl mx-auto flex flex-col md:flex-row h-full bg-white shadow-2xl relative overflow-hidden">
           
           {/* LEFT PANEL: Visualizer — HIDDEN on mobile */}
-          <div className="hidden md:flex w-1/2 lg:w-[50%] bg-white flex-col p-6 h-full overflow-hidden border-r border-gray-100 shrink-0">
+          <div className="hidden md:flex w-1/2 lg:w-[40%] bg-white flex-col p-6 h-full overflow-hidden border-r border-gray-100 shrink-0">
             <div className="flex-1 min-h-0 relative rounded-2xl overflow-hidden bg-gray-50 border border-gray-100 flex flex-col px-12 lg:px-20 py-4">
               <div className="w-full h-full relative flex flex-col">
                   <Visualizer 
@@ -1364,8 +1365,8 @@ const Builder: React.FC<BuilderProps> = ({ addToCart, addToSwatches, swatches })
             </div>
           </div>
 
-          {/* RIGHT PANEL: Progressive Stepper — Full width on mobile */}
-          <div className="w-full md:w-1/2 lg:w-[50%] flex flex-col flex-1 md:flex-none md:h-full bg-white relative overflow-hidden">
+          {/* MIDDLE PANEL: Progressive Stepper — Full width on mobile */}
+          <div className="w-full md:w-1/2 lg:w-[34%] flex flex-col flex-1 md:flex-none md:h-full bg-white relative overflow-hidden">
 
             {/* Sticky Mobile Price Header */}
             {priceBreakdown.total > 0 && (
@@ -1483,6 +1484,30 @@ const Builder: React.FC<BuilderProps> = ({ addToCart, addToSwatches, swatches })
               saleActive={priceBreakdown.saleActive}
             />
           </div>
+
+          {/* RIGHT PANEL: Step Guide + Trust + Total — desktop only (lg breakpoint+) */}
+          <BuilderRightRail
+            openStep={openStep}
+            totalPrice={priceBreakdown.total}
+            originalPrice={priceBreakdown.originalTotal}
+            saleActive={priceBreakdown.saleActive}
+            deliveryDate={getEstimatedDelivery()}
+            isStepValid={(() => {
+              if (openStep === null) return allStepsComplete && priceBreakdown.total > 0;
+              if (openStep === 0) return !!config.material;
+              if (openStep === 1) return config.width > 0 && config.height > 0;
+              if (openStep === STEPS.length - 1) return priceBreakdown.total > 0;
+              return true;
+            })()}
+            isLastStep={openStep === STEPS.length - 1}
+            onContinue={() => {
+              if (openStep === STEPS.length - 1) {
+                doAddToCart();
+              } else if (openStep !== null) {
+                handleConfirmStep(openStep);
+              }
+            }}
+          />
       </div>
 
       {/* EXIT INTENT MODAL — DISABLED, handled by abandoned cart system */}
