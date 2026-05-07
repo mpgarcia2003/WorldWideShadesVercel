@@ -10,6 +10,28 @@ import styles from './FabricPicker.module.css';
 import { Fabric } from '../types';
 import { getFabricUrl, isSaleActive, SALE_CONFIG, getGridPrice, applyMarkup } from '../constants';
 
+// ─── FABRIC DISPLAY PRIORITY ──────────────────────────────
+// Per-price-tier preferred order. Within each tier, fabrics whose name starts
+// with one of these strings are shown first, in array order. Everything else
+// in that tier (the "rest") comes after, alphabetically.
+// Fabric names are formatted as "{Brand} {FabricCode} | {Color}" so a value of
+// "Phifer 7800" matches just that specific Phifer code, while "Mermet" matches
+// every Mermet fabric in that tier.
+const TIER_FABRIC_PRIORITY: Record<string, string[]> = {
+  B: ['Phifer 7800', 'Senbesta'],
+  C: ['Mermet', 'Texstyle', 'Phifer 4800'],
+  D: ['Mermet', 'Texstyle', 'Phifer 7400'],
+};
+
+const getFabricPriorityIndex = (fabric: Fabric): number => {
+  const tierList = TIER_FABRIC_PRIORITY[fabric.priceGroup];
+  if (!tierList) return 999; // No priority defined for this tier
+  for (let i = 0; i < tierList.length; i++) {
+    if (fabric.name.startsWith(tierList[i])) return i;
+  }
+  return 999; // Not in priority list — falls into the "rest" bucket
+};
+
 type ShadeFilter = 'Blackout' | 'Light Filtering';
 
 interface FabricPickerProps {
@@ -75,12 +97,21 @@ export default function FabricPicker({
       const q = debouncedQuery.toLowerCase().trim();
       list = list.filter(f => f.name.toLowerCase().includes(q));
     }
-    // Sort by price: cheapest first
+    // Sort: 1) by price tier (cheapest first), 2) within tier, by priority list, 3) alphabetical
     list.sort((a, b) => {
-      if (hasDims) {
-        return getGridPrice(a.priceGroup, dimW, dimH) - getGridPrice(b.priceGroup, dimW, dimH);
-      }
-      return (a.priceGroup || 'Z').localeCompare(b.priceGroup || 'Z');
+      // Primary: price tier
+      const tierCompare = hasDims
+        ? getGridPrice(a.priceGroup, dimW, dimH) - getGridPrice(b.priceGroup, dimW, dimH)
+        : (a.priceGroup || 'Z').localeCompare(b.priceGroup || 'Z');
+      if (tierCompare !== 0) return tierCompare;
+
+      // Secondary: within-tier priority (preferred brands/codes shown first)
+      const aPriority = getFabricPriorityIndex(a);
+      const bPriority = getFabricPriorityIndex(b);
+      if (aPriority !== bPriority) return aPriority - bPriority;
+
+      // Tertiary: alphabetical
+      return a.name.localeCompare(b.name);
     });
     return list;
   }, [fabrics, activeFilter, debouncedQuery, hasDims, dimW, dimH]);
