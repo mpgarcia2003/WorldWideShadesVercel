@@ -82,10 +82,19 @@ const MobileStepGuide: React.FC<MobileStepGuideProps> = ({ openStep }) => {
             </h3>
           </div>
 
-          {/* Body */}
-          <p className="text-[12px] text-[#666] leading-relaxed mb-3">
-            {guide.body}
-          </p>
+          {/* Body: prefer structured `sections` (bold gold labels). Fall back to free-form `body` for default guide. */}
+          {guide.sections && guide.sections.length > 0 ? (
+            <div className="space-y-2.5 mb-3">
+              {guide.sections.map((section, i) => (
+                <div key={i}>
+                  <div className="text-[12px] font-bold text-[#8b6d3f] mb-0.5">{section.label}</div>
+                  <div className="text-[12px] text-[#666] leading-relaxed">{section.description}</div>
+                </div>
+              ))}
+            </div>
+          ) : guide.body ? (
+            <p className="text-[12px] text-[#666] leading-relaxed mb-3">{guide.body}</p>
+          ) : null}
 
           {/* Tips */}
           {guide.tips.length > 0 && (

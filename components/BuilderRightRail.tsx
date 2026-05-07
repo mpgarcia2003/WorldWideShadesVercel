@@ -54,9 +54,19 @@ const BuilderRightRail: React.FC<BuilderRightRailProps> = ({
           <h3 className="text-[14px] font-medium text-[#1a1a1a] leading-tight mb-2" style={{ fontFamily: "'Playfair Display', Georgia, serif", letterSpacing: '-0.01em' }}>
             {guide.headline}
           </h3>
-          <p className="text-[11.5px] text-[#666] leading-relaxed mb-2.5">
-            {guide.body}
-          </p>
+          {/* Body: prefer structured `sections` (bold gold labels). Fall back to free-form `body` for default guide. */}
+          {guide.sections && guide.sections.length > 0 ? (
+            <div className="space-y-2 mb-2.5">
+              {guide.sections.map((section, i) => (
+                <div key={i}>
+                  <div className="text-[11.5px] font-bold text-[#8b6d3f] mb-0.5">{section.label}</div>
+                  <div className="text-[11.5px] text-[#666] leading-relaxed">{section.description}</div>
+                </div>
+              ))}
+            </div>
+          ) : guide.body ? (
+            <p className="text-[11.5px] text-[#666] leading-relaxed mb-2.5">{guide.body}</p>
+          ) : null}
           {guide.tips.length > 0 && (
             <div className="space-y-1.5 pt-2 border-t border-gray-100">
               {guide.tips.map((tip, i) => (
