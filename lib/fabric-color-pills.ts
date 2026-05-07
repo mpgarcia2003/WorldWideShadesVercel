@@ -45,6 +45,22 @@ export const COLOR_PILL_DOTS: Record<ColorPill, string> = {
   'Blacks & Charcoal': '#1a1a1a',
 };
 
+// Short display labels for the filter pills (the full ColorPill keys are kept
+// as the canonical identifiers used in data lookups and section headers).
+// These shortened labels are ONLY for the compact pill UI — they fit cleanly
+// in the uniform grid without truncation.
+export const COLOR_PILL_SHORT_LABELS: Record<ColorPill, string> = {
+  'Whites': 'Whites',
+  'Beige & Natural Tones': 'Beige',
+  'Browns & Earth Tones': 'Browns',
+  'Yellows': 'Yellows',
+  'Reds & Oranges': 'Reds',
+  'Greens': 'Greens',
+  'Blues': 'Blues',
+  'Grays': 'Grays',
+  'Blacks & Charcoal': 'Blacks',
+};
+
 export const slugifyForPill = (s: string): string =>
   s.toLowerCase().replace(/[^a-z0-9]/g, '');
 

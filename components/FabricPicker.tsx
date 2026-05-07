@@ -23,7 +23,7 @@ import React, { useState, useMemo, useCallback, useRef, useEffect } from 'react'
 import styles from './FabricPicker.module.css';
 import { Fabric } from '../types';
 import { getFabricUrl, isSaleActive, SALE_CONFIG, getGridPrice, applyMarkup } from '../constants';
-import { COLOR_PILL_ORDER, COLOR_PILL_DOTS, type ColorPill } from '../lib/fabric-color-pills';
+import { COLOR_PILL_ORDER, COLOR_PILL_DOTS, COLOR_PILL_SHORT_LABELS, type ColorPill } from '../lib/fabric-color-pills';
 
 // ─── FABRIC DISPLAY PRIORITY ──────────────────────────────
 // Per-price-tier preferred order. Within each tier, fabrics whose name starts
@@ -324,7 +324,7 @@ export default function FabricPicker({
                 onClick={() => setActiveColorPill(pill)}
               >
                 <span className={styles.colorPillDot} style={{ background: COLOR_PILL_DOTS[pill] }} />
-                <span className={styles.colorPillLabel}>{pill}</span>
+                <span className={styles.colorPillLabel}>{COLOR_PILL_SHORT_LABELS[pill]}</span>
               </button>
             ))}
           </div>
