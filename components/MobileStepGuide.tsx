@@ -39,38 +39,63 @@ const MobileStepGuide: React.FC<MobileStepGuideProps> = ({ openStep }) => {
       <button
         type="button"
         onClick={() => setIsOpen(!isOpen)}
-        className="w-full flex items-center justify-between gap-3 p-3 bg-white rounded-xl transition-all"
+        className="w-full flex items-center justify-between gap-3 p-3.5 rounded-2xl transition-all duration-300"
         style={{
-          border: isOpen ? '1.5px solid #c8a165' : '1px solid rgba(20,20,20,0.08)',
-          boxShadow: isOpen ? '0 4px 12px rgba(200,161,101,0.12)' : '0 1px 3px rgba(0,0,0,0.02)',
+          // Apple Wallet card aesthetic: subtle vertical gold gradient (cream → soft gold)
+          background: 'linear-gradient(180deg, #fefcf6 0%, #faf5e8 100%)',
+          // Hint of gold border — barely visible, just a tint
+          border: '1px solid rgba(200, 161, 101, 0.22)',
+          // Layered shadow stack for that "floating card" depth:
+          //   1. inset 3px gold stripe on left (the editorial accent)
+          //   2. inset 1px white highlight on top (light-hitting-card edge effect)
+          //   3. tight 1–2px shadow for crisp edge
+          //   4. soft 8–16px gold-tinted shadow for floating depth
+          boxShadow: isOpen
+            ? 'inset 3px 0 0 #c8a165, inset 0 1px 0 rgba(255,255,255,0.7), 0 2px 4px rgba(20,20,20,0.04), 0 8px 20px rgba(200,161,101,0.18)'
+            : 'inset 3px 0 0 #c8a165, inset 0 1px 0 rgba(255,255,255,0.7), 0 1px 3px rgba(20,20,20,0.04), 0 4px 12px rgba(200,161,101,0.12)',
         }}
         aria-expanded={isOpen}
       >
-        <div className="flex items-center gap-2.5 flex-1 min-w-0">
-          <div className="w-8 h-8 rounded-lg flex items-center justify-center shrink-0" style={{ backgroundColor: '#f5f0e6' }}>
-            <HelpCircle size={15} className="text-[#8b6d3f]" />
+        <div className="flex items-center gap-3 flex-1 min-w-0 pl-1">
+          {/* Premium gold gradient icon badge (white icon on gold) */}
+          <div
+            className="w-9 h-9 rounded-xl flex items-center justify-center shrink-0"
+            style={{
+              background: 'linear-gradient(135deg, #d4b07a 0%, #c8a165 55%, #b8914f 100%)',
+              boxShadow: '0 1px 3px rgba(184, 145, 79, 0.25), inset 0 1px 0 rgba(255,255,255,0.25)',
+            }}
+          >
+            <HelpCircle size={16} className="text-white" strokeWidth={2} />
           </div>
           <div className="text-left flex-1 min-w-0">
-            <div className="text-[10px] font-semibold uppercase tracking-[0.12em] text-[#aaa] leading-tight">
+            <div className="text-[10px] font-semibold uppercase tracking-[0.14em] leading-tight" style={{ color: '#8b6d3f' }}>
               Step {openStep + 1} guide
             </div>
-            <div className="text-[13px] font-semibold text-[#1a1a1a] truncate" style={{ fontFamily: "'Playfair Display', Georgia, serif" }}>
+            <div className="text-[14px] font-semibold text-[#1a1a1a] truncate mt-0.5" style={{ fontFamily: "'Playfair Display', Georgia, serif" }}>
               {isOpen ? guide.headline : 'Need help with this step?'}
             </div>
           </div>
         </div>
         <ChevronDown
           size={18}
-          className="text-[#c8a165] shrink-0 transition-transform duration-300"
-          style={{ transform: isOpen ? 'rotate(180deg)' : 'rotate(0deg)' }}
+          className="shrink-0 transition-transform duration-300"
+          style={{
+            color: '#8b6d3f',
+            transform: isOpen ? 'rotate(180deg)' : 'rotate(0deg)',
+          }}
         />
       </button>
 
-      {/* Expanded content */}
+      {/* Expanded content — same Wallet-card aesthetic continued */}
       {isOpen && (
         <div
-          className="bg-white rounded-xl p-4 mt-1.5 animate-in fade-in slide-in-from-top-1 duration-200"
-          style={{ border: '1px solid rgba(20,20,20,0.06)', boxShadow: '0 1px 3px rgba(0,0,0,0.02)' }}
+          className="rounded-2xl p-4 mt-2 animate-in fade-in slide-in-from-top-1 duration-200"
+          style={{
+            background: 'linear-gradient(180deg, #ffffff 0%, #fefcf6 100%)',
+            border: '1px solid rgba(200, 161, 101, 0.18)',
+            boxShadow:
+              'inset 3px 0 0 #c8a165, inset 0 1px 0 rgba(255,255,255,0.6), 0 1px 3px rgba(20,20,20,0.04), 0 4px 12px rgba(200,161,101,0.08)',
+          }}
         >
           {/* Icon header */}
           <div className="flex items-center gap-2 mb-2">
