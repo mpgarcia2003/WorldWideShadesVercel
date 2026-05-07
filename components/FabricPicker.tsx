@@ -308,24 +308,26 @@ export default function FabricPicker({
       {availablePills.length > 0 && (
         <div className={styles.colorFilterRow}>
           <span className={styles.colorFilterLabel}>Color</span>
-          <button
-            type="button"
-            className={`${styles.colorPill} ${activeColorPill === null ? styles.colorPillActive : ''}`}
-            onClick={() => setActiveColorPill(null)}
-          >
-            All colors
-          </button>
-          {availablePills.map(pill => (
+          <div className={styles.colorFilterGrid}>
             <button
-              key={pill}
               type="button"
-              className={`${styles.colorPill} ${activeColorPill === pill ? styles.colorPillActive : ''}`}
-              onClick={() => setActiveColorPill(pill)}
+              className={`${styles.colorPill} ${activeColorPill === null ? styles.colorPillActive : ''}`}
+              onClick={() => setActiveColorPill(null)}
             >
-              <span className={styles.colorPillDot} style={{ background: COLOR_PILL_DOTS[pill] }} />
-              {pill}
+              <span className={styles.colorPillLabel}>All colors</span>
             </button>
-          ))}
+            {availablePills.map(pill => (
+              <button
+                key={pill}
+                type="button"
+                className={`${styles.colorPill} ${activeColorPill === pill ? styles.colorPillActive : ''}`}
+                onClick={() => setActiveColorPill(pill)}
+              >
+                <span className={styles.colorPillDot} style={{ background: COLOR_PILL_DOTS[pill] }} />
+                <span className={styles.colorPillLabel}>{pill}</span>
+              </button>
+            ))}
+          </div>
         </div>
       )}
 
