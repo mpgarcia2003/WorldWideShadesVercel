@@ -1315,7 +1315,7 @@ const Builder: React.FC<BuilderProps> = ({ addToCart, addToSwatches, swatches })
       <div className="max-w-screen-2xl mx-auto flex flex-col md:flex-row h-full bg-white shadow-2xl relative overflow-hidden">
           
           {/* LEFT PANEL: Visualizer — HIDDEN on mobile */}
-          <div className="hidden md:flex w-1/2 lg:w-[40%] bg-white flex-col p-6 h-full overflow-hidden border-r border-gray-100 shrink-0">
+          <div className="hidden md:flex w-1/2 lg:w-[38%] bg-white flex-col p-6 h-full overflow-hidden border-r border-gray-100 shrink-0">
             <div className="flex-1 min-h-0 relative rounded-2xl overflow-hidden bg-gray-50 border border-gray-100 flex flex-col px-12 lg:px-20 py-4">
               <div className="w-full h-full relative flex flex-col">
                   <Visualizer 
@@ -1492,21 +1492,6 @@ const Builder: React.FC<BuilderProps> = ({ addToCart, addToSwatches, swatches })
             originalPrice={priceBreakdown.originalTotal}
             saleActive={priceBreakdown.saleActive}
             deliveryDate={getEstimatedDelivery()}
-            isStepValid={(() => {
-              if (openStep === null) return allStepsComplete && priceBreakdown.total > 0;
-              if (openStep === 0) return !!config.material;
-              if (openStep === 1) return config.width > 0 && config.height > 0;
-              if (openStep === STEPS.length - 1) return priceBreakdown.total > 0;
-              return true;
-            })()}
-            isLastStep={openStep === STEPS.length - 1}
-            onContinue={() => {
-              if (openStep === STEPS.length - 1) {
-                doAddToCart();
-              } else if (openStep !== null) {
-                handleConfirmStep(openStep);
-              }
-            }}
           />
       </div>
 
