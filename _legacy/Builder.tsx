@@ -15,6 +15,7 @@ import Visualizer from '../components/Visualizer';
 import Stepper from '../components/Stepper';
 import StickyBottomBar from '../components/StickyBottomBar';
 import BuilderRightRail from '../components/BuilderRightRail';
+import MobileStepGuide from '../components/MobileStepGuide';
 import { ShadeConfig, Fabric, WindowSelection, CartItem, RoomAnalysis, ShapeType } from '../types';
 import { DEFAULT_ROOM_IMAGE, getGridPrice, SHAPE_CONFIGS, VALANCE_OPTIONS, SIDE_CHANNEL_OPTIONS, STEPS, getFabricUrl, isSaleActive, getSalePrice, getSaleShadePrice, getSaleAccessoryPrice, SALE_CONFIG, MOTOR_PRICES, applyMarkup, FREIGHT_CHARGE, FREIGHT_WIDTH_THRESHOLD } from '../constants';
 import { getDynamicFabrics, saveSwatchRequest, saveQuoteConfig, loadQuoteConfig } from '../utils/storage';
@@ -1425,6 +1426,10 @@ const Builder: React.FC<BuilderProps> = ({ addToCart, addToSwatches, swatches })
                   />
                 </div>
               </div>
+
+              {/* MOBILE/TABLET STEP GUIDE — collapsible card with same content as desktop right rail.
+                  Hidden on lg+ (right rail handles it there). Renders inside the stepper scroll container. */}
+              <MobileStepGuide openStep={openStep} />
 
               <Stepper 
                 openStep={openStep}
