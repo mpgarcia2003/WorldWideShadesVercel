@@ -77,6 +77,17 @@ export interface ShadeConfig {
   bottomBar: string;
   valanceType: 'standard' | 'reverse' | 'cassette' | 'fascia';
   sideChannelType: 'none' | 'standard';
+  // Cassette valance — matching fabric insert (no extra charge). Only applies when valanceType === 'cassette'.
+  cassetteFabricInsert?: boolean;
+  // Freight shipping flag — auto-set true when width > 108". Adds $475 per oversize shade.
+  freightShipping?: boolean;
+  // When true, an oversize shade (>108") is split into 2 shades at addToCart time, avoiding freight.
+  // Only applies to Standard rectangular shape. Reset to false when width drops below threshold.
+  splitOversize?: boolean;
+  // User-editable widths for each split shade (only meaningful when splitOversize=true).
+  // Default to ceil(width/2) and floor(width/2). Customer can adjust for oddly-sized windows.
+  splitWidthA?: number;
+  splitWidthB?: number;
 }
 
 export interface WindowSelection {

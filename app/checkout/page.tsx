@@ -309,18 +309,23 @@ function CartItemCard({ item }: { item: CartItem }) {
   const hasValance = valance && valance.id !== "standard" && valance.id !== "reverse";
   const hasSideChannels = item.config.sideChannelType === "standard";
   const isMotorized = item.config.controlType === "Motorized";
+  const isCassetteWithInsert = item.config.valanceType === 'cassette' && !!item.config.cassetteFabricInsert;
+  const isFreight = !!item.config.freightShipping;
 
   const motorAddons = [
-    item.config.motorizedController && "Remote",
+    item.config.motorizedController && "New Remote",
     item.config.motorizedHub && "Smart Hub",
     item.config.motorizedCharger && "Charger",
     item.config.sunSensor && "Sun Sensor",
   ].filter(Boolean);
+  const usesExistingRemote = isMotorized && !item.config.motorizedController;
 
   // Roll type: Standard Roll or Reverse Roll
   const rollLabel = item.config.rollType === "Reverse" ? "Reverse Roll" : "Standard Roll";
   // Valance type: separate from roll
-  const valanceLabel = valance?.id === "cassette" ? "Cassette Valance" : valance?.id === "fascia" ? "Metal Fascia" : null;
+  const valanceLabel = valance?.id === "cassette"
+    ? (isCassetteWithInsert ? "Cassette Valance (with fabric insert)" : "Cassette Valance")
+    : valance?.id === "fascia" ? "Metal Fascia" : null;
 
   const specs: [string, string][] = [
     ["Fabric", item.config.material?.name || "\u2014"],
@@ -332,6 +337,8 @@ function CartItemCard({ item }: { item: CartItem }) {
 
   if (valanceLabel) specs.push(["Valance", valanceLabel]);
   if (hasSideChannels) specs.push(["Side Channels", "Yes"]);
+  if (usesExistingRemote) specs.push(["Remote", "Uses customer's existing Somfy remote"]);
+  if (isFreight) specs.push(["Shipping", "Freight required (oversize, +$" + (475 * (item.config.quantity || 1)) + ")"]);
   if (motorAddons.length > 0) specs.push(["Accessories", motorAddons.join(", ")]);
 
   // Fabric swatch image
@@ -401,6 +408,11 @@ function OrderSummary({
   onApplyPromo: () => void;
 }) {
   const subtotal = cart.reduce((sum, item) => sum + item.totalPrice, 0);
+  const freightTotal = cart.reduce(
+    (sum, item) => sum + (item.config.freightShipping ? 475 * (item.config.quantity || 1) : 0),
+    0
+  );
+  const productSubtotal = subtotal - freightTotal;
   const discount = promoApplied ? promoDiscount : 0;
   const adjustedTotal = subtotal - discount;
 
@@ -440,7 +452,7 @@ function OrderSummary({
                   <span style={{ textDecoration: "line-through", color: "#9ca3af" }}>{fmt(retailTotal)}</span>
                 </div>
               )}
-              <PricingRow label={`Subtotal (${cart.reduce((s, i) => s + (i.config.quantity || 1), 0)} item${cart.length > 1 ? "s" : ""})`} value={fmt(subtotal)} />
+              <PricingRow label={`Subtotal (${cart.reduce((s, i) => s + (i.config.quantity || 1), 0)} item${cart.length > 1 ? "s" : ""})`} value={fmt(productSubtotal)} />
               {saleActive && saleSavings > 0 && (
                 <div style={{ display: "flex", justifyContent: "space-between", marginBottom: "0.5rem" }}>
                   <span style={{ color: "#16a34a", fontWeight: 600 }}>Sale Savings (Up to {salePercent}% Off)</span>
@@ -454,6 +466,12 @@ function OrderSummary({
                   <span style={{ color: "#16a34a", fontWeight: 600 }}>FREE</span>
                 </span>
               </div>
+              {freightTotal > 0 && (
+                <div style={{ display: "flex", justifyContent: "space-between", marginBottom: "0.5rem", padding: "0.5rem 0.625rem", background: "#fff7ed", border: "1px solid #fed7aa", borderRadius: "0.375rem" }}>
+                  <span style={{ color: "#c2410c", fontWeight: 600 }}>Freight (oversize {'>'}108")</span>
+                  <span style={{ color: "#c2410c", fontWeight: 700 }}>{fmt(freightTotal)}</span>
+                </div>
+              )}
               {promoApplied && <PricingRow label={`Promo (${promoLabel})`} value={`-${fmt(promoDiscount)}`} valueStyle={{ color: "#16a34a", fontWeight: 600 }} />}
             </div>
 
@@ -872,6 +890,7 @@ export default function CheckoutPage() {
                   sale_percent: isSaleActive() ? _salePercent : 0,
                   tax: 0,
                   shipping: 0,
+                  freight_charge: cart.reduce((sum, item) => sum + (item.config.freightShipping ? 475 * (item.config.quantity || 1) : 0), 0),
                   total: adjustedTotal,
                   promo_code: promoApplied ? promoCode : undefined,
                   shipping_first_name: firstName,
@@ -903,6 +922,8 @@ export default function CheckoutPage() {
                     motorized_hub: item.config.motorizedHub || false,
                     motorized_charger: item.config.motorizedCharger || false,
                     sun_sensor: item.config.sunSensor || false,
+                    cassette_fabric_insert: item.config.cassetteFabricInsert || false,
+                    freight_shipping: item.config.freightShipping || false,
                     quantity: item.config.quantity || 1,
                     unit_price: item.totalPrice / (item.config.quantity || 1),
                     total_price: item.totalPrice,

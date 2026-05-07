@@ -15,7 +15,7 @@ import Visualizer from '../components/Visualizer';
 import Stepper from '../components/Stepper';
 import StickyBottomBar from '../components/StickyBottomBar';
 import { ShadeConfig, Fabric, WindowSelection, CartItem, RoomAnalysis, ShapeType } from '../types';
-import { DEFAULT_ROOM_IMAGE, getGridPrice, SHAPE_CONFIGS, VALANCE_OPTIONS, SIDE_CHANNEL_OPTIONS, STEPS, getFabricUrl, isSaleActive, getSalePrice, getSaleShadePrice, getSaleAccessoryPrice, SALE_CONFIG, MOTOR_PRICES, applyMarkup } from '../constants';
+import { DEFAULT_ROOM_IMAGE, getGridPrice, SHAPE_CONFIGS, VALANCE_OPTIONS, SIDE_CHANNEL_OPTIONS, STEPS, getFabricUrl, isSaleActive, getSalePrice, getSaleShadePrice, getSaleAccessoryPrice, SALE_CONFIG, MOTOR_PRICES, applyMarkup, FREIGHT_CHARGE, FREIGHT_WIDTH_THRESHOLD } from '../constants';
 import { getDynamicFabrics, saveSwatchRequest, saveQuoteConfig, loadQuoteConfig } from '../utils/storage';
 import { notifyAdminSwatchRequest, notifyAdminExitIntent, sendCustomerQuoteEmail } from '../utils/email';
 import { useLanguage } from '../LanguageContext';
@@ -340,7 +340,11 @@ const Builder: React.FC<BuilderProps> = ({ addToCart, addToSwatches, swatches })
 
   const [config, setConfig] = useState<ShadeConfig>(() => {
     const isEditing = typeof window !== 'undefined' && localStorage.getItem('wws_editing_item');
-    // Try to restore from localStorage for returning users
+    // Try to restore from localStorage for returning users.
+    // NOTE: We deliberately DO NOT persist customer choices like valance, side channels,
+    // roll type, bottom bar, or control type. These should always start at defaults each
+    // session (No cover / No side channels / Standard roll / Manual chain) so prior testing
+    // or earlier configs can't bleed into a fresh build.
     try {
       const saved = localStorage.getItem('wws_builder_config');
       if (saved) {
@@ -350,10 +354,14 @@ const Builder: React.FC<BuilderProps> = ({ addToCart, addToSwatches, swatches })
           width: isEditing ? (parsed.width || 0) : 0, widthFraction: isEditing ? (parsed.widthFraction || '0') : '0',
           height: isEditing ? (parsed.height || 0) : 0, heightFraction: isEditing ? (parsed.heightFraction || '0') : '0',
           customDims: isEditing ? (parsed.customDims || {}) : {},
-          controlType: isEditing ? (parsed.controlType || 'Metal Chain') : 'Metal Chain', motorPower: parsed.motorPower || 'Rechargeable', controlPosition: parsed.controlPosition || 'Right',
-          rollType: parsed.rollType || 'Standard', bottomBar: parsed.bottomBar || 'Fabric Wrapped', quantity: isEditing ? (parsed.quantity || 1) : 1, motorizedController: false,
-          motorizedHub: false, motorizedCharger: false, sunSensor: false, zipCode: '', installer: null, measureService: true,
-          installService: true, isMeasurementOnly: false, valanceType: parsed.valanceType || 'standard', sideChannelType: parsed.sideChannelType || 'none'
+          // Always default these — do NOT restore from localStorage:
+          controlType: 'Metal Chain', motorPower: 'Rechargeable', controlPosition: 'Right',
+          rollType: 'Standard', bottomBar: 'Fabric Wrapped',
+          valanceType: 'standard', sideChannelType: 'none', cassetteFabricInsert: false,
+          quantity: isEditing ? (parsed.quantity || 1) : 1,
+          motorizedController: false, motorizedHub: false, motorizedCharger: false, sunSensor: false,
+          zipCode: '', installer: null, measureService: true, installService: true, isMeasurementOnly: false,
+          freightShipping: false
         };
       }
     } catch (e) { /* ignore parse errors */ }
@@ -363,7 +371,8 @@ const Builder: React.FC<BuilderProps> = ({ addToCart, addToSwatches, swatches })
       controlType: 'Metal Chain', motorPower: 'Rechargeable', controlPosition: 'Right',
       rollType: 'Standard', bottomBar: 'Fabric Wrapped', quantity: 1, motorizedController: false,
       motorizedHub: false, motorizedCharger: false, sunSensor: false, zipCode: '', installer: null, measureService: true,
-      installService: true, isMeasurementOnly: false, valanceType: 'standard', sideChannelType: 'none'
+      installService: true, isMeasurementOnly: false, valanceType: 'standard', sideChannelType: 'none',
+      cassetteFabricInsert: false, freightShipping: false
     };
   });
 
@@ -516,19 +525,91 @@ const Builder: React.FC<BuilderProps> = ({ addToCart, addToSwatches, swatches })
     recoverQuote();
   }, []);
 
-  // Save config to localStorage for returning users
+  // Save config to localStorage for returning users.
+  // We persist ONLY structural fields (shape, dimensions, fabric, mount, quantity).
+  // We deliberately omit valance / side channel / roll / bottom bar / control type so
+  // every fresh build starts at the clean defaults (No cover, No side channels, Standard
+  // roll, Manual chain) regardless of prior testing or sessions.
   useEffect(() => {
     try {
       const toSave = {
         shape: config.shape, shadeType: config.shadeType, mountType: config.mountType,
         width: config.width, widthFraction: config.widthFraction, height: config.height, heightFraction: config.heightFraction,
-        customDims: config.customDims, controlType: config.controlType, motorPower: config.motorPower,
-        controlPosition: config.controlPosition, rollType: config.rollType, bottomBar: config.bottomBar,
-        quantity: config.quantity, valanceType: config.valanceType, sideChannelType: config.sideChannelType
+        customDims: config.customDims,
+        quantity: config.quantity
       };
       localStorage.setItem('wws_builder_config', JSON.stringify(toSave));
     } catch (e) { /* ignore storage errors */ }
   }, [config]);
+
+  // ─── OVERSIZE / SPLIT / FREIGHT ──────────────────────────
+  // CRITICAL: All these useEffects use the FUNCTIONAL form of setConfig (`prev => ...`)
+  // because multiple effects can fire in parallel on the same dependency change
+  // (e.g. splitOversize change triggers both freight + split-widths effects). The closure
+  // form `setConfig({...config, ...})` would read stale `config` from closure and the later
+  // effect would overwrite the earlier one. Functional form reads latest committed state.
+
+  // Auto-set freightShipping flag when width crosses the threshold (>108")
+  // Skipped if user has chosen splitOversize — they avoid freight by splitting into 2 shades.
+  useEffect(() => {
+    const totalWidth = Number(config.width) + parseFraction(config.widthFraction);
+    const overThreshold = totalWidth > FREIGHT_WIDTH_THRESHOLD;
+    const shouldShip = overThreshold && !config.splitOversize;
+    setConfig(prev => prev.freightShipping === shouldShip ? prev : { ...prev, freightShipping: shouldShip });
+  }, [config.width, config.widthFraction, config.splitOversize]);
+
+  // Reset splitOversize when width drops at/below threshold (no longer applicable)
+  useEffect(() => {
+    const totalWidth = Number(config.width) + parseFraction(config.widthFraction);
+    if (totalWidth <= FREIGHT_WIDTH_THRESHOLD) {
+      setConfig(prev => prev.splitOversize ? { ...prev, splitOversize: false } : prev);
+    }
+  }, [config.width, config.widthFraction]);
+
+  // splitOversize is only meaningful for Standard rectangular shapes. Reset if shape changes.
+  useEffect(() => {
+    if (config.shape !== 'Standard') {
+      setConfig(prev => prev.splitOversize ? { ...prev, splitOversize: false } : prev);
+    }
+  }, [config.shape]);
+
+  // When splitOversize is enabled or width changes, default the two split widths to 50/50
+  // (ceil/floor so the sum equals the total). Customer can then edit each individually.
+  useEffect(() => {
+    const totalWidth = Number(config.width) + parseFraction(config.widthFraction);
+    if (config.splitOversize && totalWidth > 0) {
+      setConfig(prev => {
+        const a = Math.ceil(totalWidth / 2);
+        const b = Math.floor(totalWidth / 2);
+        const sum = (prev.splitWidthA || 0) + (prev.splitWidthB || 0);
+        // Only auto-fill if widths haven't been set yet OR if they no longer match the total.
+        // Don't clobber user's manual edits otherwise.
+        if (!prev.splitWidthA || !prev.splitWidthB || sum !== Math.round(totalWidth)) {
+          return { ...prev, splitWidthA: a, splitWidthB: b };
+        }
+        return prev;
+      });
+    } else if (!config.splitOversize) {
+      setConfig(prev => (prev.splitWidthA || prev.splitWidthB) ? { ...prev, splitWidthA: undefined, splitWidthB: undefined } : prev);
+    }
+  }, [config.splitOversize, config.width, config.widthFraction]);
+
+  // Reset cassetteFabricInsert when valance changes away from cassette
+  useEffect(() => {
+    if (config.valanceType !== 'cassette') {
+      setConfig(prev => prev.cassetteFabricInsert ? { ...prev, cassetteFabricInsert: false } : prev);
+    }
+  }, [config.valanceType]);
+
+  // Default to including a new remote when controlType FIRST switches to Motorized.
+  // User can then toggle to "I have my own" but they always get a default selection.
+  const prevControlTypeRef = useRef(config.controlType);
+  useEffect(() => {
+    if (config.controlType === 'Motorized' && prevControlTypeRef.current !== 'Motorized') {
+      setConfig(prev => ({ ...prev, motorizedController: true }));
+    }
+    prevControlTypeRef.current = config.controlType;
+  }, [config.controlType]);
 
   useEffect(() => {
     if (config.shape === 'Standard') setImageSrc(DEFAULT_ROOM_IMAGE);
@@ -585,7 +666,7 @@ const Builder: React.FC<BuilderProps> = ({ addToCart, addToSwatches, swatches })
     if (config.isMeasurementOnly && config.installer) {
       const p = 24.99;
       const inst = config.installer.fees.measure;
-      return { product: p, saleProduct: p, install: inst, total: p + inst, originalTotal: p + inst, saleActive: isSaleActive() };
+      return { product: p, saleProduct: p, install: inst, freight: 0, total: p + inst, originalTotal: p + inst, saleActive: isSaleActive() };
     }
     
     const isSpecialty = config.shape !== 'Standard';
@@ -593,6 +674,9 @@ const Builder: React.FC<BuilderProps> = ({ addToCart, addToSwatches, swatches })
     const hasCustomVal = Object.values(dims).some(v => v > 0);
     const hasSpecialtyDims = isSpecialty && (config.width > 0 || config.height > 0 || hasCustomVal);
     const hasStandardDims = !isSpecialty && config.width > 0 && config.height > 0;
+
+    // Freight is per oversize shade. Charged regardless of whether full pricing is computed.
+    const freightCharge = config.freightShipping ? FREIGHT_CHARGE * config.quantity : 0;
 
     if (!(hasSpecialtyDims || hasStandardDims) || !config.material) {
       // Even without dimensions, show installer fees if pro service selected
@@ -606,11 +690,15 @@ const Builder: React.FC<BuilderProps> = ({ addToCart, addToSwatches, swatches })
           installCost = installFee;
         }
       }
-      return { product: 0, saleProduct: 0, install: installCost, total: installCost, originalTotal: installCost, saleActive: isSaleActive() };
+      return { product: 0, saleProduct: 0, install: installCost, freight: freightCharge, total: installCost + freightCharge, originalTotal: installCost + freightCharge, saleActive: isSaleActive() };
     }
     
     let w = Number(config.width) + parseFraction(config.widthFraction);
     let h = Number(config.height) + parseFraction(config.heightFraction);
+    
+    // Split mode (Standard rectangular only): each shade has its own width.
+    // Pricing computed per-shade and summed.
+    const isSplitMode = !!config.splitOversize && config.shape === 'Standard';
     
     if (isSpecialty) {
         const wKeys = ['width', 'bottomWidth', 'topWidth'];
@@ -626,19 +714,42 @@ const Builder: React.FC<BuilderProps> = ({ addToCart, addToSwatches, swatches })
         }
     }
     
-    const basePrice = getGridPrice(config.material.priceGroup, w, h, config.shape);
-    
-    let motorAddons = config.controlType === 'Motorized' ? (config.shape === 'Standard' ? MOTOR_PRICES.base.marked : 0) + (config.motorizedController ? MOTOR_PRICES.remote.marked : 0) + (config.motorizedHub ? MOTOR_PRICES.hub.marked : 0) + (config.motorizedCharger ? MOTOR_PRICES.charger.marked : 0) + (config.sunSensor ? MOTOR_PRICES.sunSensor.marked : 0) : 0;
-    
     const valanceOption = VALANCE_OPTIONS.find(v => v.id === config.valanceType);
-    const valancePrice = applyMarkup((valanceOption?.pricePerInch || 0)) * w;
-
     const bannerOption = SIDE_CHANNEL_OPTIONS.find(s => s.id === config.sideChannelType);
-    const sideChannelPrice = applyMarkup((bannerOption?.pricePerFoot || 0)) * (h / 12) * 2;
+    const motorAddonsPerShade = config.controlType === 'Motorized' 
+      ? (config.shape === 'Standard' ? MOTOR_PRICES.base.marked : 0) 
+      + (config.motorizedController ? MOTOR_PRICES.remote.marked : 0) 
+      + (config.motorizedHub ? MOTOR_PRICES.hub.marked : 0) 
+      + (config.motorizedCharger ? MOTOR_PRICES.charger.marked : 0) 
+      + (config.sunSensor ? MOTOR_PRICES.sunSensor.marked : 0) 
+      : 0;
 
-    // Split shade vs accessory pricing for different discount tiers
-    const shadeTotal = basePrice * config.quantity;
-    const accessoryTotal = (motorAddons + valancePrice + sideChannelPrice) * config.quantity;
+    // Per-shade price helper — bundles base + valance + side channels + motor add-ons.
+    const computeShadeCost = (shadeWidth: number, shadeHeight: number) => {
+      const base = getGridPrice(config.material!.priceGroup, shadeWidth, shadeHeight, config.shape);
+      const valance = applyMarkup((valanceOption?.pricePerInch || 0)) * shadeWidth;
+      const channels = applyMarkup((bannerOption?.pricePerFoot || 0)) * (shadeHeight / 12) * 2;
+      return { shade: base, accessory: motorAddonsPerShade + valance + channels };
+    };
+
+    let shadeRaw = 0;
+    let accessoryRaw = 0;
+    if (isSplitMode) {
+      const widthA = config.splitWidthA || Math.ceil(w / 2);
+      const widthB = config.splitWidthB || Math.floor(w / 2);
+      const a = computeShadeCost(widthA, h);
+      const b = computeShadeCost(widthB, h);
+      shadeRaw = a.shade + b.shade;
+      accessoryRaw = a.accessory + b.accessory;
+    } else {
+      const single = computeShadeCost(w, h);
+      shadeRaw = single.shade;
+      accessoryRaw = single.accessory;
+    }
+
+    // Apply quantity multiplier
+    const shadeTotal = shadeRaw * config.quantity;
+    const accessoryTotal = accessoryRaw * config.quantity;
     const productTotal = shadeTotal + accessoryTotal;
 
     let installCost = 0;
@@ -662,8 +773,9 @@ const Builder: React.FC<BuilderProps> = ({ addToCart, addToSwatches, swatches })
       product: productTotal, 
       saleProduct: saleProductTotal,
       install: installCost, 
-      total: saleProductTotal + installCost,
-      originalTotal: productTotal + installCost,
+      freight: freightCharge,
+      total: saleProductTotal + installCost + freightCharge,
+      originalTotal: productTotal + installCost + freightCharge,
       saleActive 
     };
   }, [config]);
@@ -719,15 +831,7 @@ const Builder: React.FC<BuilderProps> = ({ addToCart, addToSwatches, swatches })
 
     // Last step = add to cart and open cart drawer
     if (stepIndex === STEPS.length - 1) {
-      addToCart({
-        id: `item_${Date.now()}`,
-        config: { ...config },
-        unitPrice: priceBreakdown.saleProduct / config.quantity,
-        installerFee: priceBreakdown.install,
-        totalPrice: priceBreakdown.total,
-        timestamp: Date.now(),
-        visualizerImage: visualizerSnapshot,
-      });
+      doAddToCart();
       setOpenStep(null);
       // Tracking handled by app/builder/page.tsx::addToCart wrapper
       trackEvent('step_confirmed', { step_number: stepIndex + 1, step_name: STEPS[stepIndex] });
@@ -759,6 +863,85 @@ const Builder: React.FC<BuilderProps> = ({ addToCart, addToSwatches, swatches })
   };
 
   const allStepsComplete = completedSteps.size === STEPS.length;
+
+  // Centralized add-to-cart helper. Handles split-oversize logic: when splitOversize=true,
+  // pushes 2 cart items (each with its own user-specified width) instead of 1.
+  const doAddToCart = () => {
+    const isSplitMode = !!config.splitOversize && config.shape === 'Standard';
+    if (isSplitMode) {
+      const fullWidth = Number(config.width);
+      const widthA = config.splitWidthA || Math.ceil(fullWidth / 2);
+      const widthB = config.splitWidthB || (fullWidth - widthA);
+
+      // Each split shade becomes a normal cart item: clear splitOversize + freightShipping + the split widths
+      const splitConfigBase: ShadeConfig = {
+        ...config,
+        widthFraction: '0',
+        splitOversize: false,
+        freightShipping: false,
+        splitWidthA: undefined,
+        splitWidthB: undefined,
+      };
+
+      // Compute per-shade price using the SAME logic priceBreakdown uses, so the split totals are accurate.
+      // We need access to the helper inside priceBreakdown—re-derive here using identical math.
+      const h = Number(config.height) + parseFraction(config.heightFraction);
+      const valanceOption = VALANCE_OPTIONS.find(v => v.id === config.valanceType);
+      const bannerOption = SIDE_CHANNEL_OPTIONS.find(s => s.id === config.sideChannelType);
+      const motorAddonsPerShade = config.controlType === 'Motorized' 
+        ? (config.shape === 'Standard' ? MOTOR_PRICES.base.marked : 0) 
+        + (config.motorizedController ? MOTOR_PRICES.remote.marked : 0) 
+        + (config.motorizedHub ? MOTOR_PRICES.hub.marked : 0) 
+        + (config.motorizedCharger ? MOTOR_PRICES.charger.marked : 0) 
+        + (config.sunSensor ? MOTOR_PRICES.sunSensor.marked : 0) 
+        : 0;
+      const computeShadePrice = (shadeWidth: number) => {
+        if (!config.material) return 0;
+        const base = getGridPrice(config.material.priceGroup, shadeWidth, h, config.shape);
+        const valance = applyMarkup((valanceOption?.pricePerInch || 0)) * shadeWidth;
+        const channels = applyMarkup((bannerOption?.pricePerFoot || 0)) * (h / 12) * 2;
+        return base + motorAddonsPerShade + valance + channels;
+      };
+      const priceA = computeShadePrice(widthA) * config.quantity;
+      const priceB = computeShadePrice(widthB) * config.quantity;
+      const saleActive = isSaleActive();
+      // Apply same sale discount ratio to each shade as priceBreakdown applied overall
+      const totalRaw = priceA + priceB;
+      const saleRatio = totalRaw > 0 && priceBreakdown.saleProduct > 0 ? priceBreakdown.saleProduct / totalRaw : 1;
+      const saleA = priceA * saleRatio;
+      const saleB = priceB * saleRatio;
+
+      const baseId = `item_${Date.now()}`;
+      addToCart({
+        id: `${baseId}_a`,
+        config: { ...splitConfigBase, width: widthA },
+        unitPrice: saleA / config.quantity,
+        installerFee: priceBreakdown.install,
+        totalPrice: saleA,
+        timestamp: Date.now(),
+        visualizerImage: visualizerSnapshot,
+      });
+      addToCart({
+        id: `${baseId}_b`,
+        config: { ...splitConfigBase, width: widthB },
+        unitPrice: saleB / config.quantity,
+        installerFee: 0,
+        totalPrice: saleB,
+        timestamp: Date.now() + 1,
+        visualizerImage: visualizerSnapshot,
+      });
+    } else {
+      addToCart({
+        id: `item_${Date.now()}`,
+        config: { ...config },
+        unitPrice: priceBreakdown.saleProduct / config.quantity,
+        installerFee: priceBreakdown.install,
+        totalPrice: priceBreakdown.total,
+        timestamp: Date.now(),
+        visualizerImage: visualizerSnapshot,
+      });
+    }
+  };
 
   // Smart auto-advance — confirms and advances after simple selections
   const handleAutoAdvance = (stepIndex: number) => {
@@ -1265,15 +1448,7 @@ const Builder: React.FC<BuilderProps> = ({ addToCart, addToSwatches, swatches })
               isLastStep={openStep === STEPS.length - 1}
               onContinue={() => {
                 if (openStep === STEPS.length - 1) {
-                  addToCart({
-                    id: `item_${Date.now()}`,
-                    config: { ...config },
-                    unitPrice: priceBreakdown.saleProduct / config.quantity,
-                    installerFee: priceBreakdown.install,
-                    totalPrice: priceBreakdown.total,
-                    timestamp: Date.now(),
-                    visualizerImage: visualizerSnapshot,
-                  });
+                  doAddToCart();
                 } else if (openStep !== null) {
                   handleConfirmStep(openStep);
                 }

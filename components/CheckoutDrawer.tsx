@@ -59,28 +59,34 @@ const CartItemCard: React.FC<{
   const valance = VALANCE_OPTIONS.find((v: any) => v.id === item.config.valanceType);
   const hasValance = valance && valance.id !== 'standard' && valance.id !== 'reverse';
   const hasSideChannels = item.config.sideChannelType === 'standard';
+  const isCassetteWithInsert = item.config.valanceType === 'cassette' && !!item.config.cassetteFabricInsert;
+  const isFreight = !!item.config.freightShipping;
 
   // Spec rows — one row per builder step answer
   const motorAddons = [
-    item.config.motorizedController && 'Remote',
+    item.config.motorizedController && 'New Remote',
     item.config.motorizedHub && 'Smart Hub',
     item.config.motorizedCharger && 'Charger',
     item.config.sunSensor && 'Sun Sensor',
   ].filter(Boolean).join(', ');
+  const isMotorized = item.config.controlType === 'Motorized';
+  const usesExistingRemote = isMotorized && !item.config.motorizedController;
 
   const specs = [
     { label: 'Shape', value: item.config.shape !== 'Standard' ? getShapeLabel(item.config.shape) : 'Standard Rectangle' },
     { label: 'Size', value: dimDisplay || '—' },
     { label: 'Type', value: item.config.shadeType || '—' },
     { label: 'Fabric', value: item.config.material?.name || '—' },
-    { label: 'Mount', value: t(item.config.mountType === 'Inside Mount' ? 'mount.inside' : 'mount.outside') },
+    { label: 'Mount', value: item.config.mountType === 'Cloth Size' ? t('mount.clothSize') : t(item.config.mountType === 'Inside Mount' ? 'mount.inside' : 'mount.outside') },
     { label: 'Control', value: item.config.controlType === 'Motorized' ? `Motorized (${item.config.motorPower || 'Rechargeable'})` : 'Metal Chain' },
     ...(motorAddons ? [{ label: 'Add-ons', value: motorAddons }] : []),
+    ...(usesExistingRemote ? [{ label: 'Remote', value: 'Uses existing Somfy remote' }] : []),
     { label: 'Roll Type', value: item.config.rollType || 'Standard' },
     { label: 'Control Side', value: item.config.controlPosition || 'Right' },
     { label: 'Bottom Bar', value: item.config.bottomBar || 'Fabric Wrapped' },
-    ...(hasValance ? [{ label: 'Valance', value: t(`valance.${valance!.id}`) }] : []),
+    ...(hasValance ? [{ label: 'Valance', value: isCassetteWithInsert ? `${t(`valance.${valance!.id}`)} (with fabric insert)` : t(`valance.${valance!.id}`) }] : []),
     ...(hasSideChannels ? [{ label: 'Channels', value: 'Side Channels' }] : []),
+    ...(isFreight ? [{ label: 'Shipping', value: `Freight (+$${475 * (item.config.quantity || 1)}, oversize)` }] : []),
     { label: 'Qty', value: `${item.config.quantity}` },
     ...(item.config.installer ? [{ label: 'Pro Service', value: item.config.measureService && item.config.installService ? 'Measure + Install' : item.config.measureService ? 'Measure Only' : 'Install Only' }] : []),
   ];

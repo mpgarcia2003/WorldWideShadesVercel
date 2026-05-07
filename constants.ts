@@ -36,6 +36,12 @@ export const getSalePrice = (originalPrice: number) => {
 export const PRICE_MARKUP = 1.25;
 export const applyMarkup = (price: number) => Math.round(price * PRICE_MARKUP * 100) / 100;
 
+// ─── FREIGHT SHIPPING ──────────────────────────
+// Shades wider than this threshold ship via freight (cannot fit in FedEx).
+// $475 charged per oversize shade (so 2 oversize shades = $950 freight).
+export const FREIGHT_WIDTH_THRESHOLD = 108;
+export const FREIGHT_CHARGE = 475;
+
 export const MOTOR_PRICES = {
   base: { original: 250, marked: 417 },
   remote: { original: 50, marked: Math.round(50 * 1.25) },

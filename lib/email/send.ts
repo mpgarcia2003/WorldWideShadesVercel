@@ -58,6 +58,9 @@ export async function sendOrderConfirmation(order: any, items: any[]) {
         <span style="font-size:12px;color:#666;">
           ${item.fabric_name ? `${item.fabric_name} · ` : ""}${formatDimension(item.width, item.width_fraction)} W × ${formatDimension(item.height, item.height_fraction)} H<br>
           ${item.mount_type || ""} · ${item.control_type || ""}${item.motor_power ? ` (${item.motor_power})` : ""}<br>
+          ${item.valance_type === 'cassette' && item.cassette_fabric_insert ? `Cassette valance with fabric insert<br>` : ""}
+          ${item.control_type === 'Motorized' && !item.motorized_controller ? `<span style="color:#2563eb;font-weight:600;">✓ Uses your existing Somfy remote</span><br>` : ""}
+          ${item.freight_shipping ? `<span style="color:#c2410c;font-weight:600;">⚠ Oversize — freight shipping required</span><br>` : ""}
           Qty: ${item.quantity}
         </span>
       </td>
@@ -97,6 +100,7 @@ export async function sendOrderConfirmation(order: any, items: any[]) {
         ${Number(order.sale_savings) > 0 ? `<tr><td style="padding:4px 0;color:#16a34a;font-weight:600;">Sale Discount</td><td style="text-align:right;color:#16a34a;font-weight:600;">-${formatCurrency(Number(order.sale_savings))}</td></tr>` : ""}
         ${Number(order.discount) > 0 ? `<tr><td style="padding:4px 0;color:#16a34a;font-weight:600;">Promo Discount</td><td style="text-align:right;color:#16a34a;font-weight:600;">-${formatCurrency(Number(order.discount))}</td></tr>` : ""}
         <tr><td style="padding:4px 0;color:#666;">Shipping</td><td style="text-align:right;color:#16a34a;font-weight:600;">FREE</td></tr>
+        ${Number(order.freight_charge) > 0 ? `<tr><td style="padding:4px 0;color:#c2410c;font-weight:600;">Freight (oversize)</td><td style="text-align:right;color:#c2410c;font-weight:600;">${formatCurrency(Number(order.freight_charge))}</td></tr>` : ""}
         <tr><td style="padding:12px 0 0;font-size:18px;font-weight:800;color:#0c0c0c;">Total</td><td style="text-align:right;font-size:18px;font-weight:800;color:#0c0c0c;">${formatCurrency(Number(order.total))}</td></tr>
       </table>
     </div>
@@ -224,7 +228,7 @@ export async function sendNewOrderAlert(order: any, items: any[]) {
     .map(
       (item) =>
         `<li style="margin-bottom:8px;font-size:13px;color:#333;">
-          <strong>${item.shade_type}</strong> — ${item.fabric_name || "N/A"} — ${formatDimension(item.width, item.width_fraction)} × ${formatDimension(item.height, item.height_fraction)} — ${item.mount_type} — ${item.control_type}${item.motor_power ? ` (${item.motor_power})` : ""} — Qty ${item.quantity} — ${formatCurrency(Number(item.total_price))}
+          <strong>${item.shade_type}</strong> — ${item.fabric_name || "N/A"} — ${formatDimension(item.width, item.width_fraction)} × ${formatDimension(item.height, item.height_fraction)} — ${item.mount_type} — ${item.control_type}${item.motor_power ? ` (${item.motor_power})` : ""}${item.valance_type === 'cassette' && item.cassette_fabric_insert ? " — Cassette w/ fabric insert" : ""}${item.control_type === 'Motorized' && !item.motorized_controller ? ' — <span style="color:#2563eb;font-weight:700;">USES EXISTING REMOTE (don\'t ship)</span>' : ""}${item.freight_shipping ? ' — <span style="color:#c2410c;font-weight:700;">⚠ FREIGHT (oversize)</span>' : ""} — Qty ${item.quantity} — ${formatCurrency(Number(item.total_price))}
         </li>`
     )
     .join("");
@@ -256,6 +260,7 @@ export async function sendNewOrderAlert(order: any, items: any[]) {
       <tr><td style="padding:4px 0;color:#666;">Subtotal</td><td style="text-align:right;">${formatCurrency(Number(order.subtotal))}</td></tr>
       ${Number(order.sale_savings) > 0 ? `<tr><td style="padding:4px 0;color:#f59e0b;">Sale Discount (${order.sale_percent}%)</td><td style="text-align:right;color:#f59e0b;">-${formatCurrency(Number(order.sale_savings))}</td></tr>` : ""}
       ${Number(order.discount) > 0 ? `<tr><td style="padding:4px 0;color:#f59e0b;">Promo: ${order.promo_code || "—"}</td><td style="text-align:right;color:#f59e0b;">-${formatCurrency(Number(order.discount))}</td></tr>` : ""}
+      ${Number(order.freight_charge) > 0 ? `<tr><td style="padding:4px 0;color:#c2410c;font-weight:600;">Freight (oversize)</td><td style="text-align:right;color:#c2410c;font-weight:600;">${formatCurrency(Number(order.freight_charge))}</td></tr>` : ""}
       <tr style="border-top:2px solid #0c0c0c;"><td style="padding:12px 0 0;font-size:16px;font-weight:800;">Total Charged</td><td style="text-align:right;font-size:16px;font-weight:800;color:#22c55e;">${formatCurrency(Number(order.total))}</td></tr>
     </table>
 

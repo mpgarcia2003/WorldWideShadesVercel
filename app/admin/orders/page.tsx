@@ -25,6 +25,8 @@ interface OrderItem {
   motorized_hub: boolean;
   motorized_charger: boolean;
   sun_sensor: boolean;
+  cassette_fabric_insert: boolean;
+  freight_shipping: boolean;
   quantity: number;
   unit_price: number;
   total_price: number;
@@ -46,6 +48,7 @@ interface Order {
   discount: number;
   tax: number;
   shipping: number;
+  freight_charge: number;
   total: number;
   sale_savings: number;
   retail_total: number;
@@ -574,7 +577,7 @@ export default function AdminOrdersPage() {
                         </div>
                         <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "0.375rem" }}>
                           <select value={item.mount_type || ""} onChange={(e) => { const n = [...editItems]; n[idx] = {...n[idx], mount_type: e.target.value}; setEditItems(n); }} style={{ padding: "0.375rem", borderRadius: "0.25rem", border: "1px solid #ddd", fontSize: "0.75rem" }}>
-                            <option value="Inside Mount">Inside Mount</option><option value="Outside Mount">Outside Mount</option>
+                            <option value="Inside Mount">Inside Mount</option><option value="Outside Mount">Outside Mount</option><option value="Cloth Size">Cloth Size</option>
                           </select>
                           <select value={item.control_type || ""} onChange={(e) => { const n = [...editItems]; n[idx] = {...n[idx], control_type: e.target.value}; setEditItems(n); }} style={{ padding: "0.375rem", borderRadius: "0.25rem", border: "1px solid #ddd", fontSize: "0.75rem" }}>
                             <option value="Manual">Manual</option><option value="Motorized">Motorized</option>
@@ -594,10 +597,14 @@ export default function AdminOrdersPage() {
                       {item.mount_type && <div><span style={{ fontWeight: 600, color: "#999", fontSize: "0.6875rem", textTransform: "uppercase", letterSpacing: "0.05em" }}>Mount:</span> {item.mount_type}</div>}
                       {item.control_type && <div><span style={{ fontWeight: 600, color: "#999", fontSize: "0.6875rem", textTransform: "uppercase", letterSpacing: "0.05em" }}>Control:</span> {item.control_type}{item.motor_power ? ` (${item.motor_power})` : ''}</div>}
                       {item.roll_type && <div><span style={{ fontWeight: 600, color: "#999", fontSize: "0.6875rem", textTransform: "uppercase", letterSpacing: "0.05em" }}>Roll Type:</span> {item.roll_type}</div>}
-                      {item.valance_type && item.valance_type !== 'None' && item.valance_type !== 'standard' && <div><span style={{ fontWeight: 600, color: "#999", fontSize: "0.6875rem", textTransform: "uppercase", letterSpacing: "0.05em" }}>Valance:</span> {item.valance_type}</div>}
+                      {item.valance_type && item.valance_type !== 'None' && item.valance_type !== 'standard' && <div><span style={{ fontWeight: 600, color: "#999", fontSize: "0.6875rem", textTransform: "uppercase", letterSpacing: "0.05em" }}>Valance:</span> {item.valance_type}{item.valance_type === 'cassette' && item.cassette_fabric_insert ? ' (with fabric insert)' : ''}</div>}
+                      {item.freight_shipping && <div><span style={{ fontWeight: 600, color: "#dc2626", fontSize: "0.6875rem", textTransform: "uppercase", letterSpacing: "0.05em" }}>Shipping:</span> <span style={{ color: "#dc2626", fontWeight: 600 }}>Freight required (oversize {'>'}108")</span></div>}
                       {item.side_channel_type && item.side_channel_type !== 'none' && <div><span style={{ fontWeight: 600, color: "#999", fontSize: "0.6875rem", textTransform: "uppercase", letterSpacing: "0.05em" }}>Side Channels:</span> Yes</div>}
                       {(item.motorized_controller || item.motorized_hub || item.motorized_charger || item.sun_sensor) && (
-                        <div><span style={{ fontWeight: 600, color: "#999", fontSize: "0.6875rem", textTransform: "uppercase", letterSpacing: "0.05em" }}>Accessories:</span> {[item.motorized_controller && 'Remote', item.motorized_hub && 'Smart Hub', item.motorized_charger && 'Charger', item.sun_sensor && 'Sun Sensor'].filter(Boolean).join(', ')}</div>
+                        <div><span style={{ fontWeight: 600, color: "#999", fontSize: "0.6875rem", textTransform: "uppercase", letterSpacing: "0.05em" }}>Accessories:</span> {[item.motorized_controller && 'New Remote', item.motorized_hub && 'Smart Hub', item.motorized_charger && 'Charger', item.sun_sensor && 'Sun Sensor'].filter(Boolean).join(', ')}</div>
+                      )}
+                      {item.control_type === 'Motorized' && !item.motorized_controller && (
+                        <div><span style={{ fontWeight: 600, color: "#2563eb", fontSize: "0.6875rem", textTransform: "uppercase", letterSpacing: "0.05em" }}>Remote:</span> <span style={{ color: "#2563eb", fontWeight: 600 }}>Customer using existing Somfy (don't ship one)</span></div>
                       )}
                       <div><span style={{ fontWeight: 600, color: "#999", fontSize: "0.6875rem", textTransform: "uppercase", letterSpacing: "0.05em" }}>Qty:</span> {item.quantity}</div>
                     </div>
@@ -638,6 +645,11 @@ export default function AdminOrdersPage() {
                 <div style={{ display: "flex", justifyContent: "space-between", fontSize: "0.8125rem", marginBottom: "0.5rem" }}>
                   <span>Shipping</span><span>{Number(selectedOrder.shipping) === 0 ? "FREE" : fmt(Number(selectedOrder.shipping))}</span>
                 </div>
+                {Number(selectedOrder.freight_charge) > 0 && (
+                  <div style={{ display: "flex", justifyContent: "space-between", fontSize: "0.8125rem", marginBottom: "0.5rem", padding: "0.375rem 0.5rem", background: "#fff7ed", borderRadius: "0.25rem", border: "1px solid #fed7aa" }}>
+                    <span style={{ fontWeight: 600, color: "#c2410c" }}>Freight (oversize)</span><span style={{ fontWeight: 700, color: "#c2410c" }}>{fmt(Number(selectedOrder.freight_charge))}</span>
+                  </div>
+                )}
                 {(Number(selectedOrder.sale_savings) > 0 || Number(selectedOrder.discount) > 0) && (
                   <div style={{ display: "flex", justifyContent: "space-between", fontSize: "0.8125rem", marginBottom: "0.5rem", padding: "0.375rem 0.5rem", background: "#dcfce7", borderRadius: "0.25rem", border: "1px solid #86efac" }}>
                     <span style={{ fontWeight: 700, color: "#16a34a" }}>✨ Customer Saved</span>

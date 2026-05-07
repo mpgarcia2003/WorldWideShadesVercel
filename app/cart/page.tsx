@@ -21,6 +21,8 @@ interface CartItemData {
     motorizedHub: boolean;
     motorizedCharger: boolean;
     sunSensor: boolean;
+    cassetteFabricInsert?: boolean;
+    freightShipping?: boolean;
     quantity: number;
     controlPosition: string;
     rollType: string;
@@ -82,6 +84,11 @@ export default function CartPage() {
   }
 
   const subtotal = cart.reduce((sum, item) => sum + item.totalPrice, 0);
+  const freightTotal = cart.reduce(
+    (sum, item) => sum + (item.config.freightShipping ? 475 * (item.config.quantity || 1) : 0),
+    0
+  );
+  const productSubtotal = subtotal - freightTotal;
 
   if (!loaded) {
     return (
@@ -186,13 +193,33 @@ export default function CartPage() {
                       {c.valanceType && c.valanceType !== "standard" && (
                         <div>
                           <span className="text-warm-gray">Valance:</span>{" "}
-                          <span className="text-dark font-medium">{c.valanceType}</span>
+                          <span className="text-dark font-medium">{c.valanceType}{c.valanceType === 'cassette' && c.cassetteFabricInsert ? ' (with fabric insert)' : ''}</span>
+                        </div>
+                      )}
+                      {c.freightShipping && (
+                        <div className="col-span-2 sm:col-span-3">
+                          <span className="inline-flex items-center gap-1.5 px-2 py-1 rounded-md bg-orange-50 border border-orange-200 text-orange-700 text-xs font-medium">
+                            ⚠ Oversize — Freight Required (+${475 * (c.quantity || 1)})
+                          </span>
                         </div>
                       )}
                       {c.sideChannelType && c.sideChannelType !== "none" && (
                         <div>
                           <span className="text-warm-gray">Side Channels:</span>{" "}
                           <span className="text-dark font-medium">Yes</span>
+                        </div>
+                      )}
+                      {isMotorized && c.motorizedController && (
+                        <div>
+                          <span className="text-warm-gray">Remote:</span>{" "}
+                          <span className="text-dark font-medium">New (controls up to 5 shades)</span>
+                        </div>
+                      )}
+                      {isMotorized && !c.motorizedController && (
+                        <div className="col-span-2 sm:col-span-3">
+                          <span className="inline-flex items-center gap-1.5 px-2 py-1 rounded-md bg-blue-50 border border-blue-200 text-blue-700 text-xs font-medium">
+                            ✓ Uses your existing Somfy remote
+                          </span>
                         </div>
                       )}
                       {isMotorized && c.motorizedHub && (
@@ -277,12 +304,18 @@ export default function CartPage() {
                     <span className="text-warm-gray">
                       Subtotal ({cart.length} {cart.length === 1 ? "item" : "items"})
                     </span>
-                    <span className="font-medium text-dark">{fmt(subtotal)}</span>
+                    <span className="font-medium text-dark">{fmt(productSubtotal)}</span>
                   </div>
                   <div className="flex justify-between">
                     <span className="text-warm-gray">Shipping</span>
                     <span className="font-semibold text-green-600">FREE</span>
                   </div>
+                  {freightTotal > 0 && (
+                    <div className="flex justify-between bg-orange-50 border border-orange-200 rounded-md px-2 py-1.5">
+                      <span className="text-orange-700 font-medium">Freight (oversize {'>'}108")</span>
+                      <span className="font-semibold text-orange-700">{fmt(freightTotal)}</span>
+                    </div>
+                  )}
                   <div className="flex justify-between">
                     <span className="text-warm-gray">Tax</span>
                     <span className="text-warm-gray">Calculated at checkout</span>

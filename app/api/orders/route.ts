@@ -147,6 +147,7 @@ export async function POST(req: NextRequest) {
       sale_savings: body.sale_savings || 0,
       retail_total: body.retail_total || 0,
       sale_percent: body.sale_percent || 0,
+      freight_charge: body.freight_charge || 0,
     })
     .select()
     .single();
@@ -179,6 +180,8 @@ export async function POST(req: NextRequest) {
       motorized_hub: item.motorized_hub || false,
       motorized_charger: item.motorized_charger || false,
       sun_sensor: item.sun_sensor || false,
+      cassette_fabric_insert: item.cassette_fabric_insert || false,
+      freight_shipping: item.freight_shipping || false,
       quantity: item.quantity || 1,
       unit_price: item.unit_price,
       total_price: item.total_price,

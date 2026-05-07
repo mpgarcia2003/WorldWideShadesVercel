@@ -1,7 +1,7 @@
 import React, { useEffect, useState, useMemo } from 'react';
 import { Search, MapPin, Check, Ruler, UserCheck, Star, CheckCircle, Zap, Layout, Sidebar, Battery, Smartphone, Sun, Wrench, Info, ArrowRight, X, Layers, Image as ImageIcon, PanelLeftClose, ChevronRight } from 'lucide-react';
 import { ShadeConfig, ShapeType, Fabric, RoomAnalysis } from '../types';
-import { STEPS, FRACTIONS, getInstallerForZip, SHAPE_CONFIGS, VALANCE_OPTIONS, SIDE_CHANNEL_OPTIONS, ALL_FABRICS, isSaleActive, SALE_CONFIG, MOTOR_PRICES, applyMarkup, getStartingPrice } from '../constants';
+import { STEPS, FRACTIONS, getInstallerForZip, SHAPE_CONFIGS, VALANCE_OPTIONS, SIDE_CHANNEL_OPTIONS, ALL_FABRICS, isSaleActive, SALE_CONFIG, MOTOR_PRICES, applyMarkup, getStartingPrice, FREIGHT_WIDTH_THRESHOLD, FREIGHT_CHARGE } from '../constants';
 import FabricSuggestions from './FabricSuggestions';
 import { useLanguage } from '../LanguageContext';
 import { trackEvent } from '../utils/analytics';
@@ -121,6 +121,40 @@ const MeasurementInputs: React.FC<{
         })}
     </div>
     <p className="text-center text-[11px] text-[#888] font-medium mt-1">Example: 36" W × 60" H</p>
+
+    {/* Freight warning — inline, immediately visible after width entry */}
+    {(() => {
+      const widthVal = config.width || 0;
+      const fracStr = config.widthFraction;
+      const fracVal = fracStr && fracStr !== '0' && fracStr.includes('/')
+        ? (() => { const [n, d] = fracStr.split('/').map(Number); return n / d; })()
+        : 0;
+      const totalWidth = widthVal + fracVal;
+      if (totalWidth > FREIGHT_WIDTH_THRESHOLD) {
+        return (
+          <div className="mt-3 p-3 rounded-xl border-2 animate-in fade-in slide-in-from-top-1 duration-300" style={{ borderColor: '#f59e0b', backgroundColor: '#fffbeb' }}>
+            <div className="flex items-start gap-2">
+              <div className="shrink-0 mt-0.5">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#f59e0b" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/>
+                  <line x1="12" y1="9" x2="12" y2="13"/>
+                  <line x1="12" y1="17" x2="12.01" y2="17"/>
+                </svg>
+              </div>
+              <div className="flex-1">
+                <div className="text-[12px] font-bold text-[#92400e] mb-1" style={{ fontFamily: "'Playfair Display', Georgia, serif" }}>
+                  {t('freight.title')}
+                </div>
+                <p className="text-[11px] text-[#78350f] leading-snug">
+                  {t('freight.message')}
+                </p>
+              </div>
+            </div>
+          </div>
+        );
+      }
+      return null;
+    })()}
   </div>
   );
 };
@@ -299,7 +333,10 @@ const Stepper: React.FC<StepperProps> = ({
     switch (index) {
       case 0: return config.material ? `${config.material.category} — ${config.material.name.split('|')[0].trim()}` : t('step.summary.allFabrics');
       case 1: return getShapeLabel(config.shape);
-      case 2: return t(config.mountType === 'Inside Mount' ? 'mount.inside' : 'mount.outside');
+      case 2: {
+        if (config.mountType === 'Cloth Size') return t('mount.clothSize');
+        return t(config.mountType === 'Inside Mount' ? 'mount.inside' : 'mount.outside');
+      }
       case 3: return config.controlType === 'Metal Chain' ? `${t('control.chain')} \u2014 ${config.controlPosition || 'Right'} Side` : t('control.motorized');
       case 4: {
           const valanceLabel = t(`valance.${config.valanceType}`) || t('step.summary.noValance');
@@ -430,6 +467,12 @@ const Stepper: React.FC<StepperProps> = ({
                           onHeightChange={(v) => handleMeasurementChange('height', Number(v) || 0)}
                           onWidthFractionChange={(v) => handleFractionChange('width', v)}
                           onHeightFractionChange={(v) => handleFractionChange('height', v)}
+                          splitOversize={!!config.splitOversize}
+                          onSplitOversizeChange={(v) => updateConfig('splitOversize', v)}
+                          splitWidthA={config.splitWidthA}
+                          splitWidthB={config.splitWidthB}
+                          onSplitWidthAChange={(v) => updateConfig('splitWidthA', v)}
+                          onSplitWidthBChange={(v) => updateConfig('splitWidthB', v)}
                         />
                       </>
                     ) : showSpecialtyShapes ? (
@@ -541,7 +584,7 @@ const Stepper: React.FC<StepperProps> = ({
                       <img src="https://res.cloudinary.com/dcmlcfynd/image/upload/v1771868691/ChatGPT_Image_Feb_23_2026_12_40_36_PM_ajfwry.png" alt="Inside Mount vs Outside Mount" className="w-full h-auto" />
                     </div>
 
-                    <div className="grid grid-cols-2 gap-2">
+                    <div className="grid grid-cols-3 gap-2">
                         {/* Inside Mount */}
                         <button
                           onClick={() => { updateConfig('mountType', 'Inside Mount'); setTimeout(() => handleStepConfirmWithTracking(2), 400); }}
@@ -577,7 +620,46 @@ const Stepper: React.FC<StepperProps> = ({
                             Full coverage & larger look<br/>Mounts above your window
                           </p>
                         </button>
+
+                        {/* Cloth Size — third option, equal weight */}
+                        <button
+                          onClick={() => { updateConfig('mountType', 'Cloth Size'); }}
+                          className={`p-4 border-2 rounded-xl transition-all text-center relative ${
+                            config.mountType === 'Cloth Size' ? 'border-[#c8a165] bg-[#faf8f4] shadow-sm' : 'border-gray-200 hover:border-gray-300 bg-white'
+                          }`}
+                        >
+                          <div className="absolute -top-2.5 left-1/2 -translate-x-1/2 text-[8px] font-bold px-2 py-0.5 rounded-full uppercase tracking-wider whitespace-nowrap text-[#475569] bg-[#f1f5f9] border border-[#cbd5e1]">
+                            Custom Width
+                          </div>
+                          <div className="text-[13px] font-semibold text-[#1a1a1a] mt-1" style={{ fontFamily: "'Playfair Display', Georgia, serif" }}>
+                            Cloth Size
+                          </div>
+                          <p className="text-[11px] text-[#777] mt-1 leading-snug">
+                            Cut fabric to exact width<br/>Hardware adds ~1½"
+                          </p>
+                        </button>
                     </div>
+
+                    {/* Cloth Size info callout — only when selected */}
+                    {config.mountType === 'Cloth Size' && (
+                      <div className="flex items-start gap-2 p-3 rounded-lg border bg-[#fdf9f5] border-[#e5ddd0] animate-in fade-in slide-in-from-top-1 duration-300">
+                        <Info size={14} className="shrink-0 mt-0.5" style={{ color: '#c8a165' }} />
+                        <p className="text-[11px] text-[#555] leading-snug">
+                          {t('mount.clothSizeNote')}
+                        </p>
+                      </div>
+                    )}
+
+                    {/* Confirm button for Cloth Size (other options auto-advance) */}
+                    {config.mountType === 'Cloth Size' && (
+                      <button
+                        onClick={() => handleStepConfirmWithTracking(2)}
+                        className="w-full mt-2 py-3 rounded-xl text-white font-medium text-[13px] tracking-wide transition-all hover:opacity-90"
+                        style={{ background: 'linear-gradient(135deg, #c8a165, #b8914f)' }}
+                      >
+                        Continue
+                      </button>
+                    )}
                 </div>
               )}
 
@@ -682,20 +764,50 @@ const Stepper: React.FC<StepperProps> = ({
                             </div>
                             
                             <div className="space-y-3">
-                                <div className="text-[12px] font-black text-slate-400 uppercase tracking-[0.15em] mb-0.5 ml-1">Upgrades</div>
-                                
-                                <button onClick={() => updateConfig('motorizedController', !config.motorizedController)} className={`w-full p-3 border-2 rounded-xl flex items-center justify-between transition-all ${config.motorizedController ? 'border-[#c8a165] bg-[#faf8f4] ring-1 ring-[#c8a165]' : 'border-gray-100 hover:border-gray-300 bg-white shadow-sm'}`}>
-                                    <div className="flex items-center gap-4">
-                                        <div className="w-24 h-24 bg-white rounded-xl flex items-center justify-center border border-gray-100 overflow-hidden shrink-0 shadow-sm">
-                                          <img src="https://res.cloudinary.com/dcmlcfynd/image/upload/v1765304892/Push-5-1_huhfuk.png" alt="Remote" className="w-20 h-20 object-contain" />
-                                        </div>
-                                        <div className="text-left flex-1 min-w-0">
-                                            <div className="text-xs font-black uppercase tracking-widest text-slate-900 truncate">{t('control.remote')}</div>
-                                            <div className="text-[12px] text-slate-500 font-medium leading-tight mt-1 line-clamp-3 whitespace-pre-line">{t('control.remoteDesc')}</div>
-                                        </div>
+                                {/* REQUIRED: Remote selection — motors need a remote to operate */}
+                                <div className="p-3 rounded-xl border-2 space-y-2.5" style={{ borderColor: '#c8a165', backgroundColor: '#fdfaf3' }}>
+                                    <div className="flex items-center justify-between mb-1">
+                                      <div className="text-[12px] font-black uppercase tracking-[0.15em]" style={{ color: '#8b6d3f' }}>Remote — Required</div>
+                                      <div className="text-[9px] font-bold px-1.5 py-0.5 rounded uppercase tracking-wider" style={{ color: '#92400e', backgroundColor: '#fef3c7' }}>Required</div>
                                     </div>
-                                    <div className="text-[11px] font-black px-1.5 py-0.5 rounded shrink-0" style={{ color: '#c8a165', backgroundColor: '#faf8f4' }}><span className="line-through text-[#ccc] font-medium">${MOTOR_PRICES.remote.marked}</span> +${MOTOR_PRICES.remote.original}</div>
-                                </button>
+                                    <p className="text-[11px] text-slate-600 leading-snug -mt-1 mb-1">Motors need a remote to operate. One remote controls up to 5 shades.</p>
+
+                                    {/* Option 1: Add a new remote */}
+                                    <button onClick={() => updateConfig('motorizedController', true)} className={`w-full p-3 border-2 rounded-xl flex items-center justify-between transition-all ${config.motorizedController ? 'border-[#c8a165] bg-white ring-1 ring-[#c8a165]' : 'border-gray-200 bg-white hover:border-gray-300'}`}>
+                                        <div className="flex items-center gap-3 flex-1 min-w-0">
+                                            <div className="w-5 h-5 rounded-full border-2 flex items-center justify-center shrink-0" style={{ borderColor: config.motorizedController ? '#c8a165' : '#d1d5db' }}>
+                                              {config.motorizedController && <div className="w-2.5 h-2.5 rounded-full" style={{ backgroundColor: '#c8a165' }} />}
+                                            </div>
+                                            <div className="w-16 h-16 bg-white rounded-lg flex items-center justify-center border border-gray-100 overflow-hidden shrink-0 shadow-sm">
+                                              <img src="https://res.cloudinary.com/dcmlcfynd/image/upload/v1765304892/Push-5-1_huhfuk.png" alt="Remote" className="w-14 h-14 object-contain" />
+                                            </div>
+                                            <div className="text-left flex-1 min-w-0">
+                                                <div className="text-[12px] font-bold text-slate-900">Add a New Remote</div>
+                                                <div className="text-[11px] text-slate-500 leading-tight mt-0.5">Controls up to 5 shades</div>
+                                            </div>
+                                        </div>
+                                        <div className="text-[11px] font-black px-1.5 py-0.5 rounded shrink-0" style={{ color: '#c8a165', backgroundColor: '#faf8f4' }}><span className="line-through text-[#ccc] font-medium">${MOTOR_PRICES.remote.marked}</span> +${MOTOR_PRICES.remote.original}</div>
+                                    </button>
+
+                                    {/* Option 2: Use existing remote */}
+                                    <button onClick={() => updateConfig('motorizedController', false)} className={`w-full p-3 border-2 rounded-xl flex items-center justify-between transition-all ${!config.motorizedController ? 'border-[#c8a165] bg-white ring-1 ring-[#c8a165]' : 'border-gray-200 bg-white hover:border-gray-300'}`}>
+                                        <div className="flex items-center gap-3 flex-1 min-w-0">
+                                            <div className="w-5 h-5 rounded-full border-2 flex items-center justify-center shrink-0" style={{ borderColor: !config.motorizedController ? '#c8a165' : '#d1d5db' }}>
+                                              {!config.motorizedController && <div className="w-2.5 h-2.5 rounded-full" style={{ backgroundColor: '#c8a165' }} />}
+                                            </div>
+                                            <div className="w-16 h-16 bg-white rounded-lg flex items-center justify-center border border-gray-100 overflow-hidden shrink-0 shadow-sm">
+                                              <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#16a34a" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M9 12l2 2 4-4"/><circle cx="12" cy="12" r="10"/></svg>
+                                            </div>
+                                            <div className="text-left flex-1 min-w-0">
+                                                <div className="text-[12px] font-bold text-slate-900">I Already Have a Somfy Remote</div>
+                                                <div className="text-[11px] text-slate-500 leading-tight mt-0.5">We'll pair this shade to your existing one</div>
+                                            </div>
+                                        </div>
+                                        <div className="text-[11px] font-bold px-1.5 py-0.5 rounded shrink-0" style={{ color: '#16a34a', backgroundColor: '#f0fdf4' }}>FREE</div>
+                                    </button>
+                                </div>
+
+                                <div className="text-[12px] font-black text-slate-400 uppercase tracking-[0.15em] mb-0.5 ml-1 mt-4">Optional Upgrades</div>
                                 
                                 <button onClick={() => updateConfig('motorizedHub', !config.motorizedHub)} className={`w-full p-3 border-2 rounded-xl flex items-center justify-between transition-all ${config.motorizedHub ? 'border-[#c8a165] bg-[#faf8f4] ring-1 ring-[#c8a165]' : 'border-gray-100 hover:border-gray-300 bg-white shadow-sm'}`}>
                                     <div className="flex items-center gap-4">
@@ -871,6 +983,11 @@ const Stepper: React.FC<StepperProps> = ({
                                           <div className="text-left">
                                               <div className="text-[13px] font-semibold text-[#1a1a1a] leading-tight mb-0.5" style={{ fontFamily: "'Playfair Display', Georgia, serif" }}>{t(`valance.${opt.id}`)}</div>
                                               <div className="text-[11px] text-[#777] font-medium leading-tight">{opt.desc}</div>
+                                              {opt.id === 'cassette' && (
+                                                <div className="text-[10px] font-semibold leading-tight mt-1" style={{ color: '#22c55e' }}>
+                                                  ✓ {t('valance.cassetteInsertOffer')}
+                                                </div>
+                                              )}
                                           </div>
                                           <div className="text-[10px] font-bold uppercase tracking-widest shrink-0 ml-3" style={{ color: '#c8a165' }}>
                                               <span className="line-through text-[#ccc] font-normal">${applyMarkup(opt.pricePerInch).toFixed(2)}</span> +${opt.pricePerInch.toFixed(2)}/in
@@ -880,6 +997,37 @@ const Stepper: React.FC<StepperProps> = ({
                               );
                           })}
                         </div>
+
+                        {/* Cassette Fabric Insert sub-option — only when cassette is selected */}
+                        {config.valanceType === 'cassette' && (
+                          <div className="ml-2 pl-4 border-l-2 border-[#c8a165]/30 space-y-2 mt-2 animate-in fade-in slide-in-from-bottom-1 duration-300">
+                            <p className="text-[11px] font-semibold text-[#555] uppercase tracking-wider">Fabric Insert (no extra charge)</p>
+                            <div className="grid grid-cols-2 gap-2">
+                              <button
+                                onClick={() => setConfig({ ...config, cassetteFabricInsert: false })}
+                                className={`p-3 border-2 rounded-xl text-center transition-all ${
+                                  !config.cassetteFabricInsert
+                                    ? 'border-[#c8a165] bg-[#faf8f4] shadow-sm'
+                                    : 'border-gray-100 hover:border-gray-200 bg-white'
+                                }`}
+                              >
+                                <div className="text-[12px] font-semibold text-[#1a1a1a]" style={{ fontFamily: "'Playfair Display', Georgia, serif" }}>{t('valance.cassetteInsertWithout')}</div>
+                                <p className="text-[10px] text-[#777] mt-0.5 leading-snug">{t('valance.cassetteInsertWithoutDesc')}</p>
+                              </button>
+                              <button
+                                onClick={() => setConfig({ ...config, cassetteFabricInsert: true })}
+                                className={`p-3 border-2 rounded-xl text-center transition-all ${
+                                  config.cassetteFabricInsert
+                                    ? 'border-[#c8a165] bg-[#faf8f4] shadow-sm'
+                                    : 'border-gray-100 hover:border-gray-200 bg-white'
+                                }`}
+                              >
+                                <div className="text-[12px] font-semibold text-[#1a1a1a]" style={{ fontFamily: "'Playfair Display', Georgia, serif" }}>{t('valance.cassetteInsertWith')}</div>
+                                <p className="text-[10px] text-[#777] mt-0.5 leading-snug">{t('valance.cassetteInsertWithDesc')}</p>
+                              </button>
+                            </div>
+                          </div>
+                        )}
                         
                         <div className="flex items-center gap-2 text-slate-400 font-black uppercase tracking-[0.15em] text-[11px] px-1 mt-6">
                             <PanelLeftClose size={14} /> <span>Light Blocking Channels</span>
