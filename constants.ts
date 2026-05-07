@@ -1,4 +1,5 @@
 import { Fabric, Installer, ShapeType } from './types';
+import { getColorPill } from './lib/fabric-color-pills';
 
 export const COMPANY_NAME = "World Wide Shades";
 
@@ -1127,16 +1128,22 @@ const parseFabricName = (url: string) => {
   
   const color = colorParts.join(' | ') || 'Premium';
 
+  // Look up the color filter pill from the master CSV-derived mapping.
+  // Uses slugified key: `${slug(wwsFabricName)}_${slug(color)}`. Returns null
+  // when no mapping exists (typically for fabrics not yet in the master list).
+  const colorPill = getColorPill(mapData.wwsFabricName, color);
+
   return {
     name: `${mapData.company} ${mapData.fabric} | ${color}`.trim(),
     category,
-    mapData
+    mapData,
+    colorPill
   };
 };
 
 const generateFabrics = (urls: string[]): Fabric[] => {
   return urls.map((url, index) => {
-    const { name, category, mapData } = parseFabricName(url);
+    const { name, category, mapData, colorPill } = parseFabricName(url);
     const fabricId = `fab_${index}`;
     
     // Generate a placeholder Shopify Variant ID for tracking consistency
@@ -1154,6 +1161,7 @@ const generateFabrics = (urls: string[]): Fabric[] => {
       priceGroup: getPriceGroupForFabric(mapData.wwsFabricName, mapData.type === 'Blackout Shades'),
       features: ['UV Protection', 'Fade Resistant'],
       rgb: { r: 200, g: 200, b: 200 },
+      colorPill,
       sku: `WWS-${fabricId.toUpperCase()}`,
       shopifyId,
       shopifyProductId

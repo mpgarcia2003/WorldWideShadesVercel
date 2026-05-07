@@ -1,3 +1,5 @@
+import type { ColorPill } from './lib/fabric-color-pills';
+
 export interface Fabric {
   id: string;
   name: string;
@@ -8,6 +10,9 @@ export interface Fabric {
   priceGroup: string;
   features: string[];
   rgb: { r: number, g: number, b: number };
+  // Color group for the Step 1 color filter pills. Null when no mapping exists
+  // (e.g. fabrics added to the codebase but not yet in the master CSV).
+  colorPill?: ColorPill | null;
   // Analytics Fields
   sku?: string;
   shopifyId?: string; // The Variant ID in Shopify

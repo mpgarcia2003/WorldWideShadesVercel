@@ -517,4 +517,159 @@
     margin-left: auto;
     margin-right: auto;
   }
+
+  .sectionTitle {
+    font-size: 22px;
+  }
+}
+
+/* ===========================================================
+   COLOR FILTER PILLS (added for Step 1 color filter feature)
+   =========================================================== */
+.colorFilterRow {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  margin: 16px 0 24px;
+  padding: 16px 0;
+  border-top: 1px solid #E8E6E1;
+  border-bottom: 1px solid #E8E6E1;
+}
+
+.colorFilterLabel {
+  font-size: 11px;
+  font-weight: 600;
+  color: #B0ACA5;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  margin-right: 4px;
+}
+
+.colorPill {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  white-space: nowrap;
+  padding: 7px 12px 7px 10px;
+  font-size: 12px;
+  font-weight: 600;
+  font-family: inherit;
+  border-radius: 20px;
+  border: 1.5px solid #E0DDD8;
+  background: #FFFFFF;
+  color: #706B63;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.colorPill:hover:not(.colorPillActive) {
+  border-color: #B0ACA5;
+}
+
+.colorPillActive {
+  background: #1A1A1A;
+  color: #FFFFFF;
+  border-color: #1A1A1A;
+}
+
+.colorPillDot {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  flex-shrink: 0;
+  border: 1px solid rgba(0, 0, 0, 0.10);
+}
+
+/* ===========================================================
+   COLOR SECTIONS (browse mode — grouped by color pill)
+   =========================================================== */
+.section {
+  margin-bottom: 28px;
+}
+
+.section:last-child {
+  margin-bottom: 0;
+}
+
+.sectionHeader {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  padding-bottom: 12px;
+  border-bottom: 1px solid #E8E6E1;
+  margin-bottom: 16px;
+}
+
+.sectionTitle {
+  font-family: 'Playfair Display', Georgia, serif;
+  font-size: 20px;
+  font-weight: 500;
+  color: #1A1A1A;
+  margin: 0;
+  letter-spacing: -0.01em;
+}
+
+.sectionCount {
+  font-size: 11px;
+  color: #B0ACA5;
+  font-weight: 500;
+}
+
+.sectionMore {
+  display: block;
+  margin: 14px auto 0;
+  padding: 9px 16px;
+  font-size: 12px;
+  font-weight: 600;
+  font-family: inherit;
+  color: #1A1A1A;
+  background: transparent;
+  border: 1.5px solid #E0DDD8;
+  border-radius: 20px;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.sectionMore:hover {
+  background: #F5F3EF;
+  border-color: #1A1A1A;
+}
+
+/* ===========================================================
+   FILTER STATUS BANNER (filter mode)
+   =========================================================== */
+.filterStatus {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  background: #F5F3EF;
+  border-radius: 10px;
+  padding: 10px 14px;
+  margin-bottom: 16px;
+  font-size: 12px;
+  color: #706B63;
+}
+
+.filterStatusText strong {
+  color: #1A1A1A;
+  font-weight: 600;
+}
+
+.filterStatusReset {
+  background: transparent;
+  border: none;
+  color: #1A1A1A;
+  font-size: 12px;
+  font-weight: 600;
+  font-family: inherit;
+  cursor: pointer;
+  text-decoration: underline;
+  padding: 0;
+  flex-shrink: 0;
+}
+
+.filterStatusReset:hover {
+  opacity: 0.6;
 }

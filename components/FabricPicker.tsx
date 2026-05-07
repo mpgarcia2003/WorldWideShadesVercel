@@ -1,14 +1,29 @@
 /**
  * FabricPicker.tsx
  * ─────────────────────────────────────────────────────────
- * Combined Step 1 — replaces old Step 1 (Shade Type) + Step 2 (Choose Fabric)
- * Accepts existing Fabric type from types.ts, adapts internally.
+ * Step 1 — Choose Fabric. Two layout modes:
+ *
+ *   BROWSE MODE (default — "All colors" selected, no search)
+ *     Fabrics grouped by color pill (Whites, Beige, Browns, …) into
+ *     editorial sections with serif headers. Each section sorted by the
+ *     standard price-tier + brand-priority logic. Sections cap at
+ *     SECTION_PREVIEW tiles with a "Show all X" CTA that activates the
+ *     filter for that color.
+ *
+ *   FILTER MODE (specific color pill OR search query)
+ *     Flat grid sorted cheapest-first. Filter status banner explains
+ *     what's being shown with a Reset link.
+ *
+ * Color pills are derived from the `colorPill` field on each Fabric,
+ * populated at parse-time from the master CSV mapping in
+ * `lib/fabric-color-pills.ts`.
  */
 
 import React, { useState, useMemo, useCallback, useRef, useEffect } from 'react';
 import styles from './FabricPicker.module.css';
 import { Fabric } from '../types';
 import { getFabricUrl, isSaleActive, SALE_CONFIG, getGridPrice, applyMarkup } from '../constants';
+import { COLOR_PILL_ORDER, COLOR_PILL_DOTS, type ColorPill } from '../lib/fabric-color-pills';
 
 // ─── FABRIC DISPLAY PRIORITY ──────────────────────────────
 // Per-price-tier preferred order. Within each tier, fabrics whose name starts
@@ -51,6 +66,7 @@ interface FabricPickerProps {
 }
 
 const PAGE_SIZE = 18;
+const SECTION_PREVIEW = 12; // Max tiles per color section in browse mode before showing "Show all"
 
 export default function FabricPicker({
   fabrics,
@@ -70,6 +86,7 @@ export default function FabricPicker({
   const [searchQuery, setSearchQuery] = useState('');
   const [debouncedQuery, setDebouncedQuery] = useState('');
   const [visibleCount, setVisibleCount] = useState(PAGE_SIZE);
+  const [activeColorPill, setActiveColorPill] = useState<ColorPill | null>(null); // null = "All colors"
   const searchRef = useRef<HTMLInputElement>(null);
 
   const parseFrac = (f: string) => { if (!f || f === '0') return 0; if (f.includes('/')) { const [n, d] = f.split('/').map(Number); return n / d; } return 0; };
@@ -89,35 +106,83 @@ export default function FabricPicker({
     setSearchQuery('');
     setDebouncedQuery('');
     setVisibleCount(PAGE_SIZE);
+    setActiveColorPill(null); // Reset to "All colors" when shade type changes
   }, [onShadeTypeChange]);
 
-  const filtered = useMemo(() => {
-    let list = fabrics.filter(f => f.category === activeFilter);
-    if (debouncedQuery.trim()) {
-      const q = debouncedQuery.toLowerCase().trim();
-      list = list.filter(f => f.name.toLowerCase().includes(q));
-    }
-    // Sort: 1) by price tier (cheapest first), 2) within tier, by priority list, 3) alphabetical
-    list.sort((a, b) => {
-      // Primary: price tier
+  // Reset pagination when any filter changes (but not on every dimension change)
+  useEffect(() => {
+    setVisibleCount(PAGE_SIZE);
+  }, [activeColorPill, debouncedQuery, activeFilter]);
+
+  // ─── DATA PIPELINE ──────────────────────────────────────
+  // candidates = all fabrics in current shade type (Blackout / Light Filtering)
+  const candidates = useMemo(
+    () => fabrics.filter(f => f.category === activeFilter),
+    [fabrics, activeFilter]
+  );
+
+  // Standard sort: 1) price tier (cheapest first), 2) within tier, brand priority, 3) alphabetical
+  const sortFabrics = useCallback((list: Fabric[]) => {
+    return list.slice().sort((a, b) => {
       const tierCompare = hasDims
         ? getGridPrice(a.priceGroup, dimW, dimH) - getGridPrice(b.priceGroup, dimW, dimH)
         : (a.priceGroup || 'Z').localeCompare(b.priceGroup || 'Z');
       if (tierCompare !== 0) return tierCompare;
 
-      // Secondary: within-tier priority (preferred brands/codes shown first)
       const aPriority = getFabricPriorityIndex(a);
       const bPriority = getFabricPriorityIndex(b);
       if (aPriority !== bPriority) return aPriority - bPriority;
 
-      // Tertiary: alphabetical
       return a.name.localeCompare(b.name);
     });
-    return list;
-  }, [fabrics, activeFilter, debouncedQuery, hasDims, dimW, dimH]);
+  }, [hasDims, dimW, dimH]);
 
-  const visibleFabrics = filtered.slice(0, visibleCount);
-  const hasMore = visibleCount < filtered.length;
+  // Counts per color pill (within current shade type) — drives which pills render and which are hidden
+  const pillCounts = useMemo(() => {
+    const counts: Partial<Record<ColorPill, number>> = {};
+    for (const f of candidates) {
+      if (f.colorPill) counts[f.colorPill] = (counts[f.colorPill] || 0) + 1;
+    }
+    return counts;
+  }, [candidates]);
+
+  // Only show pills that have at least 1 fabric in the current shade type
+  const availablePills = useMemo(
+    () => COLOR_PILL_ORDER.filter(p => (pillCounts[p] || 0) > 0),
+    [pillCounts]
+  );
+
+  // Layout decision: flat (filter/search active) vs grouped (browse mode)
+  const isFlatMode = activeColorPill !== null || debouncedQuery.trim().length > 0;
+
+  // Flat list (used when isFlatMode = true)
+  const flatList = useMemo(() => {
+    if (!isFlatMode) return [];
+    let list = candidates;
+    if (activeColorPill) list = list.filter(f => f.colorPill === activeColorPill);
+    if (debouncedQuery.trim()) {
+      const q = debouncedQuery.toLowerCase().trim();
+      list = list.filter(f => f.name.toLowerCase().includes(q));
+    }
+    return sortFabrics(list);
+  }, [isFlatMode, candidates, activeColorPill, debouncedQuery, sortFabrics]);
+
+  // Grouped sections (used when isFlatMode = false)
+  const groupedSections = useMemo(() => {
+    if (isFlatMode) return [];
+    const map = new Map<ColorPill, Fabric[]>();
+    for (const f of candidates) {
+      if (!f.colorPill) continue;
+      if (!map.has(f.colorPill)) map.set(f.colorPill, []);
+      map.get(f.colorPill)!.push(f);
+    }
+    return COLOR_PILL_ORDER
+      .filter(p => map.has(p))
+      .map(p => ({ pill: p, fabrics: sortFabrics(map.get(p)!) }));
+  }, [isFlatMode, candidates, sortFabrics]);
+
+  const flatVisible = flatList.slice(0, visibleCount);
+  const flatHasMore = visibleCount < flatList.length;
   const selectedFabric = fabrics.find(f => f.id === selectedId) || null;
 
   const blackoutCount = useMemo(() => fabrics.filter(f => f.category === 'Blackout').length, [fabrics]);
@@ -132,6 +197,50 @@ export default function FabricPicker({
   const getOriginalPrice = (fabric: Fabric) => {
     if (!hasDims || !isSaleActive()) return null;
     return getGridPrice(fabric.priceGroup, dimW, dimH);
+  };
+
+  const handleResetFilters = () => {
+    setActiveColorPill(null);
+    setSearchQuery('');
+    setDebouncedQuery('');
+  };
+
+  // Tile renderer — shared by flat and grouped modes
+  const renderTile = (fabric: Fabric) => {
+    const isSelected = fabric.id === selectedId;
+    const price = getPrice(fabric);
+    const origPrice = getOriginalPrice(fabric);
+    const thumbUrl = getFabricUrl(fabric.cloudinaryId, 'thumb');
+    return (
+      <button
+        key={fabric.id}
+        type="button"
+        className={`${styles.tile} ${isSelected ? styles.tileSelected : ''}`}
+        onClick={() => onFabricSelect(fabric)}
+      >
+        <div
+          className={styles.swatch}
+          style={thumbUrl ? { backgroundImage: `url(${thumbUrl})`, backgroundSize: 'cover' } : { backgroundColor: '#ddd' }}
+        >
+          {isSelected && (
+            <div className={styles.checkOverlay}>
+              <svg viewBox="0 0 16 16" fill="none" stroke="#FFFFFF" strokeWidth="2.5">
+                <polyline points="3,8 7,12 13,4" />
+              </svg>
+            </div>
+          )}
+        </div>
+        <div className={styles.tileInfo}>
+          <div className={styles.tileName}>{fabric.name}</div>
+          {price !== null && (
+            <div className={styles.tilePrice}>
+              {origPrice && <span className={styles.oldPrice}>${origPrice}</span>}
+              <span>${price}</span>
+            </div>
+          )}
+        </div>
+      </button>
+    );
   };
 
   if (loading) {
@@ -195,67 +304,107 @@ export default function FabricPicker({
         )}
       </div>
 
-      {/* ── Fabric Grid ── */}
-      {visibleFabrics.length > 0 ? (
-        <div className={styles.grid}>
-          {visibleFabrics.map((fabric) => {
-            const isSelected = fabric.id === selectedId;
-            const price = getPrice(fabric);
-            const origPrice = getOriginalPrice(fabric);
-            const thumbUrl = getFabricUrl(fabric.cloudinaryId, 'thumb');
-            return (
-              <button
-                key={fabric.id}
-                type="button"
-                className={`${styles.tile} ${isSelected ? styles.tileSelected : ''}`}
-                onClick={() => onFabricSelect(fabric)}
-              >
-                <div
-                  className={styles.swatch}
-                  style={thumbUrl ? { backgroundImage: `url(${thumbUrl})`, backgroundSize: 'cover' } : { backgroundColor: '#ddd' }}
-                >
-                  {isSelected && (
-                    <div className={styles.checkOverlay}>
-                      <svg viewBox="0 0 16 16" fill="none" stroke="#FFFFFF" strokeWidth="2.5">
-                        <polyline points="3,8 7,12 13,4" />
-                      </svg>
-                    </div>
-                  )}
-                </div>
-                <div className={styles.tileInfo}>
-                  <div className={styles.tileName}>{fabric.name}</div>
-                  {price !== null && (
-                    <div className={styles.tilePrice}>
-                      {origPrice && <span className={styles.oldPrice}>${origPrice}</span>}
-                      <span>${price}</span>
-                    </div>
-                  )}
-                </div>
-              </button>
-            );
-          })}
-        </div>
-      ) : (
-        <div className={styles.emptyState}>
-          <div className={styles.emptyIcon}>
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
-              <circle cx="11" cy="11" r="8" /><line x1="21" y1="21" x2="16.65" y2="16.65" />
-            </svg>
-          </div>
-          <div className={styles.emptyText}>No fabrics match</div>
-          <div className={styles.emptySub}>Try a different search term</div>
+      {/* ── Color filter pills ── */}
+      {availablePills.length > 0 && (
+        <div className={styles.colorFilterRow}>
+          <span className={styles.colorFilterLabel}>Color</span>
+          <button
+            type="button"
+            className={`${styles.colorPill} ${activeColorPill === null ? styles.colorPillActive : ''}`}
+            onClick={() => setActiveColorPill(null)}
+          >
+            All colors
+          </button>
+          {availablePills.map(pill => (
+            <button
+              key={pill}
+              type="button"
+              className={`${styles.colorPill} ${activeColorPill === pill ? styles.colorPillActive : ''}`}
+              onClick={() => setActiveColorPill(pill)}
+            >
+              <span className={styles.colorPillDot} style={{ background: COLOR_PILL_DOTS[pill] }} />
+              {pill}
+            </button>
+          ))}
         </div>
       )}
 
-      {/* ── Show More ── */}
-      {hasMore && (
-        <button
-          type="button"
-          className={styles.showMore}
-          onClick={() => setVisibleCount(prev => prev + PAGE_SIZE)}
-        >
-          Show More Fabrics ({filtered.length - visibleCount} remaining)
-        </button>
+      {/* ── Content: flat (filter/search) vs grouped (browse) ── */}
+      {isFlatMode ? (
+        <>
+          {/* Status banner — only shown when a color pill is active (not for plain search) */}
+          {activeColorPill && (
+            <div className={styles.filterStatus}>
+              <span className={styles.filterStatusText}>
+                Showing <strong>{activeColorPill}</strong> · {flatList.length} fabric{flatList.length !== 1 ? 's' : ''} · sorted by price
+              </span>
+              <button type="button" onClick={handleResetFilters} className={styles.filterStatusReset}>
+                Reset
+              </button>
+            </div>
+          )}
+
+          {flatVisible.length > 0 ? (
+            <div className={styles.grid}>
+              {flatVisible.map(renderTile)}
+            </div>
+          ) : (
+            <div className={styles.emptyState}>
+              <div className={styles.emptyIcon}>
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+                  <circle cx="11" cy="11" r="8" /><line x1="21" y1="21" x2="16.65" y2="16.65" />
+                </svg>
+              </div>
+              <div className={styles.emptyText}>No fabrics match</div>
+              <div className={styles.emptySub}>Try a different filter or search term</div>
+            </div>
+          )}
+
+          {flatHasMore && (
+            <button
+              type="button"
+              className={styles.showMore}
+              onClick={() => setVisibleCount(prev => prev + PAGE_SIZE)}
+            >
+              Show More Fabrics ({flatList.length - visibleCount} remaining)
+            </button>
+          )}
+        </>
+      ) : (
+        // ─── BROWSE MODE: grouped sections ──────────────────
+        groupedSections.length > 0 ? (
+          groupedSections.map(({ pill, fabrics: sectionFabrics }) => {
+            const showAll = sectionFabrics.length <= SECTION_PREVIEW;
+            const display = showAll ? sectionFabrics : sectionFabrics.slice(0, SECTION_PREVIEW);
+            return (
+              <section key={pill} className={styles.section}>
+                <header className={styles.sectionHeader}>
+                  <h3 className={styles.sectionTitle}>{pill}</h3>
+                  <span className={styles.sectionCount}>
+                    {sectionFabrics.length} fabric{sectionFabrics.length !== 1 ? 's' : ''}
+                  </span>
+                </header>
+                <div className={styles.grid}>
+                  {display.map(renderTile)}
+                </div>
+                {!showAll && (
+                  <button
+                    type="button"
+                    className={styles.sectionMore}
+                    onClick={() => setActiveColorPill(pill)}
+                  >
+                    Show all {sectionFabrics.length} {pill.toLowerCase()} →
+                  </button>
+                )}
+              </section>
+            );
+          })
+        ) : (
+          <div className={styles.emptyState}>
+            <div className={styles.emptyText}>No fabrics available</div>
+            <div className={styles.emptySub}>Try the other shade type</div>
+          </div>
+        )
       )}
 
       {/* ── Selection Banner ── */}
