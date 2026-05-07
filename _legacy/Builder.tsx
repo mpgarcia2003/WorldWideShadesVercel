@@ -716,20 +716,28 @@ const Builder: React.FC<BuilderProps> = ({ addToCart, addToSwatches, swatches })
     
     const valanceOption = VALANCE_OPTIONS.find(v => v.id === config.valanceType);
     const bannerOption = SIDE_CHANNEL_OPTIONS.find(s => s.id === config.sideChannelType);
-    const motorAddonsPerShade = config.controlType === 'Motorized' 
-      ? (config.shape === 'Standard' ? MOTOR_PRICES.base.marked : 0) 
-      + (config.motorizedController ? MOTOR_PRICES.remote.marked : 0) 
-      + (config.motorizedHub ? MOTOR_PRICES.hub.marked : 0) 
-      + (config.motorizedCharger ? MOTOR_PRICES.charger.marked : 0) 
-      + (config.sunSensor ? MOTOR_PRICES.sunSensor.marked : 0) 
+
+    // PER-SHADE: each shade has its own motor inside the roller. Multiplied by quantity.
+    const motorBasePerShade = config.controlType === 'Motorized' && config.shape === 'Standard'
+      ? MOTOR_PRICES.base.marked
       : 0;
 
-    // Per-shade price helper — bundles base + valance + side channels + motor add-ons.
+    // PER-ORDER: one remote/hub/sensor/charger per household. Charged ONCE regardless of quantity.
+    // Per the UI copy: "One remote controls up to 5 shades." Same logic for hub/sensor/charger.
+    const motorAddonsPerOrder = config.controlType === 'Motorized'
+      ? (config.motorizedController ? MOTOR_PRICES.remote.marked : 0)
+      + (config.motorizedHub ? MOTOR_PRICES.hub.marked : 0)
+      + (config.motorizedCharger ? MOTOR_PRICES.charger.marked : 0)
+      + (config.sunSensor ? MOTOR_PRICES.sunSensor.marked : 0)
+      : 0;
+
+    // Per-shade price helper — base + valance + side channels + per-shade motor portion only.
+    // The per-order accessories (remote/hub/etc) are added once at the bottom, NOT here.
     const computeShadeCost = (shadeWidth: number, shadeHeight: number) => {
       const base = getGridPrice(config.material!.priceGroup, shadeWidth, shadeHeight, config.shape);
       const valance = applyMarkup((valanceOption?.pricePerInch || 0)) * shadeWidth;
       const channels = applyMarkup((bannerOption?.pricePerFoot || 0)) * (shadeHeight / 12) * 2;
-      return { shade: base, accessory: motorAddonsPerShade + valance + channels };
+      return { shade: base, accessory: motorBasePerShade + valance + channels };
     };
 
     let shadeRaw = 0;
@@ -747,9 +755,9 @@ const Builder: React.FC<BuilderProps> = ({ addToCart, addToSwatches, swatches })
       accessoryRaw = single.accessory;
     }
 
-    // Apply quantity multiplier
+    // Apply quantity multiplier to per-shade items, then add per-order accessories ONCE.
     const shadeTotal = shadeRaw * config.quantity;
-    const accessoryTotal = accessoryRaw * config.quantity;
+    const accessoryTotal = accessoryRaw * config.quantity + motorAddonsPerOrder;
     const productTotal = shadeTotal + accessoryTotal;
 
     let installCost = 0;
@@ -888,22 +896,30 @@ const Builder: React.FC<BuilderProps> = ({ addToCart, addToSwatches, swatches })
       const h = Number(config.height) + parseFraction(config.heightFraction);
       const valanceOption = VALANCE_OPTIONS.find(v => v.id === config.valanceType);
       const bannerOption = SIDE_CHANNEL_OPTIONS.find(s => s.id === config.sideChannelType);
-      const motorAddonsPerShade = config.controlType === 'Motorized' 
-        ? (config.shape === 'Standard' ? MOTOR_PRICES.base.marked : 0) 
-        + (config.motorizedController ? MOTOR_PRICES.remote.marked : 0) 
-        + (config.motorizedHub ? MOTOR_PRICES.hub.marked : 0) 
-        + (config.motorizedCharger ? MOTOR_PRICES.charger.marked : 0) 
-        + (config.sunSensor ? MOTOR_PRICES.sunSensor.marked : 0) 
+
+      // PER-SHADE: motor base goes into each shade.
+      const motorBasePerShade = config.controlType === 'Motorized' && config.shape === 'Standard'
+        ? MOTOR_PRICES.base.marked
         : 0;
+      // PER-ORDER: remote/hub/sensor/charger charged once.
+      const motorAddonsPerOrder = config.controlType === 'Motorized'
+        ? (config.motorizedController ? MOTOR_PRICES.remote.marked : 0)
+        + (config.motorizedHub ? MOTOR_PRICES.hub.marked : 0)
+        + (config.motorizedCharger ? MOTOR_PRICES.charger.marked : 0)
+        + (config.sunSensor ? MOTOR_PRICES.sunSensor.marked : 0)
+        : 0;
+
       const computeShadePrice = (shadeWidth: number) => {
         if (!config.material) return 0;
         const base = getGridPrice(config.material.priceGroup, shadeWidth, h, config.shape);
         const valance = applyMarkup((valanceOption?.pricePerInch || 0)) * shadeWidth;
         const channels = applyMarkup((bannerOption?.pricePerFoot || 0)) * (h / 12) * 2;
-        return base + motorAddonsPerShade + valance + channels;
+        return base + motorBasePerShade + valance + channels;
       };
-      const priceA = computeShadePrice(widthA) * config.quantity;
-      const priceB = computeShadePrice(widthB) * config.quantity;
+      // Each split shade gets its own per-shade price × quantity. Per-order accessories are split
+      // 50/50 across the two shades so the order total reconciles with priceBreakdown.
+      const priceA = computeShadePrice(widthA) * config.quantity + (motorAddonsPerOrder / 2);
+      const priceB = computeShadePrice(widthB) * config.quantity + (motorAddonsPerOrder / 2);
       const saleActive = isSaleActive();
       // Apply same sale discount ratio to each shade as priceBreakdown applied overall
       const totalRaw = priceA + priceB;

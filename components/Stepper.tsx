@@ -1,7 +1,7 @@
 import React, { useEffect, useState, useMemo } from 'react';
 import { Search, MapPin, Check, Ruler, UserCheck, Star, CheckCircle, Zap, Layout, Sidebar, Battery, Smartphone, Sun, Wrench, Info, ArrowRight, X, Layers, Image as ImageIcon, PanelLeftClose, ChevronRight } from 'lucide-react';
 import { ShadeConfig, ShapeType, Fabric, RoomAnalysis } from '../types';
-import { STEPS, FRACTIONS, getInstallerForZip, SHAPE_CONFIGS, VALANCE_OPTIONS, SIDE_CHANNEL_OPTIONS, ALL_FABRICS, isSaleActive, SALE_CONFIG, MOTOR_PRICES, applyMarkup, getStartingPrice, FREIGHT_WIDTH_THRESHOLD, FREIGHT_CHARGE } from '../constants';
+import { STEPS, FRACTIONS, getInstallerForZip, SHAPE_CONFIGS, VALANCE_OPTIONS, SIDE_CHANNEL_OPTIONS, ALL_FABRICS, isSaleActive, SALE_CONFIG, MOTOR_PRICES, applyMarkup, getStartingPrice, getSaleAccessoryPrice, FREIGHT_WIDTH_THRESHOLD, FREIGHT_CHARGE } from '../constants';
 import FabricSuggestions from './FabricSuggestions';
 import { useLanguage } from '../LanguageContext';
 import { trackEvent } from '../utils/analytics';
@@ -722,7 +722,7 @@ const Stepper: React.FC<StepperProps> = ({
                               <div className="flex items-center gap-2">
                                 <span className="text-[14px] font-semibold text-[#1a1a1a]" style={{ fontFamily: "'Playfair Display', Georgia, serif" }}>⚡ Motorized</span>
                               </div>
-                              <span className="text-[11px] font-bold text-[#8b6d3f]"><span className="line-through text-[#ccc] font-medium">${MOTOR_PRICES.base.marked}</span> +${MOTOR_PRICES.base.original}</span>
+                              <span className="text-[11px] font-bold text-[#8b6d3f]">{isSaleActive() ? (<><span className="line-through text-[#ccc] font-medium">${MOTOR_PRICES.base.marked}</span>{' +$'}{getSaleAccessoryPrice(MOTOR_PRICES.base.marked).toFixed(2)}</>) : (<>+${MOTOR_PRICES.base.marked}</>)}</span>
                             </div>
                             <p className="text-[12px] text-[#777] leading-snug mt-1.5">
                               Remote or app-controlled — Perfect for large or hard-to-reach windows
@@ -786,7 +786,7 @@ const Stepper: React.FC<StepperProps> = ({
                                                 <div className="text-[11px] text-slate-500 leading-tight mt-0.5">Controls up to 5 shades</div>
                                             </div>
                                         </div>
-                                        <div className="text-[11px] font-black px-1.5 py-0.5 rounded shrink-0" style={{ color: '#c8a165', backgroundColor: '#faf8f4' }}><span className="line-through text-[#ccc] font-medium">${MOTOR_PRICES.remote.marked}</span> +${MOTOR_PRICES.remote.original}</div>
+                                        <div className="text-[11px] font-black px-1.5 py-0.5 rounded shrink-0" style={{ color: '#c8a165', backgroundColor: '#faf8f4' }}>{isSaleActive() ? (<><span className="line-through text-[#ccc] font-medium">${MOTOR_PRICES.remote.marked}</span>{' +$'}{getSaleAccessoryPrice(MOTOR_PRICES.remote.marked).toFixed(2)}</>) : (<>+${MOTOR_PRICES.remote.marked}</>)}</div>
                                     </button>
 
                                     {/* Option 2: Use existing remote */}
@@ -819,7 +819,7 @@ const Stepper: React.FC<StepperProps> = ({
                                             <div className="text-[12px] text-slate-500 font-medium leading-tight mt-1 line-clamp-3 whitespace-pre-line">{t('control.hubDesc')}</div>
                                         </div>
                                     </div>
-                                    <div className="text-[11px] font-black px-1.5 py-0.5 rounded shrink-0" style={{ color: '#c8a165', backgroundColor: '#faf8f4' }}><span className="line-through text-[#ccc] font-medium">${MOTOR_PRICES.hub.marked}</span> +${MOTOR_PRICES.hub.original}</div>
+                                    <div className="text-[11px] font-black px-1.5 py-0.5 rounded shrink-0" style={{ color: '#c8a165', backgroundColor: '#faf8f4' }}>{isSaleActive() ? (<><span className="line-through text-[#ccc] font-medium">${MOTOR_PRICES.hub.marked}</span>{' +$'}{getSaleAccessoryPrice(MOTOR_PRICES.hub.marked).toFixed(2)}</>) : (<>+${MOTOR_PRICES.hub.marked}</>)}</div>
                                 </button>
 
                                 <div className="w-full p-3 border border-dashed rounded-xl flex items-center gap-4" style={{ borderColor: '#e8dcc8', backgroundColor: '#fdfbf7' }}>
@@ -843,7 +843,7 @@ const Stepper: React.FC<StepperProps> = ({
                                             <div className="text-[12px] text-slate-500 font-medium leading-tight mt-1 line-clamp-3 whitespace-pre-line">{t('control.sunSensorDesc')}</div>
                                         </div>
                                     </div>
-                                    <div className="text-[11px] font-black px-1.5 py-0.5 rounded shrink-0" style={{ color: '#c8a165', backgroundColor: '#faf8f4' }}><span className="line-through text-[#ccc] font-medium">${MOTOR_PRICES.sunSensor.marked}</span> +${MOTOR_PRICES.sunSensor.original}</div>
+                                    <div className="text-[11px] font-black px-1.5 py-0.5 rounded shrink-0" style={{ color: '#c8a165', backgroundColor: '#faf8f4' }}>{isSaleActive() ? (<><span className="line-through text-[#ccc] font-medium">${MOTOR_PRICES.sunSensor.marked}</span>{' +$'}{getSaleAccessoryPrice(MOTOR_PRICES.sunSensor.marked).toFixed(2)}</>) : (<>+${MOTOR_PRICES.sunSensor.marked}</>)}</div>
                                 </button>
 
                                 <button onClick={() => updateConfig('motorizedCharger', !config.motorizedCharger)} className={`w-full p-3 border-2 rounded-xl flex items-center justify-between transition-all ${config.motorizedCharger ? 'border-[#c8a165] bg-[#faf8f4] ring-1 ring-[#c8a165]' : 'border-gray-100 hover:border-gray-300 bg-white shadow-sm'}`}>
@@ -856,7 +856,7 @@ const Stepper: React.FC<StepperProps> = ({
                                             <div className="text-[12px] text-slate-500 font-medium leading-tight mt-1 line-clamp-3 whitespace-pre-line">{t('control.chargerDesc')}</div>
                                         </div>
                                     </div>
-                                    <div className="text-[11px] font-black px-1.5 py-0.5 rounded shrink-0" style={{ color: '#c8a165', backgroundColor: '#faf8f4' }}><span className="line-through text-[#ccc] font-medium">${MOTOR_PRICES.charger.marked}</span> +${MOTOR_PRICES.charger.original}</div>
+                                    <div className="text-[11px] font-black px-1.5 py-0.5 rounded shrink-0" style={{ color: '#c8a165', backgroundColor: '#faf8f4' }}>{isSaleActive() ? (<><span className="line-through text-[#ccc] font-medium">${MOTOR_PRICES.charger.marked}</span>{' +$'}{getSaleAccessoryPrice(MOTOR_PRICES.charger.marked).toFixed(2)}</>) : (<>+${MOTOR_PRICES.charger.marked}</>)}</div>
                                 </button>
                             </div>
                         </div>
