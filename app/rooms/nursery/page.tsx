@@ -14,6 +14,10 @@ import {
   Sparkles,
   Phone,
 } from "lucide-react"
+import { SITE } from "@/lib/constants"
+
+// Canonical site URL — emits www, not apex.
+const SITE_URL = `https://${SITE.domain}`
 
 export const metadata: Metadata = {
   title: "Blackout Shades for Nurseries | Cordless, OEKO-TEX Safe — World Wide Shades",
@@ -23,7 +27,7 @@ export const metadata: Metadata = {
     title: "Blackout Shades for Nurseries | World Wide Shades",
     description:
       "Better sleep for baby, better everything for you. Cordless blackout shades with OEKO-TEX certified fabrics. Custom-fit from $250.",
-    url: "https://worldwideshades.com/rooms/nursery",
+    url: `${SITE_URL}/rooms/nursery`,
     siteName: "World Wide Shades",
     type: "website",
     images: [{ url: "https://res.cloudinary.com/dcmlcfynd/image/upload/c_fill,w_1200,h_630,g_auto/v1774397716/lightfilter-hero-living_ka1oae.png", width: 1200, height: 630, alt: "Safe cordless blackout shades for nurseries — World Wide Shades" }],
@@ -152,7 +156,7 @@ const jsonLd = {
     {
       "@type": "Organization",
       name: "World Wide Shades LLC",
-      url: "https://worldwideshades.com",
+      url: SITE_URL,
       telephone: "+18446742716",
       description: "Factory-direct custom roller shades. Made in USA.",
     },
@@ -163,19 +167,19 @@ const jsonLd = {
           "@type": "ListItem",
           position: 1,
           name: "Home",
-          item: "https://worldwideshades.com",
+          item: SITE_URL,
         },
         {
           "@type": "ListItem",
           position: 2,
           name: "Roller Shades",
-          item: "https://worldwideshades.com",
+          item: SITE_URL,
         },
         {
           "@type": "ListItem",
           position: 3,
           name: "Nursery Shades",
-          item: "https://worldwideshades.com/rooms/nursery",
+          item: `${SITE_URL}/rooms/nursery`,
         },
       ],
     },

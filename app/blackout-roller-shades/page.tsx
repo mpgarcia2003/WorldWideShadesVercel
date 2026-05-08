@@ -14,6 +14,12 @@ import { FAQ } from "./components/FAQ";
 import { FinalCTA } from "./components/FinalCTA";
 import { MobileStickyBar } from "./components/MobileStickyBar";
 import { FAQS, IMAGES } from "./data";
+import { SITE } from "@/lib/constants";
+
+// Canonical site URL — emits www, not apex. Was previously a mix of
+// hardcoded apex and hardcoded www; this normalizes everything through
+// the SITE constant so future host changes are one-line edits.
+const SITE_URL = `https://${SITE.domain}`;
 
 // ── Metadata (server-rendered in <head>) ──
 export const metadata: Metadata = {
@@ -23,7 +29,7 @@ export const metadata: Metadata = {
   openGraph: {
     title: "Custom Blackout Roller Shades | World Wide Shades",
     description: "Order custom blackout roller shades online. 100% light blocking, built to your exact window. From $145 with Spring Sale.",
-    url: "https://www.worldwideshades.com/blackout-roller-shades",
+    url: `${SITE_URL}/blackout-roller-shades`,
     siteName: "World Wide Shades",
     type: "website",
     images: [{ url: IMAGES.heroBgOg, width: 1200, height: 630, alt: "Custom blackout roller shades in a modern bedroom" }],
@@ -35,7 +41,7 @@ export const metadata: Metadata = {
     images: [IMAGES.heroBgOg],
   },
   alternates: {
-    canonical: "https://www.worldwideshades.com/blackout-roller-shades",
+    canonical: `${SITE_URL}/blackout-roller-shades`,
   },
 };
 
@@ -48,8 +54,8 @@ const jsonLd = {
       name: "Custom Blackout Roller Shades",
       description: "100% light-blocking blackout roller shades, custom-built to your exact window size. 200+ premium fabrics, factory-direct pricing, ships in ~7 days.",
       brand: { "@type": "Brand", name: "World Wide Shades" },
-      manufacturer: { "@type": "Organization", name: "World Wide Shades", url: "https://worldwideshades.com" },
-      url: "https://worldwideshades.com/blackout-roller-shades",
+      manufacturer: { "@type": "Organization", name: "World Wide Shades", url: SITE_URL },
+      url: `${SITE_URL}/blackout-roller-shades`,
       image: IMAGES.heroBgOg,
       category: "Blackout Window Shades",
       material: "Premium Blackout Fabric",
@@ -94,8 +100,8 @@ const jsonLd = {
     {
       "@type": "BreadcrumbList",
       itemListElement: [
-        { "@type": "ListItem", position: 1, name: "Home", item: "https://www.worldwideshades.com" },
-        { "@type": "ListItem", position: 2, name: "Blackout Roller Shades", item: "https://www.worldwideshades.com/blackout-roller-shades" },
+        { "@type": "ListItem", position: 1, name: "Home", item: SITE_URL },
+        { "@type": "ListItem", position: 2, name: "Blackout Roller Shades", item: `${SITE_URL}/blackout-roller-shades` },
       ],
     },
   ],

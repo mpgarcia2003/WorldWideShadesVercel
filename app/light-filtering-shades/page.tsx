@@ -16,6 +16,11 @@ import {
   Hammer,
   CheckCircle,
 } from "lucide-react"
+import { SITE } from "@/lib/constants"
+
+// Canonical site URL — emits www, not apex. Previously hardcoded as apex,
+// generating "Page with redirect" entries in GSC and inconsistent canonicals.
+const SITE_URL = `https://${SITE.domain}`
 
 export const metadata: Metadata = {
   title: "Custom Light Filtering Roller Shades | Soft Natural Light, Ships 7 Days — World Wide Shades",
@@ -25,7 +30,7 @@ export const metadata: Metadata = {
     title: "Custom Light Filtering Roller Shades | World Wide Shades",
     description:
       "Stop fighting harsh sunlight. Custom light filtering shades with 479 fabrics, shipped in 7 days. Factory-direct pricing from $250.",
-    url: "https://worldwideshades.com/light-filtering-shades",
+    url: `${SITE_URL}/light-filtering-shades`,
     siteName: "World Wide Shades",
     type: "website",
     images: [{ url: "https://res.cloudinary.com/dcmlcfynd/image/upload/c_fill,w_1200,h_630,g_auto/v1774397716/lightfilter-hero-living_ka1oae.png", width: 1200, height: 630, alt: "Custom light filtering roller shades in a bright living room — World Wide Shades" }],
@@ -161,7 +166,7 @@ const jsonLd = {
     {
       "@type": "Organization",
       name: "World Wide Shades LLC",
-      url: "https://worldwideshades.com",
+      url: SITE_URL,
       telephone: "+18446742716",
       description: "Factory-direct custom roller shades. Made in USA.",
     },
@@ -172,19 +177,19 @@ const jsonLd = {
           "@type": "ListItem",
           position: 1,
           name: "Home",
-          item: "https://worldwideshades.com",
+          item: SITE_URL,
         },
         {
           "@type": "ListItem",
           position: 2,
           name: "Roller Shades",
-          item: "https://worldwideshades.com",
+          item: SITE_URL,
         },
         {
           "@type": "ListItem",
           position: 3,
           name: "Light Filtering Roller Shades",
-          item: "https://worldwideshades.com/light-filtering-shades",
+          item: `${SITE_URL}/light-filtering-shades`,
         },
       ],
     },

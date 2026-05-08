@@ -11,6 +11,12 @@ import {
   Check,
   Phone,
 } from "lucide-react"
+import { SITE } from "@/lib/constants"
+
+// Canonical site URL — emits www, not apex. Previously these URLs were
+// hardcoded as https://worldwideshades.com which 307-redirected to www,
+// generating "Page with redirect" entries in GSC and inconsistent canonicals.
+const SITE_URL = `https://${SITE.domain}`
 
 export const metadata: Metadata = {
   title: "Custom Roller Shades | AI-Powered Shade Builder — World Wide Shades",
@@ -20,7 +26,7 @@ export const metadata: Metadata = {
     title: "Custom Roller Shades | World Wide Shades",
     description:
       "Design your perfect shade in minutes. Preview 700+ fabrics on your actual window with our AI builder. Factory-direct pricing, free shipping, made in USA.",
-    url: "https://worldwideshades.com",
+    url: SITE_URL,
     siteName: "World Wide Shades",
     type: "website",
     images: [{ url: "https://res.cloudinary.com/dcmlcfynd/image/upload/c_fill,w_1200,h_630,g_auto/v1774397716/lightfilter-hero-living_ka1oae.png", width: 1200, height: 630, alt: "Custom roller shades in a modern living room — World Wide Shades" }],
@@ -39,7 +45,7 @@ const jsonLd = {
     {
       "@type": "Organization",
       name: "World Wide Shades LLC",
-      url: "https://worldwideshades.com",
+      url: SITE_URL,
       telephone: "+18446742716",
       address: {
         "@type": "PostalAddress",
@@ -50,13 +56,13 @@ const jsonLd = {
     },
     {
       "@type": "WebSite",
-      url: "https://worldwideshades.com",
+      url: SITE_URL,
       name: "World Wide Shades",
       potentialAction: {
         "@type": "SearchAction",
         target: {
           "@type": "EntryPoint",
-          urlTemplate: "https://worldwideshades.com/search?q={search_term_string}",
+          urlTemplate: `${SITE_URL}/search?q={search_term_string}`,
         },
         "query-input": "required name=search_term_string",
       },
@@ -177,7 +183,7 @@ const jsonLd = {
           "@type": "ListItem",
           position: 1,
           name: "Home",
-          item: "https://worldwideshades.com",
+          item: SITE_URL,
         },
       ],
     },

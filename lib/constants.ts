@@ -2,10 +2,15 @@
 // Re-export sale helpers so marketing pages use a single import.
 export { isSaleActive, getSalePrice, SALE_CONFIG, PRICE_MARKUP } from "@/constants";
 
+// IMPORTANT: domain is www, not apex. Vercel terminates traffic on www;
+// apex 308-redirects to www (see next.config.ts redirects()). Keeping this
+// canonical means sitemap, robots.txt, JSON-LD, and OpenGraph all emit
+// www URLs, eliminating the apex/www inconsistency that was generating
+// "Page with redirect" entries on every sitemap URL in GSC.
 export const SITE = {
   name: "World Wide Shades",
   tagline: "Custom Window Shades Made Simple",
-  domain: "worldwideshades.com",
+  domain: "www.worldwideshades.com",
   builderDomain: "builder.worldwideshades.com",
   phone: "(844) 674-2716",
   email: "hello@worldwideshades.com",

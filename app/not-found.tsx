@@ -1,5 +1,28 @@
+import type { Metadata } from "next";
 import Link from "next/link";
 import { CTAButton } from "@/components/shared/CTAButton";
+
+/**
+ * 404 / Not Found page
+ * ──────────────────────────────────────────────────────────────────────────
+ * Per-route metadata override that sets robots: { index: false, follow: true }.
+ *
+ * Why this matters: the root layout's metadata sets `robots: { index: true,
+ * follow: true }` as the site-wide default. Without this override, Next.js
+ * inherits that index:true onto the not-found page, producing a SOFT-404:
+ * the page returns HTTP 404 (correct) but emits <meta robots="index, follow">,
+ * which Google treats as conflicting and historically erred toward keeping the
+ * URL in the index. The audit (2026-05-08) flagged this on /pages/* and
+ * /blogs/news/* legacy URLs from the old Shopify storefront — Google had
+ * 119 URLs in "crawled — currently not indexed" partially due to this.
+ *
+ * follow:true is intentional — we still want PageRank to flow OUT of the 404
+ * page through the "Go Home" / "Design a Shade" CTAs to legitimate destinations.
+ */
+export const metadata: Metadata = {
+  robots: { index: false, follow: true },
+  title: "Page Not Found",
+};
 
 export default function NotFound() {
   return (

@@ -21,6 +21,10 @@ import {
   Eye,
   BedDouble,
 } from "lucide-react"
+import { SITE } from "@/lib/constants"
+
+// Canonical site URL — emits www, not apex.
+const SITE_URL = `https://${SITE.domain}`
 
 export const metadata: Metadata = {
   title: "Blackout Shades for Bedrooms | Sleep in Complete Darkness — World Wide Shades",
@@ -30,7 +34,7 @@ export const metadata: Metadata = {
     title: "Blackout Shades for Bedrooms | World Wide Shades",
     description:
       "Transform your bedroom into a sleep sanctuary. Custom blackout shades that block 100% of light. Factory-direct from $250.",
-    url: "https://worldwideshades.com/rooms/bedroom",
+    url: `${SITE_URL}/rooms/bedroom`,
     siteName: "World Wide Shades",
     type: "website",
     images: [{ url: "https://res.cloudinary.com/dcmlcfynd/image/upload/c_fill,w_1200,h_630,g_auto/v1774397197/blackout-hero-bedroom_wngxnr.png", width: 1200, height: 630, alt: "Custom blackout shades for bedrooms — World Wide Shades" }],
@@ -143,7 +147,7 @@ const jsonLd = {
     {
       "@type": "Organization",
       name: "World Wide Shades LLC",
-      url: "https://worldwideshades.com",
+      url: SITE_URL,
       telephone: "+18446742716",
       description: "Factory-direct custom roller shades. Made in USA.",
     },
@@ -154,19 +158,19 @@ const jsonLd = {
           "@type": "ListItem",
           position: 1,
           name: "Home",
-          item: "https://worldwideshades.com",
+          item: SITE_URL,
         },
         {
           "@type": "ListItem",
           position: 2,
           name: "Blackout Shades",
-          item: "https://worldwideshades.com/blackout-roller-shades",
+          item: `${SITE_URL}/blackout-roller-shades`,
         },
         {
           "@type": "ListItem",
           position: 3,
           name: "Blackout Shades for Bedrooms",
-          item: "https://worldwideshades.com/rooms/bedroom",
+          item: `${SITE_URL}/rooms/bedroom`,
         },
       ],
     },

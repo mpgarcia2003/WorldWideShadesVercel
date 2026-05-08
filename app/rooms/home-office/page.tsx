@@ -21,6 +21,10 @@ import {
   ChevronDown,
   Phone,
 } from "lucide-react"
+import { SITE } from "@/lib/constants"
+
+// Canonical site URL — emits www, not apex.
+const SITE_URL = `https://${SITE.domain}`
 
 export const metadata: Metadata = {
   title: "Custom Shades for Home Offices | Reduce Glare, Boost Focus — World Wide Shades",
@@ -30,7 +34,7 @@ export const metadata: Metadata = {
     title: "Custom Shades for Home Offices | World Wide Shades",
     description:
       "Custom home office shades that eliminate screen glare and reduce eye strain. Light filtering for soft focus, motorized for convenience. From $250. Ships in 7 days.",
-    url: "https://worldwideshades.com/rooms/home-office",
+    url: `${SITE_URL}/rooms/home-office`,
     siteName: "World Wide Shades",
     type: "website",
     images: [{ url: "https://res.cloudinary.com/dcmlcfynd/image/upload/c_fill,w_1200,h_630,g_auto/v1774397716/lightfilter-hero-living_ka1oae.png", width: 1200, height: 630, alt: "Custom shades for living rooms — World Wide Shades" }],
@@ -142,7 +146,7 @@ const jsonLd = {
     {
       "@type": "Organization",
       name: "World Wide Shades LLC",
-      url: "https://worldwideshades.com",
+      url: SITE_URL,
       telephone: "+18446742716",
       description: "Factory-direct custom roller shades. Made in USA.",
     },
@@ -153,19 +157,19 @@ const jsonLd = {
           "@type": "ListItem",
           position: 1,
           name: "Home",
-          item: "https://worldwideshades.com",
+          item: SITE_URL,
         },
         {
           "@type": "ListItem",
           position: 2,
           name: "Roller Shades",
-          item: "https://worldwideshades.com",
+          item: SITE_URL,
         },
         {
           "@type": "ListItem",
           position: 3,
           name: "Shades for Home Offices",
-          item: "https://worldwideshades.com/rooms/home-office",
+          item: `${SITE_URL}/rooms/home-office`,
         },
       ],
     },

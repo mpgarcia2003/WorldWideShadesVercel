@@ -14,6 +14,10 @@ import {
   Palette,
   Hammer,
 } from "lucide-react"
+import { SITE } from "@/lib/constants"
+
+// Canonical site URL — emits www, not apex.
+const SITE_URL = `https://${SITE.domain}`
 
 export const metadata: Metadata = {
   title: "Custom Shades for Bathrooms | Privacy + Moisture Resistant — World Wide Shades",
@@ -21,7 +25,7 @@ export const metadata: Metadata = {
   openGraph: {
     title: "Custom Shades for Bathrooms | World Wide Shades",
     description: "Custom bathroom shades with moisture-resistant fabrics. Complete privacy without sacrificing light. Custom-fit from $250.",
-    url: "https://worldwideshades.com/rooms/bathroom",
+    url: `${SITE_URL}/rooms/bathroom`,
     siteName: "World Wide Shades",
     type: "website",
     images: [{ url: "https://res.cloudinary.com/dcmlcfynd/image/upload/c_fill,w_1200,h_630,g_auto/v1774397716/lightfilter-hero-living_ka1oae.png", width: 1200, height: 630, alt: "Custom shades for bathrooms — World Wide Shades" }],
@@ -48,10 +52,10 @@ const jsonLd = {
       { "@type": "Question", name: "Can I get a shade for a small or odd-shaped window?", acceptedAnswer: { "@type": "Answer", text: "Yes — custom-cut to your exact measurements, down to 1/8 inch." } },
       { "@type": "Question", name: "Do you offer blackout for bathrooms?", acceptedAnswer: { "@type": "Answer", text: "Yes. Ideal for ground-floor bathrooms facing the street. Light filtering is more popular for most bathrooms." } },
     ] },
-    { "@type": "Organization", name: "World Wide Shades LLC", url: "https://worldwideshades.com", telephone: "+18446742716" },
+    { "@type": "Organization", name: "World Wide Shades LLC", url: SITE_URL, telephone: "+18446742716" },
     { "@type": "BreadcrumbList", itemListElement: [
-      { "@type": "ListItem", position: 1, name: "Home", item: "https://worldwideshades.com" },
-      { "@type": "ListItem", position: 2, name: "Bathroom Shades", item: "https://worldwideshades.com/rooms/bathroom" },
+      { "@type": "ListItem", position: 1, name: "Home", item: SITE_URL },
+      { "@type": "ListItem", position: 2, name: "Bathroom Shades", item: `${SITE_URL}/rooms/bathroom` },
     ] },
   ],
 }
