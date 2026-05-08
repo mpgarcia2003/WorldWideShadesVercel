@@ -638,21 +638,28 @@ export default function CheckoutPage() {
   const [isProcessing, setIsProcessing] = useState(false);
   const [clientSecret, setClientSecret] = useState<string | null>(null);
   const [stripeError, setStripeError] = useState("");
-  const [gaClientId, setGaClientId] = useState<string | null>(null);
+  // gaClientId is held in a ref (not state) so its async resolution doesn't
+  // re-trigger the PaymentIntent effect below. The effect reads it lazily at
+  // fetch time. See the PaymentIntent useEffect for race-condition context.
+  const gaClientIdRef = useRef<string | null>(null);
 
-  // Capture GA4 client_id for server-side attribution stitching
+  // Capture GA4 client_id for server-side attribution stitching.
+  // Stored in a ref so updates do NOT trigger re-renders or re-fire downstream
+  // effects (this previously caused PaymentIntent recreation → stale clientSecret
+  // → mobile users seeing payment errors until pull-to-refresh remounted).
   useEffect(() => {
     try {
       const w = window as any;
       if (w.gtag) {
         w.gtag('get', 'G-1RHH50R34P', 'client_id', (id: string) => {
-          if (id) setGaClientId(id);
+          if (id) gaClientIdRef.current = id;
         });
       }
-      // Fallback: read from GA cookie
-      if (!gaClientId) {
+      // Fallback: read from GA cookie. Note we read .current here, not the
+      // outer `gaClientId` (no closure issue — refs always read the latest value).
+      if (!gaClientIdRef.current) {
         const match = document.cookie.match(/_ga=GA\d+\.\d+\.(.+)/);
-        if (match) setGaClientId(match[1]);
+        if (match) gaClientIdRef.current = match[1];
       }
     } catch {}
   }, []);
@@ -680,33 +687,70 @@ export default function CheckoutPage() {
     // begin_checkout is a primary bidding conversion in Google Ads.
     // Dual-sending (browser + MP) would double-count and corrupt Smart Bidding.
     // Browser/GTM is the single source of truth for this event.
-  }, [loaded, cart.length, gaClientId]);
+  }, [loaded, cart.length]);
 
-  // Create PaymentIntent when cart is loaded
+  // Compute a stable subtotal in cents. Using a number primitive in the
+  // dependency array (instead of the cart array reference) prevents needless
+  // PaymentIntent recreations on harmless re-renders.
+  const subtotalCents = Math.round(
+    cart.reduce((sum, item) => sum + item.totalPrice, 0) * 100
+  );
+  const discountCents = promoApplied ? Math.round(promoDiscount * 100) : 0;
+  const amountInCents = subtotalCents - discountCents;
+
+  // Create PaymentIntent when the cart is loaded and amount changes.
+  //
+  // Race-condition history: this effect previously listed `cart` (an unstable
+  // array reference) and `gaClientId` (state that resolves async after mount)
+  // as dependencies, causing 2+ PaymentIntents to be created in rapid succession
+  // on mobile. Stripe Elements would mount with the first clientSecret while a
+  // second was being created, leading to "Payment failed" errors that only
+  // recovered after a full pull-to-refresh remount.
+  //
+  // Fix: depend only on stable primitives (loaded, amountInCents, cartLength).
+  // Read gaClientId lazily via ref inside the fetch body. Use AbortController
+  // to cancel any in-flight request if deps change before it resolves so the
+  // "loser" fetch can't overwrite the "winner's" clientSecret.
   useEffect(() => {
     if (!loaded || cart.length === 0) return;
-    const total = cart.reduce((sum, item) => sum + item.totalPrice, 0);
-    const discount = promoApplied ? promoDiscount : 0;
-    const amountInCents = Math.round((total - discount) * 100);
     if (amountInCents < 50) return;
+
+    const controller = new AbortController();
 
     setStripeError("");
     fetch("/api/checkout", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
+      signal: controller.signal,
       body: JSON.stringify({
         amount: amountInCents,
         email: email || undefined,
-        metadata: { items: cart.length.toString(), ga_client_id: gaClientId || '' },
+        metadata: {
+          items: cart.length.toString(),
+          // Read latest gaClientId at fetch time — ref always reflects the
+          // current value, no stale-closure or re-render issue.
+          ga_client_id: gaClientIdRef.current || '',
+        },
       }),
     })
       .then((res) => res.json())
       .then((data) => {
+        if (controller.signal.aborted) return;
         if (data.clientSecret) setClientSecret(data.clientSecret);
         else setStripeError(data.error || "Could not initialize payment.");
       })
-      .catch(() => setStripeError("Could not connect to payment server."));
-  }, [loaded, cart, promoApplied, promoDiscount, gaClientId]); // include gaClientId so metadata updates when it resolves
+      .catch((err) => {
+        // AbortError is expected when deps change mid-flight — swallow silently.
+        if (err?.name === 'AbortError') return;
+        setStripeError("Could not connect to payment server.");
+      });
+
+    return () => controller.abort();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    // (`email` intentionally omitted: changes on every keystroke and would
+    // recreate intents on each character. Stripe accepts the email as part of
+    // the confirmPayment call, so embedding it in metadata is best-effort only.)
+  }, [loaded, amountInCents, cart.length]);
 
   const subtotal = cart.reduce((sum, item) => sum + item.totalPrice, 0);
   const discount = promoApplied ? promoDiscount : 0;
@@ -962,11 +1006,22 @@ export default function CheckoutPage() {
         <div className="mobile-sticky-cta">
           <button
             onClick={() => {
-              const el = document.querySelector('.place-order-btn');
-              if (el) {
-                el.scrollIntoView({ behavior: 'smooth', block: 'center' });
-                setTimeout(() => (el as HTMLButtonElement).click(), 600);
-              }
+              // Guard against double-tap: if already processing, do nothing.
+              // Without this, a second tap stacks another 600ms timer that
+              // would auto-click the underlying place-order button after the
+              // first submission has already started — risking double-charge.
+              if (isProcessing) return;
+
+              const el = document.querySelector('.place-order-btn') as HTMLButtonElement | null;
+              if (!el) return;
+              el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+              setTimeout(() => {
+                // Re-check at click time — isProcessing may have flipped during
+                // the 600ms scroll animation, or the underlying button may now
+                // be disabled (Stripe still validating). Either skips the click.
+                if (isProcessing || el.disabled) return;
+                el.click();
+              }, 600);
             }}
             disabled={isProcessing}
             style={{

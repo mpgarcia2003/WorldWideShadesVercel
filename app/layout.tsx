@@ -1,7 +1,6 @@
 import type { Metadata } from "next";
 import Script from "next/script";
 import { DM_Sans, Playfair_Display } from "next/font/google";
-import { Header } from "@/components/shell/Header";
 import { ShellWrapper } from "@/components/shell/ShellWrapper";
 import { Providers } from "@/components/shared/Providers";
 import { GlobalPhoneTracker } from "@/components/shared/GlobalPhoneTracker";
@@ -44,7 +43,6 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             <BehaviorTracker />
             <ClarityScript />
             <ShellWrapper>
-              <Header />
               <main className="flex-1">{children}</main>
             </ShellWrapper>
           </Providers>
