@@ -94,7 +94,7 @@ const nextConfig: NextConfig = {
       // Specific maps (in priority order - first match wins).
       // Top-impression URLs from GSC 90-day report.
       { source: "/pages/pentagon-shades", destination: "/specialty-shapes/pentagon", permanent: true },
-      { source: "/pages/hexagon-shades", destination: "/specialty-shapes", permanent: true },
+      { source: "/pages/hexagon-shades", destination: "/specialty-shapes/hexagon", permanent: true },
       { source: "/pages/exterior-shades", destination: "/specialty-shapes", permanent: true },
       { source: "/pages/custom-roller-shades", destination: "/blackout-roller-shades", permanent: true },
       { source: "/pages/builder", destination: "/builder", permanent: true },
@@ -170,15 +170,19 @@ const nextConfig: NextConfig = {
         permanent: true,
       },
 
-      // Skylight
+      // Skylight — these now route directly to the dedicated skylight page
+      // built in Week 2 Session 3. Previously they were placeholders pointing
+      // to /blog/skylight-shades-guide. The dedicated page is the proper
+      // commercial-intent destination for these searches (VELUX-brand
+      // homeowners, sunroom homeowners, etc.).
       {
         source: "/blogs/news/in-depth-review-of-skylight-shade-for-skylights",
-        destination: "/blog/skylight-shades-guide",
+        destination: "/specialty-shapes/skylight",
         permanent: true,
       },
       {
         source: "/blogs/news/top-picks-for-the-best-skylight-shades-light-control-style",
-        destination: "/blog/skylight-shades-guide",
+        destination: "/specialty-shapes/skylight",
         permanent: true,
       },
 

@@ -264,19 +264,19 @@ export const PENTAGON_DATA: ShapeData = {
       slug: "hexagon",
       name: "Hexagon Shades",
       description: "Six-sided shades for decorative & accent windows.",
-      hasPage: false,
+      hasPage: true,
     },
     {
       slug: "arch",
       name: "Arch Shades",
       description: "Half-moon, quarter-round, and full arches.",
-      hasPage: false,
+      hasPage: true,
     },
     {
       slug: "skylight",
       name: "Skylight Shades",
       description: "Overhead and angled skylight shade systems.",
-      hasPage: false,
+      hasPage: true,
     },
   ],
 

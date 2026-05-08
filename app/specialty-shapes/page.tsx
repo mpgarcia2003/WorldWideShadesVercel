@@ -483,12 +483,20 @@ export default function SpecialtyShapesPage() {
                   <span className="font-semibold text-dark">Common in:</span> Entryways, bathrooms,
                   stairways, front door sidelights, decorative windows
                 </p>
-                <a
-                  href="/specialty-shapes/pentagon"
-                  className="inline-block mt-auto text-center bg-dark text-white font-sans font-semibold text-sm px-6 py-3 rounded-sm hover:bg-dark-soft transition-colors duration-200"
-                >
-                  View Pentagon Shades →
-                </a>
+                <div className="mt-auto grid grid-cols-2 gap-2">
+                  <a
+                    href="/specialty-shapes/pentagon"
+                    className="inline-block text-center bg-dark text-white font-sans font-semibold text-sm px-3 py-3 rounded-sm hover:bg-dark-soft transition-colors duration-200"
+                  >
+                    Pentagon →
+                  </a>
+                  <a
+                    href="/specialty-shapes/hexagon"
+                    className="inline-block text-center bg-dark text-white font-sans font-semibold text-sm px-3 py-3 rounded-sm hover:bg-dark-soft transition-colors duration-200"
+                  >
+                    Hexagon →
+                  </a>
+                </div>
               </div>
             </div>
 
@@ -542,10 +550,10 @@ export default function SpecialtyShapesPage() {
                   church-style windows, grand entryways
                 </p>
                 <a
-                  href="/builder"
+                  href="/specialty-shapes/arch"
                   className="inline-block mt-auto text-center bg-dark text-white font-sans font-semibold text-sm px-6 py-3 rounded-sm hover:bg-dark-soft transition-colors duration-200"
                 >
-                  Design Arch Shade
+                  View Arch Shades →
                 </a>
               </div>
             </div>
@@ -607,10 +615,10 @@ export default function SpecialtyShapesPage() {
                   sunrooms, studios, converted lofts
                 </p>
                 <a
-                  href="/builder"
+                  href="/specialty-shapes/skylight"
                   className="inline-block mt-auto text-center bg-dark text-white font-sans font-semibold text-sm px-6 py-3 rounded-sm hover:bg-dark-soft transition-colors duration-200"
                 >
-                  Design Skylight Shade
+                  View Skylight Shades →
                 </a>
               </div>
             </div>
