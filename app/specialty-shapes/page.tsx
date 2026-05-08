@@ -19,6 +19,11 @@ import {
   Wrench,
   Zap,
 } from "lucide-react"
+import { SITE } from "@/lib/constants"
+
+// Canonical site URL — emits www, not apex. Previously hardcoded as apex,
+// generating "Page with redirect" entries in GSC and inconsistent canonicals.
+const SITE_URL = `https://${SITE.domain}`
 
 export const metadata: Metadata = {
   title: "Specialty Shape Window Shades | Triangle, Trapezoid, Hexagon — World Wide Shades",
@@ -28,7 +33,7 @@ export const metadata: Metadata = {
     title: "Specialty Shape Window Shades | World Wide Shades",
     description:
       "Triangle, trapezoid, hexagon, pentagon, arch, skylight — custom shades for the windows other companies turn away. 100% Fit Guarantee.",
-    url: "https://worldwideshades.com/specialty-shapes",
+    url: `${SITE_URL}/specialty-shapes`,
     siteName: "World Wide Shades",
     type: "website",
     images: [{ url: "https://res.cloudinary.com/dcmlcfynd/image/upload/c_fill,w_1200,h_630,g_auto/v1774397716/lightfilter-hero-living_ka1oae.png", width: 1200, height: 630, alt: "Custom specialty shape window shades — World Wide Shades" }],
@@ -156,7 +161,7 @@ const jsonLd = {
     {
       "@type": "Organization",
       name: "World Wide Shades LLC",
-      url: "https://worldwideshades.com",
+      url: SITE_URL,
       telephone: "+18446742716",
       description: "Factory-direct custom roller shades including specialty shapes. Made in USA.",
     },
@@ -167,19 +172,19 @@ const jsonLd = {
           "@type": "ListItem",
           position: 1,
           name: "Home",
-          item: "https://worldwideshades.com",
+          item: SITE_URL,
         },
         {
           "@type": "ListItem",
           position: 2,
           name: "Roller Shades",
-          item: "https://worldwideshades.com",
+          item: SITE_URL,
         },
         {
           "@type": "ListItem",
           position: 3,
           name: "Specialty Shape Window Shades",
-          item: "https://worldwideshades.com/specialty-shapes",
+          item: `${SITE_URL}/specialty-shapes`,
         },
       ],
     },
@@ -392,10 +397,10 @@ export default function SpecialtyShapesPage() {
                   chalets, loft apartments, vaulted ceilings, gable windows
                 </p>
                 <a
-                  href="/builder"
+                  href="/specialty-shapes/triangle"
                   className="inline-block mt-auto text-center bg-dark text-white font-sans font-semibold text-sm px-6 py-3 rounded-sm hover:bg-dark-soft transition-colors duration-200"
                 >
-                  Design Triangle Shade
+                  View Triangle Shades →
                 </a>
               </div>
             </div>
@@ -435,10 +440,10 @@ export default function SpecialtyShapesPage() {
                   cathedral ceilings, loft bedrooms, attic conversions, stairway windows
                 </p>
                 <a
-                  href="/builder"
+                  href="/specialty-shapes/trapezoid"
                   className="inline-block mt-auto text-center bg-dark text-white font-sans font-semibold text-sm px-6 py-3 rounded-sm hover:bg-dark-soft transition-colors duration-200"
                 >
-                  Design Trapezoid Shade
+                  View Trapezoid Shades →
                 </a>
               </div>
             </div>
@@ -479,10 +484,10 @@ export default function SpecialtyShapesPage() {
                   stairways, front door sidelights, decorative windows
                 </p>
                 <a
-                  href="/builder"
+                  href="/specialty-shapes/pentagon"
                   className="inline-block mt-auto text-center bg-dark text-white font-sans font-semibold text-sm px-6 py-3 rounded-sm hover:bg-dark-soft transition-colors duration-200"
                 >
-                  Design Hexagon Shade
+                  View Pentagon Shades →
                 </a>
               </div>
             </div>

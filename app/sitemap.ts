@@ -1,8 +1,12 @@
 import type { MetadataRoute } from "next";
 import { LANDING_PAGES } from "@/data/pages";
 import { getAllPosts } from "@/lib/blog";
+import { SITE } from "@/lib/constants";
+import { SHAPE_SLUGS } from "@/data/specialty-shapes";
 
-const BASE = "https://worldwideshades.com";
+// Use the canonical www host. Previously hardcoded as apex, which caused every
+// sitemap URL to 307-redirect to www and show as "Page with redirect" in GSC.
+const BASE = `https://${SITE.domain}`;
 
 export default function sitemap(): MetadataRoute.Sitemap {
   const now = new Date().toISOString();
@@ -33,5 +37,16 @@ export default function sitemap(): MetadataRoute.Sitemap {
     url: `${BASE}/blog/${post.slug}`, lastModified: post.date || now, changeFrequency: "monthly" as const, priority: 0.6,
   }));
 
-  return [...staticPages, ...landingPages, ...roomPages, ...blogPages];
+  // Specialty-shape sub-pages (pentagon, trapezoid, triangle, plus any added
+  // to the registry later). High commercial-intent SEO pages — priority 0.9
+  // matching the main landing pages. URLs are pulled from the data registry
+  // so the sitemap auto-updates when new shape pages are added.
+  const shapePages: MetadataRoute.Sitemap = SHAPE_SLUGS.map((shape) => ({
+    url: `${BASE}/specialty-shapes/${shape}`,
+    lastModified: now,
+    changeFrequency: "weekly" as const,
+    priority: 0.9,
+  }));
+
+  return [...staticPages, ...landingPages, ...roomPages, ...blogPages, ...shapePages];
 }

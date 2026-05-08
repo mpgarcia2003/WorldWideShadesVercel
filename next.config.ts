@@ -93,7 +93,7 @@ const nextConfig: NextConfig = {
       // ===== Legacy Shopify /pages/* redirects =====
       // Specific maps (in priority order - first match wins).
       // Top-impression URLs from GSC 90-day report.
-      { source: "/pages/pentagon-shades", destination: "/specialty-shapes", permanent: true },
+      { source: "/pages/pentagon-shades", destination: "/specialty-shapes/pentagon", permanent: true },
       { source: "/pages/hexagon-shades", destination: "/specialty-shapes", permanent: true },
       { source: "/pages/exterior-shades", destination: "/specialty-shapes", permanent: true },
       { source: "/pages/custom-roller-shades", destination: "/blackout-roller-shades", permanent: true },
@@ -129,28 +129,44 @@ const nextConfig: NextConfig = {
       // Shopify article slugs we know existed. Each maps to the closest
       // /blog/* article we currently have, or to a closely related landing.
 
-      // Triangle / trapezoid / specialty shapes
-      // (No /specialty-shapes/[shape] pages built yet - that's Week 2 work.
-      // For now we redirect to the arched-window blog post as the closest
-      // topical match. When shape pages launch, update these destinations.)
+      // Triangle / trapezoid — these now route directly to the dedicated
+      // shape pages built in Week 2 (Session 1+2). Previously they were placeholders
+      // pointing to /blog/arched-window-shade-solutions. The dedicated pages
+      // give Google a shape-specific destination that matches the article's
+      // original commercial intent ("shades for triangle/trapezoid windows").
       {
         source: "/blogs/news/top-custom-shades-for-trapezoid-windows-enhance-your-space",
-        destination: "/blog/arched-window-shade-solutions",
+        destination: "/specialty-shapes/trapezoid",
         permanent: true,
       },
       {
         source: "/blogs/news/the-complete-guide-to-angled-window-shades-solutions-for-triangular-windows",
-        destination: "/blog/arched-window-shade-solutions",
+        destination: "/specialty-shapes/triangle",
         permanent: true,
       },
       {
         source: "/blogs/news/triangle-window-shades-custom-solutions-for-unique-shaped-windows",
-        destination: "/blog/arched-window-shade-solutions",
+        destination: "/specialty-shapes/triangle",
         permanent: true,
       },
       {
         source: "/blogs/news/best-window-shades-for-triangle-windows-find-your-perfect-fit",
-        destination: "/blog/arched-window-shade-solutions",
+        destination: "/specialty-shapes/triangle",
+        permanent: true,
+      },
+
+      // Cathedral / sloped ceiling — trapezoid windows are the dominant shape
+      // in cathedral / sloped-ceiling configurations. Route these to the
+      // trapezoid shape page rather than the floor-to-ceiling windows blog
+      // since the article intent is solving an architectural shape problem.
+      {
+        source: "/blogs/news/cathedral-ceiling-window-treatments-custom-shades-curtains-amp-smart-options",
+        destination: "/specialty-shapes/trapezoid",
+        permanent: true,
+      },
+      {
+        source: "/blogs/news/window-treatments-sloped-ceiling-custom-shade-ideas-amp-solutions",
+        destination: "/specialty-shapes/trapezoid",
         permanent: true,
       },
 
@@ -163,18 +179,6 @@ const nextConfig: NextConfig = {
       {
         source: "/blogs/news/top-picks-for-the-best-skylight-shades-light-control-style",
         destination: "/blog/skylight-shades-guide",
-        permanent: true,
-      },
-
-      // Cathedral / sloped ceiling
-      {
-        source: "/blogs/news/cathedral-ceiling-window-treatments-custom-shades-curtains-amp-smart-options",
-        destination: "/blog/shades-for-floor-to-ceiling-windows",
-        permanent: true,
-      },
-      {
-        source: "/blogs/news/window-treatments-sloped-ceiling-custom-shade-ideas-amp-solutions",
-        destination: "/blog/shades-for-floor-to-ceiling-windows",
         permanent: true,
       },
 
