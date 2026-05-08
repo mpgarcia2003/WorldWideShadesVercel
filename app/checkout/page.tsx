@@ -12,29 +12,16 @@ const stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY!
 // ---------------------------------------------------------------------------
 // Promo Codes
 // ---------------------------------------------------------------------------
-interface PromoCode {
-  code: string;
-  type: "percent" | "flat";
-  value: number; // percent (10 = 10%) or flat dollar amount
-  minOrder: number;
-  label: string;
-  active: boolean;
-}
+// Validation is performed server-side at /api/promo/validate. Code list is no
+// longer present in the client bundle (was a security/revenue leak: attackers
+// could read all codes via DevTools and bypass minOrder/first-order rules by
+// editing JS). See app/api/promo/validate/route.ts for current rules.
 
-const PROMO_CODES: PromoCode[] = [
-  { code: "COMEBACK10", type: "percent", value: 10, minOrder: 0, label: "10% Off — Welcome Back", active: true },
-  { code: "SHADE10", type: "flat", value: 50, minOrder: 100, label: "$50 Off", active: true },
-  { code: "SAVE15", type: "percent", value: 15, minOrder: 300, label: "15% Off", active: true },
-  { code: "FIRST20", type: "percent", value: 20, minOrder: 200, label: "20% Off — First Order", active: true },
-];
-
-function validatePromo(code: string, subtotal: number): { valid: boolean; promo?: PromoCode; discount?: number; error?: string } {
-  if (!code.trim()) return { valid: false, error: "Enter a promo code" };
-  const promo = PROMO_CODES.find((p) => p.code.toUpperCase() === code.trim().toUpperCase() && p.active);
-  if (!promo) return { valid: false, error: "Invalid promo code" };
-  if (subtotal < promo.minOrder) return { valid: false, error: `Minimum order ${promo.minOrder} required` };
-  const discount = promo.type === "percent" ? subtotal * (promo.value / 100) : promo.value;
-  return { valid: true, promo, discount: Math.min(discount, subtotal) };
+interface PromoValidateResponse {
+  valid: boolean;
+  discount?: number;
+  label?: string;
+  error?: string;
 }
 
 // ---------------------------------------------------------------------------
@@ -240,6 +227,13 @@ function StripePaymentForm({
       <PaymentElement
         options={{
           layout: "tabs",
+          // Collect billing address inside Stripe's PaymentElement so we don't
+          // have to maintain a custom form for it. "auto" hides the section
+          // when the selected payment method already provides billing details
+          // (e.g. Apple Pay/Google Pay), and shows it for cards. Stripe runs AVS
+          // checks against this address — critical for cards registered to a
+          // different address than shipping.
+          fields: { billingDetails: { address: "auto" } },
           defaultValues: { billingDetails: { address: { country: "US" } } },
         }}
       />
@@ -395,6 +389,7 @@ function OrderSummary({
   promoDiscount,
   promoLabel,
   promoError,
+  promoLoading,
   onApplyPromo,
 }: {
   cart: CartItem[];
@@ -405,6 +400,7 @@ function OrderSummary({
   promoDiscount: number;
   promoLabel: string;
   promoError: string;
+  promoLoading: boolean;
   onApplyPromo: () => void;
 }) {
   const subtotal = cart.reduce((sum, item) => sum + item.totalPrice, 0);
@@ -488,9 +484,11 @@ function OrderSummary({
               />
               <button
                 onClick={onApplyPromo}
-                style={{ padding: "0.5rem 1rem", backgroundColor: promoApplied ? "#d1fae5" : "#0c0c0c", color: promoApplied ? "#065f46" : "#fff", border: "none", borderRadius: "0.375rem", fontSize: "0.8125rem", fontWeight: 600, cursor: "pointer", whiteSpace: "nowrap" }}
+                disabled={promoLoading}
+                aria-busy={promoLoading}
+                style={{ padding: "0.5rem 1rem", backgroundColor: promoApplied ? "#d1fae5" : "#0c0c0c", color: promoApplied ? "#065f46" : "#fff", border: "none", borderRadius: "0.375rem", fontSize: "0.8125rem", fontWeight: 600, cursor: promoLoading ? "wait" : "pointer", whiteSpace: "nowrap", opacity: promoLoading ? 0.7 : 1 }}
               >
-                {promoApplied ? "✓ Applied" : "Apply"}
+                {promoLoading ? "Checking…" : promoApplied ? "✓ Applied" : "Apply"}
               </button>
             </div>
             {promoError && !promoApplied && (
@@ -625,8 +623,12 @@ export default function CheckoutPage() {
   const [city, setCity] = useState("");
   const [state, setState] = useState("");
   const [zip, setZip] = useState("");
-  const [useBillingAddress, setUseBillingAddress] = useState(true);
-  const [showBillingAddress, setShowBillingAddress] = useState(false);
+  // NOTE: Billing address is now collected by Stripe's <PaymentElement>
+  // (see fields.billingDetails.address: "auto" in StripePaymentForm).
+  // The previous "Use as billing address" checkbox + custom billing form was
+  // removed because its inputs were never wired to state — any data the user
+  // typed was silently dropped, causing AVS failures on cards registered to a
+  // different address than shipping.
 
   // UI state
   const [orderSummaryOpen, setOrderSummaryOpen] = useState(false);
@@ -635,6 +637,7 @@ export default function CheckoutPage() {
   const [promoDiscount, setPromoDiscount] = useState(0);
   const [promoLabel, setPromoLabel] = useState("");
   const [promoError, setPromoError] = useState("");
+  const [promoLoading, setPromoLoading] = useState(false);
   const [isProcessing, setIsProcessing] = useState(false);
   const [clientSecret, setClientSecret] = useState<string | null>(null);
   const [stripeError, setStripeError] = useState("");
@@ -759,23 +762,44 @@ export default function CheckoutPage() {
   const _retailTotal = isSaleActive() ? cart.reduce((sum, item) => sum + (item.totalPrice / (1 - _salePercent / 100)), 0) : subtotal;
   const _saleSavings = _retailTotal - subtotal;
 
-  function handleUseBillingChange(checked: boolean) {
-    setUseBillingAddress(checked);
-    setShowBillingAddress(!checked);
-  }
+  async function handleApplyPromo() {
+    if (promoLoading) return;
+    setPromoLoading(true);
+    setPromoError("");
 
-  function handleApplyPromo() {
-    const result = validatePromo(promoCode, subtotal);
-    if (result.valid && result.promo && result.discount !== undefined) {
-      setPromoApplied(true);
-      setPromoDiscount(result.discount);
-      setPromoLabel(result.promo.label);
-      setPromoError("");
-    } else {
+    try {
+      const res = await fetch("/api/promo/validate", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          code: promoCode,
+          subtotal,
+          email: email || undefined, // server uses this for first-order checks
+        }),
+      });
+      const data: PromoValidateResponse = await res.json();
+
+      if (data.valid && typeof data.discount === "number") {
+        setPromoApplied(true);
+        setPromoDiscount(data.discount);
+        setPromoLabel(data.label || "");
+        setPromoError("");
+      } else {
+        setPromoApplied(false);
+        setPromoDiscount(0);
+        setPromoLabel("");
+        setPromoError(data.error || "Invalid code");
+      }
+    } catch (err) {
+      // Network or parse error — surface a generic message rather than silently
+      // fail. Failing closed (no discount applied) is the safe default.
+      console.error("[Promo] validate request failed:", err);
       setPromoApplied(false);
       setPromoDiscount(0);
       setPromoLabel("");
-      setPromoError(result.error || "Invalid code");
+      setPromoError("Could not validate code. Please try again.");
+    } finally {
+      setPromoLoading(false);
     }
   }
 
@@ -829,7 +853,7 @@ export default function CheckoutPage() {
             </div>
           </button>
           <div className="mobile-summary-content" style={{ display: orderSummaryOpen ? "block" : "none", marginBottom: "1.5rem" }}>
-            <OrderSummary cart={cart} promoCode={promoCode} setPromoCode={setPromoCode} promoApplied={promoApplied} setPromoApplied={setPromoApplied} promoDiscount={promoDiscount} promoLabel={promoLabel} promoError={promoError} onApplyPromo={handleApplyPromo} />
+            <OrderSummary cart={cart} promoCode={promoCode} setPromoCode={setPromoCode} promoApplied={promoApplied} setPromoApplied={setPromoApplied} promoDiscount={promoDiscount} promoLabel={promoLabel} promoError={promoError} promoLoading={promoLoading} onApplyPromo={handleApplyPromo} />
           </div>
         </div>
 
@@ -897,28 +921,9 @@ export default function CheckoutPage() {
                     <input id="zip" type="text" className="checkout-input" placeholder="10001" value={zip} onChange={(e) => setZip(e.target.value)} autoComplete="postal-code" maxLength={10} />
                   </div>
                 </div>
-                <label style={{ display: "flex", alignItems: "center", gap: "0.625rem", cursor: "pointer", fontSize: "0.875rem", color: "#374151" }}>
-                  <input type="checkbox" checked={useBillingAddress} onChange={(e) => handleUseBillingChange(e.target.checked)} style={{ width: "1rem", height: "1rem", accentColor: "#c8a165" }} />
-                  Use as billing address
-                </label>
+                {/* Billing address is collected inside Stripe's PaymentElement
+                    below — no custom UI needed. Removed buggy checkbox + form. */}
               </div>
-              {showBillingAddress && (
-                <div style={{ marginTop: "1rem", paddingTop: "1rem", borderTop: "1px solid #f0ebe3" }}>
-                  <h3 style={{ fontSize: "0.9375rem", fontWeight: 600, color: "#0c0c0c", marginBottom: "0.875rem" }}>Billing Address</h3>
-                  <div style={{ display: "grid", gap: "0.875rem" }}>
-                    <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "0.75rem" }}>
-                      <div><label className="checkout-label">First name</label><input type="text" className="checkout-input" placeholder="Jane" autoComplete="billing given-name" /></div>
-                      <div><label className="checkout-label">Last name</label><input type="text" className="checkout-input" placeholder="Smith" autoComplete="billing family-name" /></div>
-                    </div>
-                    <div><label className="checkout-label">Address</label><input type="text" className="checkout-input" placeholder="123 Main Street" autoComplete="billing address-line1" /></div>
-                    <div style={{ display: "grid", gridTemplateColumns: "2fr 1.5fr 1.5fr", gap: "0.75rem" }}>
-                      <div><label className="checkout-label">City</label><input type="text" className="checkout-input" placeholder="New York" /></div>
-                      <div><label className="checkout-label">State</label><input type="text" className="checkout-input" placeholder="NY" maxLength={2} /></div>
-                      <div><label className="checkout-label">ZIP</label><input type="text" className="checkout-input" placeholder="10001" maxLength={10} /></div>
-                    </div>
-                  </div>
-                </div>
-              )}
             </div>
 
             {/* Stripe Payment — card, Apple Pay, Google Pay */}
@@ -988,7 +993,7 @@ export default function CheckoutPage() {
           {/* RIGHT COLUMN (desktop only) */}
           <div className="desktop-order-summary-col">
             <div style={{ position: "sticky", top: "1.5rem" }}>
-              <OrderSummary cart={cart} promoCode={promoCode} setPromoCode={setPromoCode} promoApplied={promoApplied} setPromoApplied={setPromoApplied} promoDiscount={promoDiscount} promoLabel={promoLabel} promoError={promoError} onApplyPromo={handleApplyPromo} />
+              <OrderSummary cart={cart} promoCode={promoCode} setPromoCode={setPromoCode} promoApplied={promoApplied} setPromoApplied={setPromoApplied} promoDiscount={promoDiscount} promoLabel={promoLabel} promoError={promoError} promoLoading={promoLoading} onApplyPromo={handleApplyPromo} />
             </div>
           </div>
         </div>
