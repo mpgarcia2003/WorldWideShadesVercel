@@ -205,27 +205,51 @@ export default function ThankYouPage() {
     const loaded = loadOrder();
     setOrder(loaded);
 
-    // Backup purchase event — fires ONLY if checkout didn't already track it
-    // Covers: 3DS redirects, slow network, ad blocker killed GTM mid-fire
+    // Backup purchase event — fires ONLY if checkout didn't already track it.
+    // Covers: 3DS redirects, slow network, ad blocker killed GTM mid-fire.
+    //
+    // GUARD: We only fire if we have a valid Stripe PaymentIntent ID (pi_xxx).
+    // Previously this fell back to the WWS order number (e.g. WWS-20260508-0001)
+    // as transaction_id, which would diverge from the webhook-fired event
+    // (which uses pi_xxx). GA4 dedupes by transaction_id — a mismatch causes
+    // GA4 to count the same purchase twice, inflating reported revenue.
+    // Falling back to the order number is NEVER correct: webhook is authoritative.
     if (loaded.total > 0 && loaded.number !== defaultOrder.number) {
       const alreadyTracked = sessionStorage.getItem('wws_purchase_tracked');
       if (!alreadyTracked) {
-        const stripePI = (typeof window !== 'undefined' && localStorage.getItem('wws_last_order'))
-          ? JSON.parse(localStorage.getItem('wws_last_order')!).stripe_payment_intent_id || loaded.number
-          : loaded.number;
-        trackPurchase(
-          stripePI,
-          loaded.total,
-          loaded.items.map((i: any) => ({
-            item_id: i.fabric || 'shade',
-            item_name: i.name || 'Custom Roller Shade',
-            item_category: i.name || 'Roller Shade',
-            price: i.price || 0,
-            quantity: i.qty || 1,
-          })),
-          { tax: loaded.tax, shipping: loaded.shipping, discount: loaded.discount }
-        );
-        sessionStorage.setItem('wws_purchase_tracked', 'true');
+        let stripePI: string | null = null;
+        try {
+          const raw = typeof window !== 'undefined' ? localStorage.getItem('wws_last_order') : null;
+          if (raw) {
+            const parsed = JSON.parse(raw);
+            if (typeof parsed?.stripe_payment_intent_id === 'string' && parsed.stripe_payment_intent_id.startsWith('pi_')) {
+              stripePI = parsed.stripe_payment_intent_id;
+            }
+          }
+        } catch {
+          // localStorage parse failure — fall through to skip tracking
+        }
+
+        if (stripePI) {
+          trackPurchase(
+            stripePI,
+            loaded.total,
+            loaded.items.map((i: any) => ({
+              item_id: i.fabric || 'shade',
+              item_name: i.name || 'Custom Roller Shade',
+              item_category: i.name || 'Roller Shade',
+              price: i.price || 0,
+              quantity: i.qty || 1,
+            })),
+            { tax: loaded.tax, shipping: loaded.shipping, discount: loaded.discount }
+          );
+          sessionStorage.setItem('wws_purchase_tracked', 'true');
+        } else {
+          // Skip backup tracking entirely. The Stripe webhook will fire the
+          // server-side purchase with the correct pi_xxx — our backup is not
+          // needed and using the wrong ID would corrupt GA4 dedup.
+          console.warn('[Order Confirmation] Skipped backup purchase tracking: no stripe_payment_intent_id (pi_xxx) available. Webhook will handle GA4 attribution.');
+        }
       }
     }
   }, []);

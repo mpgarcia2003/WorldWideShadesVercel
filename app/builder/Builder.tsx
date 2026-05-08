@@ -11,19 +11,19 @@ const getEstimatedDelivery = () => {
   }
   return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
 };
-import Visualizer from '../components/Visualizer';
-import Stepper from '../components/Stepper';
-import StickyBottomBar from '../components/StickyBottomBar';
-import BuilderRightRail from '../components/BuilderRightRail';
-import MobileStepGuide from '../components/MobileStepGuide';
-import { ShadeConfig, Fabric, WindowSelection, CartItem, RoomAnalysis, ShapeType } from '../types';
-import { DEFAULT_ROOM_IMAGE, getGridPrice, SHAPE_CONFIGS, VALANCE_OPTIONS, SIDE_CHANNEL_OPTIONS, STEPS, getFabricUrl, isSaleActive, getSalePrice, getSaleShadePrice, getSaleAccessoryPrice, SALE_CONFIG, MOTOR_PRICES, applyMarkup, FREIGHT_CHARGE, FREIGHT_WIDTH_THRESHOLD } from '../constants';
-import { getDynamicFabrics, saveSwatchRequest, saveQuoteConfig, loadQuoteConfig } from '../utils/storage';
-import { notifyAdminSwatchRequest, notifyAdminExitIntent, sendCustomerQuoteEmail } from '../utils/email';
-import { useLanguage } from '../LanguageContext';
-import { trackEvent } from '../utils/analytics';
-import { builderHooks } from '../services/analytics';
-import { bhStepComplete, bhStepStart } from '../lib/tracking/behavior';
+import Visualizer from '@/components/Visualizer';
+import Stepper from '@/components/Stepper';
+import StickyBottomBar from '@/components/StickyBottomBar';
+import BuilderRightRail from '@/components/BuilderRightRail';
+import MobileStepGuide from '@/components/MobileStepGuide';
+import { ShadeConfig, Fabric, WindowSelection, CartItem, RoomAnalysis, ShapeType } from '@/types';
+import { DEFAULT_ROOM_IMAGE, getGridPrice, SHAPE_CONFIGS, VALANCE_OPTIONS, SIDE_CHANNEL_OPTIONS, STEPS, getFabricUrl, isSaleActive, getSalePrice, getSaleShadePrice, getSaleAccessoryPrice, SALE_CONFIG, MOTOR_PRICES, applyMarkup, FREIGHT_CHARGE, FREIGHT_WIDTH_THRESHOLD } from '@/constants';
+import { getDynamicFabrics, saveSwatchRequest, saveQuoteConfig, loadQuoteConfig } from '@/utils/storage';
+import { notifyAdminSwatchRequest, notifyAdminExitIntent, sendCustomerQuoteEmail } from '@/utils/email';
+import { useLanguage } from '@/LanguageContext';
+import { trackEvent } from '@/utils/analytics';
+import { builderHooks } from '@/services/analytics';
+import { bhStepComplete, bhStepStart } from '@/lib/tracking/behavior';
 
 interface BuilderProps {
   addToCart: (item: CartItem) => void;

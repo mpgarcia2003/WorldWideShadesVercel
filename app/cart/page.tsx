@@ -100,12 +100,13 @@ export default function CartPage() {
 
   return (
     <div className="min-h-screen bg-cream">
-      {/* Header */}
-      <header className="bg-white border-b border-cream-dark">
-        <div className="max-w-5xl mx-auto px-4 sm:px-6 py-4 flex items-center justify-between">
-          <Link href="/" className="font-serif text-xl font-bold text-dark">
-            World Wide <span className="text-gold">Shades</span>
-          </Link>
+      {/* Cart sub-header: lives BELOW the global SiteHeader (rendered by ShellWrapper).
+          Previously this page rendered its own <header> with a duplicate "World Wide Shades"
+          logo — customers saw two stacked logos at the top of /cart. Removed in favor of
+          a slim sub-bar that just shows item count and "add more" affordance, since the
+          global header already provides logo, nav, and cart icon. */}
+      <div className="bg-white border-b border-cream-dark">
+        <div className="max-w-5xl mx-auto px-4 sm:px-6 py-3 flex items-center justify-between">
           <h1 className="font-sans text-sm font-semibold text-dark uppercase tracking-wider">
             Your Cart ({cart.length})
           </h1>
@@ -113,7 +114,7 @@ export default function CartPage() {
             + Add More
           </Link>
         </div>
-      </header>
+      </div>
 
       <main className="max-w-5xl mx-auto px-4 sm:px-6 py-8">
         {cart.length === 0 ? (
