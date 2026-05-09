@@ -21,7 +21,7 @@ export const TRAPEZOID_DATA: ShapeData = {
   shapeNamePlural: "Trapezoids",
 
   meta: {
-    title: "Custom Trapezoid Window Shades — From $1,950 | World Wide Shades",
+    title: "Custom Trapezoid Window Shades — From $1,950",
     description:
       "Custom shades for trapezoid windows. The angled-top windows in cathedral ceilings, A-frames, and lofts. Proprietary precision cutting, 700+ fabrics, made in USA.",
     ogImage:

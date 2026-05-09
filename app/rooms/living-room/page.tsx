@@ -20,7 +20,7 @@ import { SITE } from "@/lib/constants"
 const SITE_URL = `https://${SITE.domain}`
 
 export const metadata: Metadata = {
-  title: "Custom Shades for Living Rooms | Light Filtering & Blackout — World Wide Shades",
+  title: "Custom Shades for Living Rooms | Light Filtering & Blackout",
   description:
     "Custom living room shades in 700+ fabrics. Light filtering for soft glow, blackout for movie nights. Factory-direct from $250. Ships in 7 days. Made in USA.",
   openGraph: {

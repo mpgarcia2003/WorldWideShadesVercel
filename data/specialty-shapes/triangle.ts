@@ -20,7 +20,7 @@ export const TRIANGLE_DATA: ShapeData = {
   shapeNamePlural: "Triangles",
 
   meta: {
-    title: "Custom Triangle Window Shades — From $1,950 | World Wide Shades",
+    title: "Custom Triangle Window Shades — From $1,950",
     description:
       "Custom shades for triangle windows. A-frames, gable peaks, vaulted ceilings — the windows other companies refuse. Proprietary precision cutting, 700+ fabrics.",
     ogImage:

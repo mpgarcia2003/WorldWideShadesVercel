@@ -23,7 +23,7 @@ export const PENTAGON_DATA: ShapeData = {
   shapeNamePlural: "Pentagons",
 
   meta: {
-    title: "Custom Pentagon Window Shades — From $1,950 | World Wide Shades",
+    title: "Custom Pentagon Window Shades — From $1,950",
     description:
       "Custom shades for pentagon windows. The 5-sided windows other companies refuse. Proprietary precision cutting, 700+ fabrics, made in USA. Ships in 7–10 days.",
     ogImage:

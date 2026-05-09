@@ -20,7 +20,7 @@ import { SITE } from "@/lib/constants"
 const SITE_URL = `https://${SITE.domain}`
 
 export const metadata: Metadata = {
-  title: "Motorized Roller Shades | Voice Control, Smart Home — World Wide Shades",
+  title: "Motorized Roller Shades | Voice Control, Smart Home",
   description:
     "Upgrade any custom shade to motorized. Works with Alexa, Google Home, Apple HomeKit. Rechargeable battery, no wiring. From +$250. Ships in 7 days. Made in USA.",
   openGraph: {

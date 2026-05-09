@@ -20,7 +20,7 @@ import { SITE } from "@/lib/constants"
 const SITE_URL = `https://${SITE.domain}`
 
 export const metadata: Metadata = {
-  title: "Custom Shades for Bathrooms | Privacy + Moisture Resistant — World Wide Shades",
+  title: "Custom Shades for Bathrooms | Privacy + Moisture Resistant",
   description: "Custom bathroom shades with moisture-resistant fabrics. Complete privacy without sacrificing light. Custom-fit from $250. Free shipping. Made in USA.",
   openGraph: {
     title: "Custom Shades for Bathrooms | World Wide Shades",

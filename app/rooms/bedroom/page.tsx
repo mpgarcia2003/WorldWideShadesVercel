@@ -27,7 +27,7 @@ import { SITE } from "@/lib/constants"
 const SITE_URL = `https://${SITE.domain}`
 
 export const metadata: Metadata = {
-  title: "Blackout Shades for Bedrooms | Sleep in Complete Darkness — World Wide Shades",
+  title: "Blackout Shades for Bedrooms | Sleep in Complete Darkness",
   description:
     "Custom blackout shades for bedrooms. 100% light blocking, custom-fit to your exact windows. 200+ fabrics from $250. Motorized option available. Ships in 7 days.",
   openGraph: {

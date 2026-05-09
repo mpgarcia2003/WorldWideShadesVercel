@@ -20,7 +20,7 @@ export const SKYLIGHT_DATA: ShapeData = {
   shapeNamePlural: "Skylights",
 
   meta: {
-    title: "Custom Skylight Shades — Overhead, Angled, Motorized | World Wide Shades",
+    title: "Custom Skylight Shades — Overhead, Angled, Motorized",
     description:
       "Custom shades for skylight windows. Overhead, angled, tension-mounted, track-guided, and motorized configurations. 700+ fabrics, made in USA, ships in 7–10 days.",
     ogImage:

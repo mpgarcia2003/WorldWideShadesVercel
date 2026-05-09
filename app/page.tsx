@@ -19,7 +19,7 @@ import { SITE } from "@/lib/constants"
 const SITE_URL = `https://${SITE.domain}`
 
 export const metadata: Metadata = {
-  title: "Custom Roller Shades | AI-Powered Shade Builder — World Wide Shades",
+  title: "Custom Roller Shades | AI-Powered Shade Builder",
   description:
     "Design custom roller shades with our AI-powered builder. 700+ premium fabrics, blackout & light filtering, specialty shapes. Factory-direct from $153. Free shipping. Made in USA.",
   openGraph: {

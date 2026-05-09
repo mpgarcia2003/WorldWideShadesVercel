@@ -27,7 +27,7 @@ import { SITE } from "@/lib/constants"
 const SITE_URL = `https://${SITE.domain}`
 
 export const metadata: Metadata = {
-  title: "Custom Shades for Home Offices | Reduce Glare, Boost Focus — World Wide Shades",
+  title: "Custom Shades for Home Offices | Reduce Glare, Boost Focus",
   description:
     "Custom home office shades that eliminate screen glare and reduce eye strain. Light filtering for soft focus, motorized for convenience. From $250. Ships in 7 days.",
   openGraph: {

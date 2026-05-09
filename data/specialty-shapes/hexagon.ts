@@ -19,7 +19,7 @@ export const HEXAGON_DATA: ShapeData = {
   shapeNamePlural: "Hexagons",
 
   meta: {
-    title: "Custom Hexagon Window Shades — From $1,950 | World Wide Shades",
+    title: "Custom Hexagon Window Shades — From $1,950",
     description:
       "Custom shades for hexagon and flat-top hexagon windows. The 6-sided windows other companies refuse. Proprietary precision cutting, 700+ fabrics, made in USA.",
     ogImage:

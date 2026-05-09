@@ -26,7 +26,7 @@ import { SITE } from "@/lib/constants"
 const SITE_URL = `https://${SITE.domain}`
 
 export const metadata: Metadata = {
-  title: "Specialty Shape Window Shades | Triangle, Trapezoid, Hexagon — World Wide Shades",
+  title: "Specialty Shape Window Shades | Triangle, Trapezoid, Hexagon, Pentagon, Arch",
   description:
     "Custom shades for triangle, trapezoid, hexagon, pentagon, arch, and skylight windows. The windows other companies can't cover. From $1,950. Made in USA, ships in 7-10 days.",
   openGraph: {

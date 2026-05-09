@@ -20,7 +20,7 @@ import { SITE } from "@/lib/constants"
 const SITE_URL = `https://${SITE.domain}`
 
 export const metadata: Metadata = {
-  title: "Blackout Shades for Nurseries | Cordless, OEKO-TEX Safe — World Wide Shades",
+  title: "Blackout Shades for Nurseries | Cordless, OEKO-TEX Safe",
   description:
     "Custom blackout shades designed for nurseries. 100% light blocking, cordless for child safety, OEKO-TEX certified fabrics. Better sleep for baby, better everything for you.",
   openGraph: {

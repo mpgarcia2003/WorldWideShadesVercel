@@ -23,7 +23,7 @@ import { SITE } from "@/lib/constants"
 const SITE_URL = `https://${SITE.domain}`
 
 export const metadata: Metadata = {
-  title: "Custom Light Filtering Roller Shades | Soft Natural Light, Ships 7 Days — World Wide Shades",
+  title: "Custom Light Filtering Roller Shades | Soft Natural Light, Ships 7 Days",
   description:
     "Custom light filtering roller shades that soften harsh sunlight without blocking your view. 479 premium fabrics, factory-direct from $250, 100% fit guarantee. Made in USA, ships in 7 days.",
   openGraph: {

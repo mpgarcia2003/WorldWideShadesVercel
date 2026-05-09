@@ -23,7 +23,7 @@ const SITE_URL = `https://${SITE.domain}`;
 
 // ── Metadata (server-rendered in <head>) ──
 export const metadata: Metadata = {
-  title: "Custom Blackout Roller Shades | Up to 50% Off | World Wide Shades",
+  title: "Custom Blackout Roller Shades | Up to 50% Off",
   description:
     "100% light-blocking blackout roller shades, custom-built to your exact window. 200+ fabrics, factory-direct from $145. Ships in ~7 days. Free shipping. Made in USA.",
   openGraph: {
