@@ -1,10 +1,32 @@
 -- ============================================================================
 -- World Wide Shades — Supabase Schema
--- Run this in Supabase SQL Editor to create all tables
--- Project: tptisikpbmqvllfhjdch
+-- Project: tptisikpbmqvllfhjdch ("WWS-Orders")
+-- Last verified against production: 2026-05-09
+-- ============================================================================
+--
+-- IMPORTANT: This file used to lie. Prior to 2026-05-09 it claimed schemas
+-- that didn't actually exist in production, which caused a multi-day silent
+-- order-loss incident (route.ts INSERTed columns that weren't in production:
+-- `freight_charge`, `freight_shipping`, `cassette_fabric_insert`).
+--
+-- Going forward, this file is the documented mirror of production. If you
+-- need to add a column, EITHER:
+--   (a) Run the ALTER TABLE in Supabase first, then update this file, OR
+--   (b) Update this file, run it as a migration in Supabase, then ship code
+-- The two must NEVER drift again. Use `lib/supabase/verify-schema.sql` (TBD)
+-- in CI to catch drift if you want to harden this further.
+--
+-- This file represents the orders/order_items tables as fully verified
+-- against the production information_schema. Other tables (customers,
+-- order_status_history, purchase_events, abandoned_carts, behavior_*) are
+-- documented from code references but have NOT been re-verified column-by-
+-- column against production. If you need those exact schemas, query
+-- information_schema.columns directly.
 -- ============================================================================
 
+
 -- Customers table (linked to Supabase Auth)
+-- NOTE: not column-verified against production 2026-05-09; matches code usage.
 CREATE TABLE IF NOT EXISTS customers (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   auth_id UUID REFERENCES auth.users(id) ON DELETE CASCADE,
@@ -21,10 +43,12 @@ CREATE TABLE IF NOT EXISTS customers (
   updated_at TIMESTAMPTZ DEFAULT now()
 );
 
--- Orders table
+
+-- Orders table — VERIFIED against production 2026-05-09
+-- Column order matches information_schema ordinal_position.
 CREATE TABLE IF NOT EXISTS orders (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-  order_number TEXT UNIQUE NOT NULL, -- e.g. WWS-20260408-0001
+  order_number TEXT UNIQUE NOT NULL, -- e.g. WWS-20260509-0001
   customer_id UUID REFERENCES customers(id),
   email TEXT NOT NULL, -- for guest checkout lookup
   status TEXT NOT NULL DEFAULT 'received'
@@ -49,18 +73,23 @@ CREATE TABLE IF NOT EXISTS orders (
   tracking_url TEXT,
   estimated_delivery TEXT,
   notes TEXT,
+  created_at TIMESTAMPTZ DEFAULT now(),
+  updated_at TIMESTAMPTZ DEFAULT now(),
   sale_savings NUMERIC(10,2) DEFAULT 0,
   retail_total NUMERIC(10,2) DEFAULT 0,
   sale_percent NUMERIC(5,2) DEFAULT 0,
-  created_at TIMESTAMPTZ DEFAULT now(),
-  updated_at TIMESTAMPTZ DEFAULT now()
+  phone TEXT,
+  cost NUMERIC(10,2) DEFAULT 0,             -- internal: cost of goods (admin entry)
+  shipping_cost NUMERIC(10,2) DEFAULT 0,    -- internal: actual freight paid
+  freight_charge NUMERIC(10,2) DEFAULT 0    -- ADDED 2026-05-09 (oversize freight surcharge passed to customer)
 );
 
--- Order line items
+
+-- Order line items — VERIFIED against production 2026-05-09
 CREATE TABLE IF NOT EXISTS order_items (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   order_id UUID REFERENCES orders(id) ON DELETE CASCADE,
-  shade_type TEXT NOT NULL, -- 'Blackout', 'Light Filtering'
+  shade_type TEXT NOT NULL,                 -- 'Blackout', 'Light Filtering', 'Custom Roller Shade', etc.
   shape TEXT NOT NULL DEFAULT 'Standard',
   fabric_name TEXT,
   fabric_id TEXT,
@@ -68,10 +97,10 @@ CREATE TABLE IF NOT EXISTS order_items (
   width_fraction TEXT,
   height NUMERIC(6,2),
   height_fraction TEXT,
-  custom_dims JSONB, -- for specialty shapes
+  custom_dims JSONB,                        -- specialty shapes
   mount_type TEXT,
   control_type TEXT,
-  motor_power TEXT, -- 'Rechargeable', 'Hardwired'
+  motor_power TEXT,                         -- 'Rechargeable', 'Hardwired'
   roll_type TEXT,
   bottom_bar TEXT,
   valance_type TEXT,
@@ -83,11 +112,15 @@ CREATE TABLE IF NOT EXISTS order_items (
   quantity INTEGER DEFAULT 1,
   unit_price NUMERIC(10,2) NOT NULL,
   total_price NUMERIC(10,2) NOT NULL,
-  visualizer_image TEXT, -- base64 or Cloudinary URL
-  created_at TIMESTAMPTZ DEFAULT now()
+  visualizer_image TEXT,                    -- base64 or Cloudinary URL
+  created_at TIMESTAMPTZ DEFAULT now(),
+  cassette_fabric_insert BOOLEAN DEFAULT false,  -- ADDED 2026-05-09
+  freight_shipping BOOLEAN DEFAULT false         -- ADDED 2026-05-09 (per-item oversize flag)
 );
 
--- Order status history (for timeline tracking)
+
+-- Order status history (timeline tracking)
+-- NOTE: not column-verified against production 2026-05-09; matches code usage.
 CREATE TABLE IF NOT EXISTS order_status_history (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   order_id UUID REFERENCES orders(id) ON DELETE CASCADE,
@@ -96,7 +129,9 @@ CREATE TABLE IF NOT EXISTS order_status_history (
   created_at TIMESTAMPTZ DEFAULT now()
 );
 
--- Purchase dedup table (prevents double purchase events)
+
+-- Purchase dedup table (prevents double GA4 purchase events)
+-- NOTE: not column-verified against production 2026-05-09; matches code usage.
 CREATE TABLE IF NOT EXISTS purchase_events (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   order_id UUID REFERENCES orders(id),
@@ -105,12 +140,15 @@ CREATE TABLE IF NOT EXISTS purchase_events (
   created_at TIMESTAMPTZ DEFAULT now()
 );
 
+
 -- Indexes
 CREATE INDEX IF NOT EXISTS idx_orders_email ON orders(email);
 CREATE INDEX IF NOT EXISTS idx_orders_order_number ON orders(order_number);
 CREATE INDEX IF NOT EXISTS idx_orders_customer ON orders(customer_id);
+CREATE INDEX IF NOT EXISTS idx_orders_stripe_pi ON orders(stripe_payment_intent_id); -- ADDED 2026-05-09 for webhook idempotency lookups (planned)
 CREATE INDEX IF NOT EXISTS idx_order_items_order ON order_items(order_id);
 CREATE INDEX IF NOT EXISTS idx_order_status_history_order ON order_status_history(order_id);
+
 
 -- RLS policies
 ALTER TABLE customers ENABLE ROW LEVEL SECURITY;
@@ -130,11 +168,11 @@ CREATE POLICY "Users can view own orders" ON orders
 CREATE POLICY "Users can view own order items" ON order_items
   FOR SELECT USING (order_id IN (SELECT id FROM orders WHERE customer_id IN (SELECT id FROM customers WHERE auth_id = auth.uid())));
 
--- Status history visible if parent order is visible  
+-- Status history visible if parent order is visible
 CREATE POLICY "Users can view own order status history" ON order_status_history
   FOR SELECT USING (order_id IN (SELECT id FROM orders WHERE customer_id IN (SELECT id FROM customers WHERE auth_id = auth.uid())));
 
--- Service role bypass (for admin API routes)
+-- Service role bypass (for admin API routes that use SUPABASE_SERVICE_ROLE_KEY)
 CREATE POLICY "Service role full access customers" ON customers FOR ALL USING (auth.role() = 'service_role');
 CREATE POLICY "Service role full access orders" ON orders FOR ALL USING (auth.role() = 'service_role');
 CREATE POLICY "Service role full access order_items" ON order_items FOR ALL USING (auth.role() = 'service_role');

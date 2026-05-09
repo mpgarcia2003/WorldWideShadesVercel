@@ -1,3 +1,32 @@
+/**
+ * /api/orders — order creation + admin listing
+ * ──────────────────────────────────────────────────────────────────────────
+ * SCHEMA DEPENDENCY: This route INSERTs into `orders` and `order_items` in
+ * the production Supabase project (`tptisikpbmqvllfhjdch`). Every column
+ * referenced below MUST exist in production with matching type/nullability,
+ * or the INSERT will return 400 and this endpoint will respond 500.
+ *
+ * The 2026-05-09 incident — silently dropped orders for ~6 days — was caused
+ * by `freight_charge`, `freight_shipping`, and `cassette_fabric_insert`
+ * being added to this code without a corresponding Supabase migration. The
+ * route returned 500, the browser swallowed it, customers saw a fake
+ * success screen, and the orders never saved.
+ *
+ * RULES going forward:
+ *   1. If you add a column reference here, add the matching ALTER TABLE in
+ *      Supabase BEFORE deploying.
+ *   2. `lib/supabase/schema.sql` should mirror production. If it doesn't,
+ *      production is the source of truth — update the .sql file to match.
+ *   3. NEVER silently swallow Supabase errors. Always `console.error` the
+ *      full error object before returning 5xx — Vercel logs the body of
+ *      console.error but NOT the response body of an outbound REST call,
+ *      so without explicit logging, root-causing failures takes hours.
+ *   4. The Stripe webhook (app/api/webhooks/stripe/route.ts) currently only
+ *      fires GA4 tracking — it does NOT create orders. The order creation
+ *      pipeline depends entirely on the browser's POST here succeeding. A
+ *      future hardening should move INSERTs into the webhook for delivery
+ *      guarantees (Stripe retries up to 3 days; browsers do not retry).
+ */
 import { NextRequest, NextResponse } from "next/server";
 import { createAdminClient } from "@/lib/supabase/client";
 import { sendOrderConfirmation, sendNewOrderAlert } from "@/lib/email/send";
@@ -101,7 +130,7 @@ export async function POST(req: NextRequest) {
     if (existing) {
       customerId = existing.id;
     } else {
-      const { data: newCustomer } = await supabase
+      const { data: newCustomer, error: customerError } = await supabase
         .from("customers")
         .insert({
           email: body.email,
@@ -115,7 +144,20 @@ export async function POST(req: NextRequest) {
         })
         .select("id")
         .single();
-      customerId = newCustomer?.id;
+      // Don't fail the order if the customer insert fails — orders.customer_id
+      // is nullable, so the order will still save with customer_id = null and
+      // the customer record can be backfilled later via the email field.
+      // But we log the failure so it doesn't disappear silently.
+      if (customerError) {
+        console.error("[Orders API] Customer insert failed (continuing without customer_id):", {
+          error_message: customerError.message,
+          error_code: customerError.code,
+          error_details: customerError.details,
+          email: body.email,
+          pi: piId,
+        });
+      }
+      customerId = newCustomer?.id ?? null;
     }
   }
 
@@ -153,7 +195,24 @@ export async function POST(req: NextRequest) {
     .single();
 
   if (orderError) {
-    return NextResponse.json({ error: orderError.message }, { status: 500 });
+    // Log the full Supabase error so root cause is visible in Vercel logs.
+    // The 2026-05-09 incident took an hour to diagnose because this branch
+    // returned 500 with the message in JSON but never console.error'd the
+    // error object — the actual cause ("column 'freight_charge' of relation
+    // 'orders' does not exist") was invisible in Vercel runtime logs.
+    console.error("[Orders API] Order insert failed:", {
+      error_message: orderError.message,
+      error_code: orderError.code,
+      error_details: orderError.details,
+      error_hint: orderError.hint,
+      order_number: orderNumber,
+      pi: piId,
+      body_keys: Object.keys(body),
+    });
+    return NextResponse.json(
+      { error: orderError.message, code: orderError.code, hint: orderError.hint },
+      { status: 500 }
+    );
   }
 
   // Create order items
@@ -187,7 +246,22 @@ export async function POST(req: NextRequest) {
       total_price: item.total_price,
     }));
 
-    await supabase.from("order_items").insert(items);
+    const { error: itemsError } = await supabase.from("order_items").insert(items);
+    if (itemsError) {
+      // Items insert failed but the order header is already committed. Don't
+      // return 5xx (would mislead the browser into retrying and double-billing
+      // or duplicating headers). Log loudly so the admin can manually patch
+      // the order_items rows from the body data captured here.
+      console.error("[Orders API] Order items insert failed (order header committed, items missing):", {
+        error_message: itemsError.message,
+        error_code: itemsError.code,
+        error_details: itemsError.details,
+        error_hint: itemsError.hint,
+        order_id: order.id,
+        order_number: orderNumber,
+        item_count: items.length,
+      });
+    }
   }
 
   // Initial status history entry
