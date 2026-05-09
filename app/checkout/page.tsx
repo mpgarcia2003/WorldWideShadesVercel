@@ -137,10 +137,81 @@ function StripePaymentForm({
       total
     );
 
+    // ─── STEP 1 (NEW 2026-05-09): Pre-create the pending order in DB ──
+    //
+    // Why this happens BEFORE confirmPayment:
+    //   The previous architecture put order creation INSIDE the
+    //   post-confirmPayment flow (browser-side). If Stripe required 3D
+    //   Secure step-up auth, the browser redirected to the bank's auth
+    //   page and back. The original page's JS was unloaded during the
+    //   redirect, so the "save order" code never ran. Customer was
+    //   charged, no order saved, no email sent.
+    //
+    //   By creating the pending order here (server-side, before payment),
+    //   the data is durable in the DB regardless of browser fate. The
+    //   Stripe webhook then finalizes server-to-server. See
+    //   lib/orders/finalize.ts and app/api/webhooks/stripe/route.ts.
+    //
+    // The PaymentIntent ID is the part of clientSecret before "_secret_".
+    // (Stripe doesn't expose the raw PI ID through the React Stripe SDK
+    // until confirmPayment runs, so we extract it from the clientSecret.)
+    const elementsAny = elements as any;
+    const clientSecret: string | undefined =
+      elementsAny?._commonOptions?.clientSecret?.clientSecret ||
+      elementsAny?._commonOptions?.clientSecret;
+    const piId = clientSecret ? String(clientSecret).split("_secret_")[0] : null;
+
+    if (!piId || !piId.startsWith("pi_")) {
+      console.error("[Checkout] Could not extract PaymentIntent ID from clientSecret");
+      setErrorMessage("Payment session expired. Please refresh and try again.");
+      setIsProcessing(false);
+      return;
+    }
+
+    let initOrderNumber = "";
+    try {
+      const initRes = await fetch("/api/orders/init", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          ...orderData,
+          stripe_payment_intent_id: piId,
+          ga_client_id:
+            (typeof window !== "undefined" &&
+              ((window as any).__wws_ga_client_id || (document.cookie.match(/_ga=GA\d+\.\d+\.(.+?)(?:;|$)/) || [])[1])) ||
+            "",
+        }),
+      });
+
+      if (!initRes.ok) {
+        const errBody = await initRes.json().catch(() => ({}));
+        console.error("[Checkout] /api/orders/init failed:", { status: initRes.status, body: errBody });
+        setErrorMessage(
+          "We couldn't prepare your order. Please try again, or call (844) 674-2716 if this keeps happening."
+        );
+        setIsProcessing(false);
+        return;
+      }
+
+      const initData = await initRes.json();
+      initOrderNumber = initData.order_number || "";
+    } catch (err) {
+      console.error("[Checkout] /api/orders/init network error:", err);
+      setErrorMessage(
+        "Could not connect to our order system. Please check your connection and try again."
+      );
+      setIsProcessing(false);
+      return;
+    }
+
+    // ─── STEP 2: Stripe confirmPayment ───────────────────────────────────
+    // The return_url now includes ?pi= so /order-confirmation can fetch the
+    // authoritative order data even if localStorage is empty (e.g., 3DS
+    // redirect comes back to a fresh page, or shared link to confirmation).
     const { error, paymentIntent } = await stripe.confirmPayment({
       elements,
       confirmParams: {
-        return_url: `${window.location.origin}/order-confirmation`,
+        return_url: `${window.location.origin}/order-confirmation?pi=${piId}`,
       },
       redirect: "if_required",
     });
@@ -173,49 +244,45 @@ function StripePaymentForm({
         // Non-fatal — webhook will still fire the server-side purchase
       }
 
-      // Save order to Supabase
-      let orderNumber = '';
-      try {
-        const res = await fetch("/api/orders", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            ...orderData,
-            stripe_payment_intent_id: paymentIntent.id,
-          }),
-        });
-        const resData = await res.json();
-        orderNumber = resData.order_number || '';
-      } catch (e) {
-        console.error("Failed to save order:", e);
-      }
-      // Save order confirmation data for the thank-you page
-      localStorage.setItem("wws_last_order", JSON.stringify({
-        order_number: orderNumber || `WWS-${new Date().toISOString().slice(0,10).replace(/-/g,'')}-${Math.floor(Math.random()*9000)+1000}`,
-        email: orderData.email,
-        date: new Date().toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' }),
-        items: (orderData.items || []).map((item: any) => ({
-          name: item.shade_type || 'Custom Roller Shade',
-          fabric: item.fabric_name || '',
-          dimensions: `${item.width || 0}${item.width_fraction && item.width_fraction !== '0' ? ' ' + item.width_fraction : ''}" x ${item.height || 0}${item.height_fraction && item.height_fraction !== '0' ? ' ' + item.height_fraction : ''}"`,
-          mount: item.mount_type || '',
-          control: item.control_type || '',
-          qty: item.quantity || 1,
-          price: item.total_price || 0,
-        })),
-        subtotal: orderData.subtotal || total,
-        discount: orderData.discount || 0,
-        shipping: 0,
-        tax: 0,
-        total: total,
-        stripe_payment_intent_id: paymentIntent.id,
-      }));
+      // ─── STEP 3 (REMOVED 2026-05-09): No more browser POST to /api/orders ──
+      //
+      // Order finalization is now handled by the Stripe webhook
+      // (app/api/webhooks/stripe/route.ts). The pending order was already
+      // created server-side in Step 1, and the webhook will flip it to
+      // 'received' + send emails when payment_intent.succeeded fires.
+      //
+      // We KEEP localStorage for /order-confirmation's UX (instant render
+      // before the API fetch returns). The order_number from /init is the
+      // authoritative one — no more random fallback IDs.
+      localStorage.setItem(
+        "wws_last_order",
+        JSON.stringify({
+          order_number: initOrderNumber,
+          email: orderData.email,
+          date: new Date().toLocaleDateString("en-US", { month: "long", day: "numeric", year: "numeric" }),
+          items: (orderData.items || []).map((item: any) => ({
+            name: item.shade_type || "Custom Roller Shade",
+            fabric: item.fabric_name || "",
+            dimensions: `${item.width || 0}${item.width_fraction && item.width_fraction !== "0" ? " " + item.width_fraction : ""}\" x ${item.height || 0}${item.height_fraction && item.height_fraction !== "0" ? " " + item.height_fraction : ""}\"`,
+            mount: item.mount_type || "",
+            control: item.control_type || "",
+            qty: item.quantity || 1,
+            price: item.total_price || 0,
+          })),
+          subtotal: orderData.subtotal || total,
+          discount: orderData.discount || 0,
+          shipping: 0,
+          tax: 0,
+          total: total,
+          stripe_payment_intent_id: paymentIntent.id,
+        })
+      );
 
       // Clear cart and redirect (1.5s delay for Google Ads conversion pixel to complete)
-      sessionStorage.setItem('wws_purchase_tracked', 'true');
+      sessionStorage.setItem("wws_purchase_tracked", "true");
       localStorage.removeItem("wws_cart_v1");
       await new Promise((resolve) => setTimeout(resolve, 1500));
-      window.location.href = "/order-confirmation";
+      window.location.href = `/order-confirmation?pi=${paymentIntent.id}`;
     } else {
       setIsProcessing(false);
     }

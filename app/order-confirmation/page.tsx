@@ -192,7 +192,7 @@ const footerColumns = [
   },
 ]
 
-// ─── MAIN COMPONENT ────────────────────────────────────────────────────────────
+// ─── MAIN COMPONENT ──────────────────────────────────��─────────────────────────
 export default function ThankYouPage() {
   const [order, setOrder] = useState(defaultOrder)
   const [showConfetti, setShowConfetti] = useState(true)
@@ -200,58 +200,194 @@ export default function ThankYouPage() {
   const [copied, setCopied] = useState(false)
   const [timeLeft, setTimeLeft] = useState({ hours: 23, minutes: 42, seconds: 18 })
 
-  // Load real order data from localStorage + backup purchase tracking
+  // ─── Server-side order status ────────────────────────────────────────
+  // The authoritative order state lives in the DB (set by the Stripe
+  // webhook). We poll /api/orders/lookup?pi=... until status is 'received'
+  // or we time out. Until then, show a banner explaining that the order
+  // is being finalized.
+  //
+  // States:
+  //   'loading'   — initial state, before first API response
+  //   'pending'   — webhook hasn't fired yet, will retry
+  //   'finalized' — order is in DB with status='received' or higher
+  //   'timeout'   — gave up after 30s; show support contact
+  //   'unknown'   — no PI in URL or localStorage; legacy/direct visit
+  type ServerStatus = "loading" | "pending" | "finalized" | "timeout" | "unknown";
+  const [serverStatus, setServerStatus] = useState<ServerStatus>("loading");
+
+  // Load order from localStorage (fast UX) + fetch authoritative from API.
   useEffect(() => {
+    // 1. Render cached data instantly so the page doesn't flicker blank
     const loaded = loadOrder();
     setOrder(loaded);
 
-    // Backup purchase event — fires ONLY if checkout didn't already track it.
-    // Covers: 3DS redirects, slow network, ad blocker killed GTM mid-fire.
-    //
-    // GUARD: We only fire if we have a valid Stripe PaymentIntent ID (pi_xxx).
-    // Previously this fell back to the WWS order number (e.g. WWS-20260508-0001)
-    // as transaction_id, which would diverge from the webhook-fired event
-    // (which uses pi_xxx). GA4 dedupes by transaction_id — a mismatch causes
-    // GA4 to count the same purchase twice, inflating reported revenue.
-    // Falling back to the order number is NEVER correct: webhook is authoritative.
-    if (loaded.total > 0 && loaded.number !== defaultOrder.number) {
-      const alreadyTracked = sessionStorage.getItem('wws_purchase_tracked');
-      if (!alreadyTracked) {
-        let stripePI: string | null = null;
-        try {
-          const raw = typeof window !== 'undefined' ? localStorage.getItem('wws_last_order') : null;
-          if (raw) {
-            const parsed = JSON.parse(raw);
-            if (typeof parsed?.stripe_payment_intent_id === 'string' && parsed.stripe_payment_intent_id.startsWith('pi_')) {
-              stripePI = parsed.stripe_payment_intent_id;
-            }
-          }
-        } catch {
-          // localStorage parse failure — fall through to skip tracking
-        }
+    // 2. Determine PaymentIntent ID — URL takes precedence over localStorage
+    const params = typeof window !== "undefined" ? new URLSearchParams(window.location.search) : null;
+    const piFromUrl = params?.get("pi") || params?.get("payment_intent") || null;
 
-        if (stripePI) {
+    let piFromCache: string | null = null;
+    try {
+      const raw = typeof window !== "undefined" ? localStorage.getItem("wws_last_order") : null;
+      if (raw) {
+        const parsed = JSON.parse(raw);
+        if (typeof parsed?.stripe_payment_intent_id === "string" && parsed.stripe_payment_intent_id.startsWith("pi_")) {
+          piFromCache = parsed.stripe_payment_intent_id;
+        }
+      }
+    } catch {
+      // Ignore parse errors
+    }
+
+    const piId = piFromUrl || piFromCache;
+
+    // 3. Backup purchase tracking — same dedup logic as before, but now
+    //    explicitly gated on having a real pi_xxx (no fallback to order_number
+    //    which would diverge from the webhook-fired event and corrupt GA4 dedup).
+    if (loaded.total > 0 && loaded.number !== defaultOrder.number && piId) {
+      const alreadyTracked = sessionStorage.getItem("wws_purchase_tracked");
+      if (!alreadyTracked) {
+        try {
           trackPurchase(
-            stripePI,
+            piId,
             loaded.total,
             loaded.items.map((i: any) => ({
-              item_id: i.fabric || 'shade',
-              item_name: i.name || 'Custom Roller Shade',
-              item_category: i.name || 'Roller Shade',
+              item_id: i.fabric || "shade",
+              item_name: i.name || "Custom Roller Shade",
+              item_category: i.name || "Roller Shade",
               price: i.price || 0,
               quantity: i.qty || 1,
             })),
             { tax: loaded.tax, shipping: loaded.shipping, discount: loaded.discount }
           );
-          sessionStorage.setItem('wws_purchase_tracked', 'true');
-        } else {
-          // Skip backup tracking entirely. The Stripe webhook will fire the
-          // server-side purchase with the correct pi_xxx — our backup is not
-          // needed and using the wrong ID would corrupt GA4 dedup.
-          console.warn('[Order Confirmation] Skipped backup purchase tracking: no stripe_payment_intent_id (pi_xxx) available. Webhook will handle GA4 attribution.');
+          sessionStorage.setItem("wws_purchase_tracked", "true");
+        } catch (e) {
+          console.warn("[OrderConfirmation] Backup tracking failed:", e);
         }
       }
+    } else if (!piId) {
+      console.warn(
+        "[OrderConfirmation] No stripe_payment_intent_id in URL or localStorage — " +
+          "backup purchase tracking skipped. Webhook (server-side) will handle GA4 attribution."
+      );
     }
+
+    // 4. Poll the API for the authoritative order state
+    if (!piId) {
+      // No PI to look up — page was probably opened directly without a real
+      // checkout (or session was wiped). Show the cached data if any, mark
+      // status as 'unknown'.
+      setServerStatus("unknown");
+      return;
+    }
+
+    let cancelled = false;
+    let attempts = 0;
+    const maxAttempts = 15; // 15 × 2s = 30s timeout
+
+    const pollOrder = async () => {
+      if (cancelled) return;
+      attempts++;
+
+      try {
+        const res = await fetch(`/api/orders/lookup?pi=${encodeURIComponent(piId)}`, {
+          headers: { "Cache-Control": "no-cache" },
+        });
+
+        if (cancelled) return;
+
+        if (res.status === 404) {
+          // Order row doesn't exist yet — webhook in flight, or /api/orders/init
+          // wasn't called (true loss). Retry until timeout.
+          if (attempts >= maxAttempts) {
+            setServerStatus("timeout");
+            return;
+          }
+          setServerStatus("pending");
+          setTimeout(pollOrder, 2000);
+          return;
+        }
+
+        if (!res.ok) {
+          // Transient API error — retry
+          if (attempts < maxAttempts) {
+            setTimeout(pollOrder, 2000);
+          } else {
+            setServerStatus("timeout");
+          }
+          return;
+        }
+
+        const data = await res.json();
+        const serverOrder = data.order;
+
+        if (!serverOrder) {
+          // Shouldn't happen with res.ok but guard anyway
+          if (attempts < maxAttempts) {
+            setTimeout(pollOrder, 2000);
+          } else {
+            setServerStatus("timeout");
+          }
+          return;
+        }
+
+        if (serverOrder.status === "pending") {
+          // Row exists but webhook hasn't run yet
+          setServerStatus("pending");
+          if (attempts < maxAttempts) {
+            setTimeout(pollOrder, 2000);
+          } else {
+            setServerStatus("timeout");
+          }
+          return;
+        }
+
+        // Finalized! Replace the local cached data with authoritative server data.
+        setServerStatus("finalized");
+        const deliveryStart = new Date();
+        deliveryStart.setDate(deliveryStart.getDate() + 7);
+        const deliveryEnd = new Date(deliveryStart);
+        deliveryEnd.setDate(deliveryEnd.getDate() + 4);
+        const opts: Intl.DateTimeFormatOptions = { month: "long", day: "numeric" };
+        setOrder({
+          number: serverOrder.order_number,
+          email: serverOrder.email,
+          date: new Date(serverOrder.created_at).toLocaleDateString("en-US", { month: "long", day: "numeric", year: "numeric" }),
+          estimatedDelivery:
+            serverOrder.estimated_delivery ||
+            `${deliveryStart.toLocaleDateString("en-US", opts)}–${deliveryEnd.toLocaleDateString("en-US", opts)}, ${deliveryEnd.getFullYear()}`,
+          items: (serverOrder.order_items || []).map((it: any) => ({
+            name: it.shade_type || "Custom Roller Shade",
+            fabric: it.fabric_name || "",
+            dimensions: `${it.width || 0}${it.width_fraction && it.width_fraction !== "0" ? " " + it.width_fraction : ""}\" x ${it.height || 0}${it.height_fraction && it.height_fraction !== "0" ? " " + it.height_fraction : ""}\"`,
+            mount: it.mount_type || "",
+            control: it.control_type || "",
+            qty: it.quantity || 1,
+            price: Number(it.total_price) || 0,
+          })),
+          subtotal: Number(serverOrder.subtotal) || 0,
+          motorized: 0,
+          valance: 0,
+          shipping: Number(serverOrder.shipping) || 0,
+          tax: Number(serverOrder.tax) || 0,
+          total: Number(serverOrder.total) || 0,
+          discount: Number(serverOrder.discount) || 0,
+          retailSavings: Number(serverOrder.sale_savings) || 0,
+        });
+      } catch (err) {
+        console.error("[OrderConfirmation] Poll error:", err);
+        if (attempts < maxAttempts && !cancelled) {
+          setTimeout(pollOrder, 2000);
+        } else if (!cancelled) {
+          setServerStatus("timeout");
+        }
+      }
+    };
+
+    pollOrder();
+
+    return () => {
+      cancelled = true;
+    };
   }, []);
 
   // Hide confetti after 5 seconds
@@ -287,6 +423,99 @@ export default function ThankYouPage() {
 
   return (
     <>
+      {/* ─── SERVER-SIDE ORDER STATUS BANNER ─────────────────── */}
+      {/* Visible while the webhook is finalizing the order, or if it    */}
+      {/* times out. Disappears once status='received' (the happy path). */}
+      {(serverStatus === "pending" || serverStatus === "timeout") && (
+        <div
+          role="status"
+          aria-live="polite"
+          style={{
+            background: serverStatus === "timeout" ? "#fef3c7" : "#fef9e7",
+            borderBottom:
+              "1px solid " + (serverStatus === "timeout" ? "#f59e0b" : "#facc15"),
+            padding: "0.875rem 1rem",
+            fontFamily: "'DM Sans', sans-serif",
+          }}
+        >
+          <div
+            style={{
+              maxWidth: "56rem",
+              margin: "0 auto",
+              display: "flex",
+              alignItems: "flex-start",
+              gap: "0.75rem",
+              fontSize: "0.875rem",
+              lineHeight: 1.5,
+              color: "#0c0c0c",
+            }}
+          >
+            <style>{`@keyframes wws-spin { to { transform: rotate(360deg); } }`}</style>
+            {serverStatus === "pending" ? (
+              <>
+                <svg
+                  width="18"
+                  height="18"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="#c8a165"
+                  strokeWidth="2.5"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  aria-hidden="true"
+                  style={{
+                    animation: "wws-spin 0.9s linear infinite",
+                    flexShrink: 0,
+                    marginTop: "1px",
+                  }}
+                >
+                  <path d="M21 12a9 9 0 1 1-6.219-8.56" />
+                </svg>
+                <div>
+                  <strong style={{ fontWeight: 700 }}>Payment received.</strong>{" "}
+                  We&apos;re finalizing your order now &mdash; this usually takes just a few
+                  seconds. Your confirmation email will arrive shortly.
+                </div>
+              </>
+            ) : (
+              <>
+                <svg
+                  width="18"
+                  height="18"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="#b45309"
+                  strokeWidth="2.5"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  aria-hidden="true"
+                  style={{ flexShrink: 0, marginTop: "1px" }}
+                >
+                  <path d="M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z" />
+                  <line x1="12" y1="9" x2="12" y2="13" />
+                  <line x1="12" y1="17" x2="12.01" y2="17" />
+                </svg>
+                <div>
+                  <strong style={{ fontWeight: 700 }}>
+                    Your payment was received successfully.
+                  </strong>{" "}
+                  We&apos;re still processing your order &mdash; you&apos;ll receive a
+                  confirmation email within a few minutes. If you don&apos;t see it
+                  within 15 minutes, please call{" "}
+                  <a
+                    href="tel:+18446742716"
+                    style={{ color: "#0c0c0c", fontWeight: 700, textDecoration: "underline" }}
+                  >
+                    (844) 674-2716
+                  </a>{" "}
+                  and we&apos;ll look into it. Your payment is safe.
+                </div>
+              </>
+            )}
+          </div>
+        </div>
+      )}
+
       {/* ─── CONFETTI KEYFRAMES ───────────────────────────────── */}
       <style>{`
         @keyframes confettiFall {
