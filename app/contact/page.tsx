@@ -5,13 +5,72 @@ import { Mail, Phone, MapPin, Clock } from "lucide-react";
 import { SITE } from "@/lib/constants";
 import { trackGenerateLead } from "@/lib/gtm/events";
 
+// ─── Contact Page ──────────────────────────────────────────────────────────
+// Wired up 2026-05-09. Previously the submit handler only fired GA4 and
+// flipped the success state — never sent the message anywhere. Now POSTs
+// to /api/contact which persists to Supabase + emails admin + auto-replies
+// to the customer. See app/api/contact/route.ts for the backend logic.
 export default function ContactPage() {
-  const [submitted, setSubmitted] = useState(false);
+  // Form state (controlled inputs so we can submit programmatically)
+  const [firstName, setFirstName] = useState("");
+  const [lastName, setLastName] = useState("");
+  const [email, setEmail] = useState("");
+  const [phone, setPhone] = useState("");
+  const [subject, setSubject] = useState("");
+  const [message, setMessage] = useState("");
 
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+  // UI state
+  const [submitted, setSubmitted] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [errorMsg, setErrorMsg] = useState<string | null>(null);
+
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    trackGenerateLead("contact-form");
-    setSubmitted(true);
+    if (loading) return; // prevent double-submit
+
+    setErrorMsg(null);
+    setLoading(true);
+
+    try {
+      const res = await fetch("/api/contact", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          firstName,
+          lastName,
+          email,
+          phone: phone || null,
+          subject: subject || null,
+          message,
+          source_page: typeof window !== "undefined" ? window.location.pathname + window.location.search : null,
+        }),
+      });
+
+      const data = await res.json().catch(() => ({}));
+
+      if (!res.ok || !data?.success) {
+        // DB save failed — show the customer an error so they can retry or call.
+        const msg =
+          data?.error ||
+          "Something went wrong sending your message. Please call us at (844) 674-2716 or try again in a moment.";
+        setErrorMsg(msg);
+        setLoading(false);
+        return;
+      }
+
+      // Successful save (regardless of email delivery — DB has the message).
+      // Fire GA4 lead event AFTER the actual save so the count reflects
+      // real submissions, not just clicks (the previous code fired the
+      // event on click even when the message went nowhere).
+      trackGenerateLead("contact-form");
+      setSubmitted(true);
+    } catch (err) {
+      console.error("Contact form submit error:", err);
+      setErrorMsg(
+        "Could not connect. Please check your internet and try again, or call (844) 674-2716."
+      );
+      setLoading(false);
+    }
   };
 
   return (
@@ -25,19 +84,24 @@ export default function ContactPage() {
               <div className="rounded-xl bg-cream p-8 text-center">
                 <span className="text-4xl mb-4 block">✓</span>
                 <h2 className="text-xl font-semibold text-dark mb-2">Message Sent!</h2>
-                <p className="text-warm-gray">We&apos;ll get back to you within 1 business day.</p>
+                <p className="text-warm-gray">We&apos;ll get back to you within 1 business day. Check your inbox for a confirmation.</p>
               </div>
             ) : (
               <form onSubmit={handleSubmit} className="space-y-5">
                 <div className="grid grid-cols-1 gap-5 sm:grid-cols-2">
-                  <Field label="First Name" name="firstName" required />
-                  <Field label="Last Name" name="lastName" required />
+                  <Field label="First Name" name="firstName" required value={firstName} onChange={setFirstName} />
+                  <Field label="Last Name" name="lastName" required value={lastName} onChange={setLastName} />
                 </div>
-                <Field label="Email" name="email" type="email" required />
-                <Field label="Phone" name="phone" type="tel" />
+                <Field label="Email" name="email" type="email" required value={email} onChange={setEmail} />
+                <Field label="Phone" name="phone" type="tel" value={phone} onChange={setPhone} />
                 <div>
                   <label className="block text-sm font-medium text-dark mb-1.5">How can we help?</label>
-                  <select name="subject" className="w-full rounded-lg border border-cream-dark bg-white px-4 py-3 text-sm text-dark focus:border-gold focus:ring-1 focus:ring-gold outline-none">
+                  <select
+                    name="subject"
+                    value={subject}
+                    onChange={(e) => setSubject(e.target.value)}
+                    className="w-full rounded-lg border border-cream-dark bg-white px-4 py-3 text-sm text-dark focus:border-gold focus:ring-1 focus:ring-gold outline-none"
+                  >
                     <option value="">Select a topic</option>
                     <option value="consultation">Book a Consultation</option>
                     <option value="quote">Request a Custom Quote</option>
@@ -47,10 +111,31 @@ export default function ContactPage() {
                   </select>
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-dark mb-1.5">Message</label>
-                  <textarea name="message" rows={5} className="w-full rounded-lg border border-cream-dark bg-white px-4 py-3 text-sm text-dark focus:border-gold focus:ring-1 focus:ring-gold outline-none resize-none" placeholder="Tell us about your project..." />
+                  <label className="block text-sm font-medium text-dark mb-1.5">Message<span className="text-gold ml-0.5">*</span></label>
+                  <textarea
+                    name="message"
+                    rows={5}
+                    required
+                    value={message}
+                    onChange={(e) => setMessage(e.target.value)}
+                    className="w-full rounded-lg border border-cream-dark bg-white px-4 py-3 text-sm text-dark focus:border-gold focus:ring-1 focus:ring-gold outline-none resize-none"
+                    placeholder="Tell us about your project..."
+                  />
                 </div>
-                <button type="submit" className="w-full sm:w-auto px-8 py-3 text-base font-semibold text-white bg-gold hover:bg-gold-dark rounded-lg transition-colors">Send Message</button>
+
+                {errorMsg && (
+                  <div role="alert" className="rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
+                    {errorMsg}
+                  </div>
+                )}
+
+                <button
+                  type="submit"
+                  disabled={loading}
+                  className="w-full sm:w-auto px-8 py-3 text-base font-semibold text-white bg-gold hover:bg-gold-dark rounded-lg transition-colors disabled:opacity-60 disabled:cursor-not-allowed"
+                >
+                  {loading ? "Sending..." : "Send Message"}
+                </button>
               </form>
             )}
           </div>
@@ -74,11 +159,38 @@ export default function ContactPage() {
   );
 }
 
-function Field({ label, name, type = "text", required = false }: { label: string; name: string; type?: string; required?: boolean }) {
+// Controlled field component — accepts value + onChange so the parent
+// can read submission data when the form is submitted.
+function Field({
+  label,
+  name,
+  type = "text",
+  required = false,
+  value,
+  onChange,
+}: {
+  label: string;
+  name: string;
+  type?: string;
+  required?: boolean;
+  value: string;
+  onChange: (v: string) => void;
+}) {
   return (
     <div>
-      <label htmlFor={name} className="block text-sm font-medium text-dark mb-1.5">{label}{required && <span className="text-gold ml-0.5">*</span>}</label>
-      <input id={name} name={name} type={type} required={required} className="w-full rounded-lg border border-cream-dark bg-white px-4 py-3 text-sm text-dark focus:border-gold focus:ring-1 focus:ring-gold outline-none" />
+      <label htmlFor={name} className="block text-sm font-medium text-dark mb-1.5">
+        {label}
+        {required && <span className="text-gold ml-0.5">*</span>}
+      </label>
+      <input
+        id={name}
+        name={name}
+        type={type}
+        required={required}
+        value={value}
+        onChange={(e) => onChange(e.target.value)}
+        className="w-full rounded-lg border border-cream-dark bg-white px-4 py-3 text-sm text-dark focus:border-gold focus:ring-1 focus:ring-gold outline-none"
+      />
     </div>
   );
 }

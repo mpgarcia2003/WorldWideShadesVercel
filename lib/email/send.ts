@@ -282,3 +282,169 @@ export async function sendNewOrderAlert(order: any, items: any[]) {
     return { success: false, error: e };
   }
 }
+
+// ─── 4. Contact Form Admin Alert ─────────────────────────────
+//
+// Fires when a customer submits the /contact form. Goes to ADMIN_EMAIL
+// (hello@worldwideshades.com). Reply-To is set to the customer's email
+// so the admin can hit Reply directly without copying-pasting.
+//
+// Subject is prefixed with the topic for inbox triage (e.g. "[Quote]",
+// "[Order]") and includes the customer name for at-a-glance context.
+export async function sendContactFormAlert(submission: {
+  id: string;
+  first_name: string;
+  last_name: string;
+  email: string;
+  phone?: string | null;
+  subject?: string | null;
+  message: string;
+  source_page?: string | null;
+  created_at?: string;
+}) {
+  // Map subject codes to human-friendly labels for the email subject line
+  const subjectLabels: Record<string, string> = {
+    consultation: "Consultation",
+    quote: "Quote Request",
+    measurement: "Measurement Help",
+    order: "Existing Order",
+    other: "General Inquiry",
+  };
+  const topicLabel = submission.subject ? subjectLabels[submission.subject] || "Inquiry" : "Inquiry";
+
+  const fullName = `${submission.first_name} ${submission.last_name}`.trim();
+
+  // Escape user-provided HTML so a customer can't break our email template
+  // by pasting <script> or stray HTML into the message field.
+  const esc = (s: string) =>
+    s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
+
+  const messageHtml = esc(submission.message).replace(/\n/g, "<br>");
+
+  const content = `
+    <div style="text-align:center;margin-bottom:24px;">
+      <div style="display:inline-block;background:#fef3c7;border:1px solid #fcd34d;border-radius:50px;padding:6px 20px;font-size:12px;font-weight:700;color:#b45309;text-transform:uppercase;letter-spacing:1px;">
+        📩 New Contact Form Submission
+      </div>
+    </div>
+
+    <h2 style="margin:0 0 4px;font-size:22px;font-weight:700;color:#0c0c0c;text-align:center;">${esc(topicLabel)}</h2>
+    <p style="margin:0 0 24px;font-size:14px;color:#666;text-align:center;">From <strong>${esc(fullName)}</strong></p>
+
+    <div style="background:#f7f5f0;border-radius:8px;padding:16px;margin-bottom:16px;">
+      <h3 style="margin:0 0 8px;font-size:13px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:#999;">Customer Details</h3>
+      <p style="margin:0;font-size:14px;color:#0c0c0c;"><strong>${esc(fullName)}</strong></p>
+      <p style="margin:4px 0 0;font-size:13px;color:#666;">
+        <a href="mailto:${esc(submission.email)}" style="color:#c8a165;text-decoration:none;">${esc(submission.email)}</a>
+      </p>
+      ${submission.phone ? `<p style="margin:4px 0 0;font-size:13px;color:#666;"><a href="tel:${esc(submission.phone)}" style="color:#c8a165;text-decoration:none;">${esc(submission.phone)}</a></p>` : ""}
+    </div>
+
+    <div style="margin-bottom:16px;">
+      <h3 style="margin:0 0 8px;font-size:13px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:#999;">Topic</h3>
+      <p style="margin:0;font-size:14px;color:#0c0c0c;">${esc(topicLabel)}</p>
+    </div>
+
+    <div style="margin-bottom:16px;">
+      <h3 style="margin:0 0 8px;font-size:13px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:#999;">Message</h3>
+      <div style="background:#fff;border:1px solid #e5ddd0;border-radius:8px;padding:16px;font-size:14px;line-height:1.6;color:#0c0c0c;white-space:pre-wrap;">${messageHtml}</div>
+    </div>
+
+    ${submission.source_page ? `<p style="margin:0 0 16px;font-size:11px;color:#999;text-align:center;">Submitted from: ${esc(submission.source_page)}</p>` : ""}
+
+    <div style="text-align:center;margin-top:24px;">
+      <a href="mailto:${esc(submission.email)}?subject=${encodeURIComponent("Re: " + topicLabel + " — World Wide Shades")}" style="display:inline-block;background:#c8a165;color:#fff;padding:12px 32px;border-radius:8px;text-decoration:none;font-weight:700;font-size:14px;margin-right:8px;">Reply to ${esc(submission.first_name)} →</a>
+    </div>
+
+    <p style="margin:24px 0 0;font-size:11px;color:#bbb;text-align:center;">Submission ID: ${esc(submission.id)}</p>`;
+
+  try {
+    const { data, error } = await resend.emails.send({
+      from: `${FROM_NAME} <${FROM_EMAIL}>`,
+      to: ADMIN_EMAIL,
+      replyTo: submission.email, // hitting Reply goes straight to the customer
+      subject: `[${topicLabel}] ${fullName} — World Wide Shades Contact Form`,
+      html: emailWrapper(content),
+    });
+    if (error) console.error("Contact form admin alert failed:", error);
+    return { success: !error, data, error };
+  } catch (e) {
+    console.error("Contact form admin alert error:", e);
+    return { success: false, error: e };
+  }
+}
+
+// ─── 5. Contact Form Customer Auto-Reply ─────────────────────
+//
+// Fires when a customer submits the /contact form. Goes to the customer.
+// Confirms we received their message and sets expectation of 1 business
+// day reply window (matching what the success screen on /contact says).
+export async function sendContactFormAutoReply(submission: {
+  first_name: string;
+  last_name: string;
+  email: string;
+  subject?: string | null;
+  message: string;
+}) {
+  const subjectLabels: Record<string, string> = {
+    consultation: "consultation request",
+    quote: "quote request",
+    measurement: "measurement question",
+    order: "order inquiry",
+    other: "message",
+  };
+  const topicLabel = submission.subject ? subjectLabels[submission.subject] || "message" : "message";
+
+  const esc = (s: string) =>
+    s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
+  const messageHtml = esc(submission.message).replace(/\n/g, "<br>");
+
+  const content = `
+    <div style="text-align:center;margin-bottom:24px;">
+      <div style="display:inline-block;background:#dcfce7;border:1px solid #86efac;border-radius:50px;padding:6px 20px;font-size:12px;font-weight:700;color:#16a34a;text-transform:uppercase;letter-spacing:1px;">
+        ✓ Message Received
+      </div>
+    </div>
+
+    <h2 style="margin:0 0 4px;font-size:22px;font-weight:700;color:#0c0c0c;text-align:center;">Thanks, ${esc(submission.first_name)}!</h2>
+    <p style="margin:0 0 24px;font-size:14px;color:#666;text-align:center;line-height:1.6;">
+      We&apos;ve received your ${esc(topicLabel)} and a member of our team will get back to you within <strong>1 business day</strong>.
+    </p>
+
+    <div style="background:#f7f5f0;border-radius:8px;padding:16px;margin-bottom:24px;">
+      <h3 style="margin:0 0 8px;font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:#999;">Your Message</h3>
+      <div style="font-size:13px;line-height:1.6;color:#333;white-space:pre-wrap;">${messageHtml}</div>
+    </div>
+
+    <div style="margin-top:24px;background:#fdf9f5;border:1px solid #e5ddd0;border-radius:8px;padding:16px;text-align:center;">
+      <p style="margin:0 0 8px;font-size:13px;font-weight:700;color:#0c0c0c;">Need a faster answer?</p>
+      <p style="margin:0 0 12px;font-size:12px;color:#666;">Call us directly — we usually pick up.</p>
+      <a href="tel:+18446742716" style="display:inline-block;background:#c8a165;color:#fff;padding:10px 24px;border-radius:8px;text-decoration:none;font-weight:700;font-size:13px;">Call (844) 674-2716</a>
+    </div>
+
+    <div style="margin-top:24px;text-align:center;">
+      <p style="font-size:13px;color:#666;margin:0 0 8px;">In the meantime, you can:</p>
+      <p style="margin:0;font-size:13px;">
+        <a href="https://worldwideshades.com/builder?utm_source=email&utm_medium=transactional&utm_campaign=contact_autoreply" style="color:#c8a165;font-weight:600;text-decoration:none;">Design Your Shade →</a>
+        &nbsp;·&nbsp;
+        <a href="https://worldwideshades.com/fabrics?utm_source=email&utm_medium=transactional&utm_campaign=contact_autoreply" style="color:#c8a165;font-weight:600;text-decoration:none;">Browse Fabrics →</a>
+        &nbsp;·&nbsp;
+        <a href="https://worldwideshades.com/faq?utm_source=email&utm_medium=transactional&utm_campaign=contact_autoreply" style="color:#c8a165;font-weight:600;text-decoration:none;">FAQ →</a>
+      </p>
+    </div>`;
+
+  try {
+    const { data, error } = await resend.emails.send({
+      from: `${FROM_NAME} <${FROM_EMAIL}>`,
+      to: submission.email,
+      replyTo: ADMIN_EMAIL, // if the customer replies to our auto-reply, it lands in our inbox
+      subject: `We got your message — World Wide Shades`,
+      html: emailWrapper(content),
+    });
+    if (error) console.error("Contact form auto-reply failed:", error);
+    return { success: !error, data, error };
+  } catch (e) {
+    console.error("Contact form auto-reply error:", e);
+    return { success: false, error: e };
+  }
+}
