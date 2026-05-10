@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useRef, useEffect } from "react";
 import { Mail, Phone, MapPin, Clock } from "lucide-react";
 import { SITE } from "@/lib/constants";
 import { trackGenerateLead } from "@/lib/gtm/events";
@@ -10,6 +10,28 @@ import { trackGenerateLead } from "@/lib/gtm/events";
 // flipped the success state — never sent the message anywhere. Now POSTs
 // to /api/contact which persists to Supabase + emails admin + auto-replies
 // to the customer. See app/api/contact/route.ts for the backend logic.
+//
+// ANTI-BOT DEFENSE (added 2026-05-09 after first bot probe submission):
+// 3 invisible layers — none affect real customers, none affect LLM crawlers
+// reading this page. They ONLY filter form submissions.
+//
+//   1. HONEYPOT FIELD: hidden input named "website" that real users can't
+//      see (CSS-hidden + aria-hidden + autocomplete=off + tabindex=-1).
+//      Bots auto-fill every input — humans don't. If submitted with a value,
+//      the API silently rejects (returns 200 success so the bot doesn't know).
+//
+//   2. RENDER TIMESTAMP: captured on mount. Sent with submission. The API
+//      rejects submissions <3s after render — humans take longer to read,
+//      type, and review. Scripted submissions are sub-second.
+//
+//   3. SERVER-SIDE HEURISTICS: pattern scoring in the API for things like
+//      no-vowel names, message-with-zero-spaces, base64 message bodies,
+//      invalid US area codes, suspicious TLDs. 2+ flags → save as 'spam'.
+//
+// LLM CRAWLABILITY: this page is fully crawlable. The `/contact` route is
+// in robots.ts allow list, in the sitemap, and in llms.txt. The honeypot
+// field is invisible HTML the crawler can ignore. Defenses only fire on
+// POST to /api/contact, not on GET of this page.
 export default function ContactPage() {
   // Form state (controlled inputs so we can submit programmatically)
   const [firstName, setFirstName] = useState("");
@@ -18,6 +40,19 @@ export default function ContactPage() {
   const [phone, setPhone] = useState("");
   const [subject, setSubject] = useState("");
   const [message, setMessage] = useState("");
+
+  // ─── ANTI-BOT: honeypot + render timestamp ─────────────────────────
+  // honeypotValue: hidden field. Real users never see it, never type into
+  // it. Bots filling all fields will set this. API rejects if non-empty.
+  const [honeypotValue, setHoneypotValue] = useState("");
+  // renderTimestamp: captured on mount. Used server-side to enforce a
+  // minimum time-to-submit (humans take >3s to fill out a form; bots
+  // submit in milliseconds). useRef so it survives re-renders without
+  // triggering them.
+  const renderTimestampRef = useRef<number>(0);
+  useEffect(() => {
+    renderTimestampRef.current = Date.now();
+  }, []);
 
   // UI state
   const [submitted, setSubmitted] = useState(false);
@@ -43,6 +78,14 @@ export default function ContactPage() {
           subject: subject || null,
           message,
           source_page: typeof window !== "undefined" ? window.location.pathname + window.location.search : null,
+          // Anti-bot fields. Sent with every submission. Real users send:
+          //   honeypot: "" (they can't see the field)
+          //   formRenderedAt: ms timestamp from when the form was rendered
+          // Bots typically send:
+          //   honeypot: <some value> (they fill all inputs blindly)
+          //   formRenderedAt: missing or sub-second-old
+          honeypot: honeypotValue,
+          formRenderedAt: renderTimestampRef.current || Date.now(),
         }),
       });
 
@@ -88,6 +131,48 @@ export default function ContactPage() {
               </div>
             ) : (
               <form onSubmit={handleSubmit} className="space-y-5">
+                {/* ─── HONEYPOT FIELD ─────────────────────────────────────
+                    Real users never see, never tab to, never fill this.
+                    Bots that auto-fill every form input will set it. The API
+                    silently rejects (200 OK with no save) when this has a
+                    value, so the bot doesn't learn it was detected.
+
+                    Defense in depth:
+                    • CSS: position:absolute + left:-9999px keeps it offscreen
+                      (display:none can be detected by smarter bots; offscreen
+                      positioning is harder to filter out)
+                    • aria-hidden="true": screen readers skip it entirely
+                    • tabindex={-1}: keyboard users can't tab into it
+                    • autoComplete="off": browsers don't autofill it
+                    • Field name "website" is intentionally tempting to bots
+                      (they love filling URL/website-looking fields).
+                ─────────────────────────────────────────────────────────── */}
+                <div
+                  aria-hidden="true"
+                  style={{
+                    position: "absolute",
+                    left: "-9999px",
+                    width: "1px",
+                    height: "1px",
+                    overflow: "hidden",
+                    opacity: 0,
+                    pointerEvents: "none",
+                  }}
+                >
+                  <label htmlFor="website-url-confirm">
+                    Leave this field empty
+                    <input
+                      id="website-url-confirm"
+                      name="website"
+                      type="text"
+                      tabIndex={-1}
+                      autoComplete="off"
+                      value={honeypotValue}
+                      onChange={(e) => setHoneypotValue(e.target.value)}
+                    />
+                  </label>
+                </div>
+
                 <div className="grid grid-cols-1 gap-5 sm:grid-cols-2">
                   <Field label="First Name" name="firstName" required value={firstName} onChange={setFirstName} />
                   <Field label="Last Name" name="lastName" required value={lastName} onChange={setLastName} />

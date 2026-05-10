@@ -32,6 +32,19 @@ const formatDim = (value: number, fraction: string) => {
   return `${value} ${fraction}`;
 };
 
+// Local helper used by the motorized-width warning. Kept as a small
+// duplicate of the parseFraction in Builder.tsx so we don't have to thread
+// a prop through; identical behavior to the inline parser used by the
+// freight warning above (see MeasurementInputs).
+const parseFraction = (fraction: string): number => {
+  if (!fraction || fraction === '0') return 0;
+  if (fraction.includes('/')) {
+    const [num, den] = fraction.split('/').map(Number);
+    return num / den;
+  }
+  return Number(fraction) || 0;
+};
+
 const AllFabricsIcon = ({ className }: { className?: string }) => (
   <svg 
     viewBox="0 0 24 24" 
@@ -733,6 +746,49 @@ const Stepper: React.FC<StepperProps> = ({
                     {/* MOTOR TYPE — only shows after selecting motorized */}
                     {config.controlType === 'Motorized' && (
                         <div className="space-y-4 pt-4 border-t border-gray-100 animate-in fade-in slide-in-from-bottom-1 duration-300">
+                            {/* External-battery warning: shades ≤25" wide are too narrow
+                                to house the battery internally inside the roller tube.
+                                The battery becomes an external slim rectangle that
+                                installs behind or on top of the shade. Customer MUST
+                                see this BEFORE picking power type so they understand
+                                what they're committing to.
+
+                                Trigger: motorized + total width (whole + fraction) is
+                                >0 AND ≤25. Width must be entered (>0) — we don't show
+                                the warning before the user has set dimensions because
+                                that would cause it to flash on/off as they edit. */}
+                            {(() => {
+                              const w = (config.width || 0) + parseFraction(config.widthFraction || '0');
+                              if (w > 0 && w <= 25) {
+                                return (
+                                  <div
+                                    className="p-3.5 rounded-xl border-2 animate-in fade-in slide-in-from-top-1 duration-300"
+                                    style={{ borderColor: '#f59e0b', backgroundColor: '#fffbeb' }}
+                                  >
+                                    <div className="flex items-start gap-2.5">
+                                      <Battery size={18} className="shrink-0 mt-0.5" style={{ color: '#d97706' }} strokeWidth={2.25} />
+                                      <div className="flex-1">
+                                        <div className="text-[13px] font-bold text-[#92400e] mb-1" style={{ fontFamily: "'Playfair Display', Georgia, serif" }}>
+                                          Heads up: External Battery Required
+                                        </div>
+                                        <p className="text-[11px] text-[#78350f] leading-snug">
+                                          Because your shade is <strong>{w}" wide (25" or under)</strong>, the
+                                          motor's battery is too large to fit inside the roller. It will arrive
+                                          as a <strong>slim rectangular battery pack</strong> that installs
+                                          behind the shade or on top of the headrail to stay mostly hidden.
+                                        </p>
+                                        <p className="text-[11px] text-[#78350f] leading-snug mt-1.5">
+                                          <strong>Important:</strong> the battery must remain connected at all
+                                          times for the shade to operate.
+                                        </p>
+                                      </div>
+                                    </div>
+                                  </div>
+                                );
+                              }
+                              return null;
+                            })()}
+
                             <div className="text-center mb-1">
                               <h4 className="text-[15px] font-normal text-[#1a1a1a]" style={{ fontFamily: "'Playfair Display', Georgia, serif" }}>
                                 Choose power type
