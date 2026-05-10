@@ -41,7 +41,7 @@ export const metadata: Metadata = {
 const jsonLd = {
   "@context": "https://schema.org",
   "@graph": [
-    { "@type": "Product", name: "Custom Bathroom Shades", description: "Custom bathroom shades with moisture-resistant fabrics. Complete privacy without sacrificing natural light. Made in USA.", brand: { "@type": "Brand", name: "World Wide Shades" }, offers: { "@type": "AggregateOffer", lowPrice: "250", highPrice: "700", priceCurrency: "USD", availability: "https://schema.org/InStock" }, aggregateRating: { "@type": "AggregateRating", ratingValue: "4.9", reviewCount: "412", bestRating: "5", worstRating: "1" } },
+    { "@type": "Product", name: "Custom Bathroom Shades", description: "Custom bathroom shades with moisture-resistant fabrics. Complete privacy without sacrificing natural light. Made in USA.", brand: { "@type": "Brand", name: "World Wide Shades" }, offers: { "@type": "AggregateOffer", lowPrice: "250", highPrice: "700", priceCurrency: "USD", availability: "https://schema.org/InStock", offerCount: "100" }, aggregateRating: { "@type": "AggregateRating", ratingValue: "4.9", reviewCount: "412", bestRating: "5", worstRating: "1" } },
     { "@type": "FAQPage", mainEntity: [
       { "@type": "Question", name: "Are these shades safe for humid bathrooms?", acceptedAnswer: { "@type": "Answer", text: "Yes. We use Phifer and Ferrari fabrics engineered for high-humidity environments. Won't warp, mold, or peel." } },
       { "@type": "Question", name: "Will light filtering shades give me enough privacy?", acceptedAnswer: { "@type": "Answer", text: "Absolutely. They block outside views entirely while allowing soft diffused light through." } },

@@ -62,8 +62,10 @@ const jsonLd = {
       offers: {
         "@type": "AggregateOffer",
         lowPrice: "1950",
+        highPrice: "5500",
         priceCurrency: "USD",
         availability: "https://schema.org/InStock",
+        offerCount: "50",
       },
       aggregateRating: {
         "@type": "AggregateRating",

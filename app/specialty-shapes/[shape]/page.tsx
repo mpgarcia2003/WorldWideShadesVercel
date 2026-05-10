@@ -118,6 +118,7 @@ export default async function SpecialtyShapePage({
           priceCurrency: "USD",
           lowPrice: String(data.jsonLd.lowPrice),
           highPrice: String(data.jsonLd.highPrice),
+          offerCount: "50",
           availability: "https://schema.org/InStock",
           deliveryLeadTime: {
             "@type": "QuantitativeValue",
