@@ -4,6 +4,17 @@ import matter from "gray-matter";
 
 const BLOG_DIR = path.join(process.cwd(), "content/blog");
 
+// gray-matter parses unquoted YAML dates (e.g. `date: 2026-05-20`) into JS Date
+// objects. The rest of the app treats `date` as a string and renders it directly
+// in JSX, which throws "Objects are not valid as a React child (found: [object Date])"
+// during prerender. Normalize to a YYYY-MM-DD string here so every consumer is
+// safe regardless of whether the frontmatter date is quoted.
+function toDateString(value: unknown): string {
+  if (!value) return "";
+  if (value instanceof Date) return value.toISOString().slice(0, 10);
+  return String(value);
+}
+
 export interface BlogPost {
   slug: string;
   title: string;
@@ -27,7 +38,7 @@ export function getAllPosts(): BlogPost[] {
       title: data.title || "",
       excerpt: data.excerpt || "",
       category: data.category || "Guides",
-      date: data.date || "",
+      date: toDateString(data.date),
       image: data.image || "",
       author: data.author || "World Wide Shades",
       content,
@@ -46,7 +57,7 @@ export function getPostBySlug(slug: string): BlogPost | null {
     title: data.title || "",
     excerpt: data.excerpt || "",
     category: data.category || "Guides",
-    date: data.date || "",
+    date: toDateString(data.date),
     image: data.image || "",
     author: data.author || "World Wide Shades",
     content,
