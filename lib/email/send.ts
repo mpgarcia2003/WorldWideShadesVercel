@@ -15,6 +15,23 @@ function formatDimension(val: number, frac: string) {
   return frac && frac !== "0" ? `${val} ${frac}"` : `${val}"`;
 }
 
+// Specialty shapes (triangle, trapezoid, pentagon, hexagon, etc.) carry their
+// real per-side measurements as a fully-labeled string in `dimensions_text`,
+// built at checkout from the shape's own input labels + fractions. Standard
+// shades and pre-2026-06-03 orders have no dimensions_text and keep their
+// original width x height rendering (handled by each call site's fallback).
+function specialtyDims(item: any): string | null {
+  if (item && item.shape && item.shape !== "Standard" && item.dimensions_text && String(item.dimensions_text).trim()) {
+    return String(item.dimensions_text);
+  }
+  return null;
+}
+
+// Appends the shape name to the line-item title for specialty shapes only.
+function shapeSuffix(item: any): string {
+  return item && item.shape && item.shape !== "Standard" ? ` \u2014 ${item.shape}` : "";
+}
+
 // ─── Shared email wrapper ────────────────────────────────────
 function emailWrapper(content: string) {
   return `<!DOCTYPE html>
@@ -54,9 +71,9 @@ export async function sendOrderConfirmation(order: any, items: any[]) {
       (item) => `
     <tr>
       <td style="padding:12px 0;border-bottom:1px solid #f0f0f0;">
-        <strong style="font-size:14px;color:#0c0c0c;">${item.shade_type}</strong><br>
+        <strong style="font-size:14px;color:#0c0c0c;">${item.shade_type}${shapeSuffix(item)}</strong><br>
         <span style="font-size:12px;color:#666;">
-          ${item.fabric_name ? `${item.fabric_name} · ` : ""}${formatDimension(item.width, item.width_fraction)} W × ${formatDimension(item.height, item.height_fraction)} H<br>
+          ${item.fabric_name ? `${item.fabric_name} · ` : ""}${specialtyDims(item) || `${formatDimension(item.width, item.width_fraction)} W × ${formatDimension(item.height, item.height_fraction)} H`}<br>
           ${item.mount_type || ""} · ${item.control_type || ""}${item.motor_power ? ` (${item.motor_power})` : ""}<br>
           ${item.valance_type === 'cassette' && item.cassette_fabric_insert ? `Cassette valance with fabric insert<br>` : ""}
           ${item.control_type === 'Motorized' && !item.motorized_controller ? `<span style="color:#2563eb;font-weight:600;">✓ Uses your existing Somfy remote</span><br>` : ""}
@@ -228,7 +245,7 @@ export async function sendNewOrderAlert(order: any, items: any[]) {
     .map(
       (item) =>
         `<li style="margin-bottom:8px;font-size:13px;color:#333;">
-          <strong>${item.shade_type}</strong> — ${item.fabric_name || "N/A"} — ${formatDimension(item.width, item.width_fraction)} × ${formatDimension(item.height, item.height_fraction)} — ${item.mount_type} — ${item.control_type}${item.motor_power ? ` (${item.motor_power})` : ""}${item.valance_type === 'cassette' && item.cassette_fabric_insert ? " — Cassette w/ fabric insert" : ""}${item.control_type === 'Motorized' && !item.motorized_controller ? ' — <span style="color:#2563eb;font-weight:700;">USES EXISTING REMOTE (don\'t ship)</span>' : ""}${item.freight_shipping ? ' — <span style="color:#c2410c;font-weight:700;">⚠ FREIGHT (oversize)</span>' : ""} — Qty ${item.quantity} — ${formatCurrency(Number(item.total_price))}
+          <strong>${item.shade_type}${shapeSuffix(item)}</strong> — ${item.fabric_name || "N/A"} — ${specialtyDims(item) || `${formatDimension(item.width, item.width_fraction)} × ${formatDimension(item.height, item.height_fraction)}`} — ${item.mount_type} — ${item.control_type}${item.motor_power ? ` (${item.motor_power})` : ""}${item.valance_type === 'cassette' && item.cassette_fabric_insert ? " — Cassette w/ fabric insert" : ""}${item.control_type === 'Motorized' && !item.motorized_controller ? ' — <span style="color:#2563eb;font-weight:700;">USES EXISTING REMOTE (don\'t ship)</span>' : ""}${item.freight_shipping ? ' — <span style="color:#c2410c;font-weight:700;">⚠ FREIGHT (oversize)</span>' : ""} — Qty ${item.quantity} — ${formatCurrency(Number(item.total_price))}
         </li>`
     )
     .join("");

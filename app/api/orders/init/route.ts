@@ -239,6 +239,8 @@ export async function POST(req: NextRequest) {
       height: item.height,
       height_fraction: item.height_fraction,
       custom_dims: item.custom_dims,
+      custom_fracs: item.custom_fracs,
+      dimensions_text: item.dimensions_text,
       mount_type: item.mount_type,
       control_type: item.control_type,
       motor_power: item.motor_power,

@@ -358,7 +358,7 @@ export default function ThankYouPage() {
           items: (serverOrder.order_items || []).map((it: any) => ({
             name: it.shade_type || "Custom Roller Shade",
             fabric: it.fabric_name || "",
-            dimensions: `${it.width || 0}${it.width_fraction && it.width_fraction !== "0" ? " " + it.width_fraction : ""}\" x ${it.height || 0}${it.height_fraction && it.height_fraction !== "0" ? " " + it.height_fraction : ""}\"`,
+            dimensions: it.dimensions_text || `${it.width || 0}${it.width_fraction && it.width_fraction !== "0" ? " " + it.width_fraction : ""}\" x ${it.height || 0}${it.height_fraction && it.height_fraction !== "0" ? " " + it.height_fraction : ""}\"`,
             mount: it.mount_type || "",
             control: it.control_type || "",
             qty: it.quantity || 1,

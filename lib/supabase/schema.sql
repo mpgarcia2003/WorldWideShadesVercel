@@ -97,7 +97,7 @@ CREATE TABLE IF NOT EXISTS order_items (
   width_fraction TEXT,
   height NUMERIC(6,2),
   height_fraction TEXT,
-  custom_dims JSONB,                        -- specialty shapes
+  custom_dims JSONB,                        -- specialty shapes (whole-inch values per dimension key)
   mount_type TEXT,
   control_type TEXT,
   motor_power TEXT,                         -- 'Rechargeable', 'Hardwired'
@@ -115,7 +115,9 @@ CREATE TABLE IF NOT EXISTS order_items (
   visualizer_image TEXT,                    -- base64 or Cloudinary URL
   created_at TIMESTAMPTZ DEFAULT now(),
   cassette_fabric_insert BOOLEAN DEFAULT false,  -- ADDED 2026-05-09
-  freight_shipping BOOLEAN DEFAULT false         -- ADDED 2026-05-09 (per-item oversize flag)
+  freight_shipping BOOLEAN DEFAULT false,        -- ADDED 2026-05-09 (per-item oversize flag)
+  custom_fracs JSONB,                            -- ADDED 2026-06-03 (specialty shapes: fraction string per dimension key, mirrors custom_dims)
+  dimensions_text TEXT                           -- ADDED 2026-06-03 (denormalized fully-labeled measurement summary for emails/confirmation)
 );
 
 

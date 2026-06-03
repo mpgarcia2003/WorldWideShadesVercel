@@ -263,7 +263,7 @@ function StripePaymentForm({
           items: (orderData.items || []).map((item: any) => ({
             name: item.shade_type || "Custom Roller Shade",
             fabric: item.fabric_name || "",
-            dimensions: `${item.width || 0}${item.width_fraction && item.width_fraction !== "0" ? " " + item.width_fraction : ""}\" x ${item.height || 0}${item.height_fraction && item.height_fraction !== "0" ? " " + item.height_fraction : ""}\"`,
+            dimensions: item.dimensions_text || `${item.width || 0}${item.width_fraction && item.width_fraction !== "0" ? " " + item.width_fraction : ""}\" x ${item.height || 0}${item.height_fraction && item.height_fraction !== "0" ? " " + item.height_fraction : ""}\"`,
             mount: item.mount_type || "",
             control: item.control_type || "",
             qty: item.quantity || 1,
@@ -1027,6 +1027,10 @@ export default function CheckoutPage() {
                     height: item.config.height,
                     height_fraction: item.config.heightFraction || '0',
                     custom_dims: item.config.customDims || null,
+                    custom_fracs: item.config.customFracs || null,
+                    // Pre-built, fully-labeled measurement summary (handles fractions + specialty
+                    // shape labels). Reuses getDimDisplay so the email/DB never re-derive labels.
+                    dimensions_text: getDimDisplay(item),
                     mount_type: item.config.mountType || 'Inside Mount',
                     control_type: item.config.controlType || 'Manual',
                     motor_power: item.config.motorPower || null,
