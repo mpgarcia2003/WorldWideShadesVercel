@@ -6,6 +6,7 @@ import { Elements, PaymentElement, useStripe, useElements } from "@stripe/react-
 import { SHAPE_CONFIGS, VALANCE_OPTIONS, SIDE_CHANNEL_OPTIONS, isSaleActive, SALE_CONFIG, getFabricUrl } from "../../constants";
 import type { CartItem, ShapeType } from "../../types";
 import { trackBeginCheckout, trackAddPaymentInfo, trackPurchase, trackPhoneClick, buildGTMItem } from "../../lib/gtm/events";
+import { getDeliveryEstimate, deliveryLabel } from "../../lib/delivery";
 
 const stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY!);
 
@@ -55,13 +56,9 @@ function getDimDisplay(item: CartItem) {
   return "—";
 }
 
-function getEstimatedDelivery() {
-  const d = new Date();
-  d.setDate(d.getDate() + 7);
-  const end = new Date(d);
-  end.setDate(end.getDate() + 4);
-  const opts: Intl.DateTimeFormatOptions = { month: "short", day: "numeric" };
-  return `${d.toLocaleDateString("en-US", opts)} – ${end.toLocaleDateString("en-US", opts)}, ${end.getFullYear()}`;
+function getEstimatedDelivery(isSpecialty: boolean = false) {
+  // Shape-aware, centralized in lib/delivery.ts. Standard → 7–10 business days; specialty → ~4 weeks.
+  return getDeliveryEstimate(isSpecialty);
 }
 
 // ---------------------------------------------------------------------------
@@ -260,6 +257,7 @@ function StripePaymentForm({
           order_number: initOrderNumber,
           email: orderData.email,
           date: new Date().toLocaleDateString("en-US", { month: "long", day: "numeric", year: "numeric" }),
+          estimated_delivery: orderData.estimated_delivery,
           items: (orderData.items || []).map((item: any) => ({
             name: item.shade_type || "Custom Roller Shade",
             fabric: item.fabric_name || "",
@@ -594,7 +592,7 @@ function OrderSummary({
           </p>
           <p style={{ display: "flex", alignItems: "center", gap: "0.375rem", marginBottom: "0.4rem" }}>
             <span>📦</span>
-            <span>Ships in ~7 business days via FedEx</span>
+            <span>Ships in {deliveryLabel(cart.some((i) => i.config.shape && i.config.shape !== "Standard"))} via FedEx</span>
           </p>
           <p style={{ display: "flex", alignItems: "center", gap: "0.375rem" }}>
             <span>📞</span>
@@ -605,7 +603,7 @@ function OrderSummary({
         {/* Delivery estimate */}
         <div style={{ marginTop: "1rem", padding: "0.75rem", backgroundColor: "#f0fdf4", border: "1px solid #bbf7d0", borderRadius: "0.5rem", fontSize: "0.8125rem" }}>
           <p style={{ fontWeight: 700, color: "#15803d", marginBottom: "0.2rem" }}>
-            📅 Estimated delivery: {getEstimatedDelivery()}
+            📅 Estimated delivery: {getEstimatedDelivery(cart.some((i) => i.config.shape && i.config.shape !== "Standard"))}
           </p>
         </div>
       </div>
@@ -1016,7 +1014,7 @@ export default function CheckoutPage() {
                   shipping_city: city,
                   shipping_state: state,
                   shipping_zip: zip,
-                  estimated_delivery: getEstimatedDelivery(),
+                  estimated_delivery: getEstimatedDelivery(cart.some((i) => i.config.shape && i.config.shape !== "Standard")),
                   items: cart.map((item) => ({
                     shade_type: `Custom ${item.config.shadeType || 'Roller'} Shade`,
                     shape: item.config.shape || 'Standard',

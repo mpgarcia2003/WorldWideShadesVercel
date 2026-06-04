@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react"
 import { trackPurchase } from "@/lib/gtm/events"
+import { getDeliveryEstimate, hasSpecialtyShape } from "@/lib/delivery"
 import {
   CheckCircle,
   Factory,
@@ -45,16 +46,13 @@ function loadOrder() {
     const raw = localStorage.getItem('wws_last_order');
     if (!raw) return defaultOrder;
     const data = JSON.parse(raw);
-    const deliveryStart = new Date();
-    deliveryStart.setDate(deliveryStart.getDate() + 7);
-    const deliveryEnd = new Date(deliveryStart);
-    deliveryEnd.setDate(deliveryEnd.getDate() + 4);
-    const opts: Intl.DateTimeFormatOptions = { month: 'long', day: 'numeric' };
+    const estimatedDelivery =
+      data.estimated_delivery || getDeliveryEstimate(hasSpecialtyShape(data.items || []));
     return {
       number: data.order_number || defaultOrder.number,
       email: data.email || defaultOrder.email,
       date: data.date || defaultOrder.date,
-      estimatedDelivery: `${deliveryStart.toLocaleDateString('en-US', opts)}–${deliveryEnd.toLocaleDateString('en-US', opts)}, ${deliveryEnd.getFullYear()}`,
+      estimatedDelivery,
       items: data.items || [],
       subtotal: data.subtotal || 0,
       motorized: 0,
@@ -83,7 +81,8 @@ const confettiPieces = Array.from({ length: CONFETTI_COUNT }).map((_, i) => ({
 }))
 
 // ─── TIMELINE STEPS ────────────────────────────────────────────────────────────
-const timelineSteps = [
+function buildTimelineSteps(estimatedDelivery: string) {
+  return [
   {
     number: 1,
     icon: CheckCircle,
@@ -114,9 +113,10 @@ const timelineSteps = [
     status: "UPCOMING" as const,
     title: "Delivered",
     description: "Arrives at your door. 15-minute install. Hardware included.",
-    timeframe: `${new Date(Date.now() + 6*86400000).toLocaleDateString('en-US', { month: 'long', day: 'numeric' })}–${new Date(Date.now() + 10*86400000).toLocaleDateString('en-US', { month: 'long', day: 'numeric' })}`,
+    timeframe: estimatedDelivery,
   },
-]
+  ];
+}
 
 // ─── ROOM CARDS ────────────────────────────────────────────────────────────────
 const roomCards = [
@@ -343,18 +343,13 @@ export default function ThankYouPage() {
 
         // Finalized! Replace the local cached data with authoritative server data.
         setServerStatus("finalized");
-        const deliveryStart = new Date();
-        deliveryStart.setDate(deliveryStart.getDate() + 7);
-        const deliveryEnd = new Date(deliveryStart);
-        deliveryEnd.setDate(deliveryEnd.getDate() + 4);
-        const opts: Intl.DateTimeFormatOptions = { month: "long", day: "numeric" };
         setOrder({
           number: serverOrder.order_number,
           email: serverOrder.email,
           date: new Date(serverOrder.created_at).toLocaleDateString("en-US", { month: "long", day: "numeric", year: "numeric" }),
           estimatedDelivery:
             serverOrder.estimated_delivery ||
-            `${deliveryStart.toLocaleDateString("en-US", opts)}–${deliveryEnd.toLocaleDateString("en-US", opts)}, ${deliveryEnd.getFullYear()}`,
+            getDeliveryEstimate(hasSpecialtyShape(serverOrder.order_items || [])),
           items: (serverOrder.order_items || []).map((it: any) => ({
             name: it.shade_type || "Custom Roller Shade",
             fabric: it.fabric_name || "",
@@ -420,6 +415,8 @@ export default function ThankYouPage() {
   }
 
   const pad = (n: number) => String(n).padStart(2, "0")
+
+  const timelineSteps = buildTimelineSteps(order.estimatedDelivery)
 
   return (
     <>
@@ -609,7 +606,7 @@ export default function ThankYouPage() {
               <Truck className="w-4 h-4 text-gold" />
               <span>
                 <span className="text-warm-gray">Estimated Delivery: </span>
-                <span className="font-semibold">April 14–18</span>
+                <span className="font-semibold">{order.estimatedDelivery}</span>
               </span>
             </div>
             <div className="inline-flex items-center gap-2 bg-white/10 border border-white/20 rounded-sm px-5 py-3 font-sans text-sm text-white">

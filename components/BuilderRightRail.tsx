@@ -17,6 +17,7 @@
 import React from 'react';
 import { Phone, Truck, ShieldCheck, Award, Calendar, ChevronRight } from 'lucide-react';
 import { getGuideForStep } from '../lib/builder-step-guides';
+import { deliveryLabel } from '../lib/delivery';
 
 interface BuilderRightRailProps {
   openStep: number | null;
@@ -24,6 +25,7 @@ interface BuilderRightRailProps {
   originalPrice: number;
   saleActive: boolean;
   deliveryDate: string;
+  isSpecialty?: boolean;
 }
 
 const BuilderRightRail: React.FC<BuilderRightRailProps> = ({
@@ -32,6 +34,7 @@ const BuilderRightRail: React.FC<BuilderRightRailProps> = ({
   originalPrice,
   saleActive,
   deliveryDate,
+  isSpecialty = false,
 }) => {
   const guide = getGuideForStep(openStep);
   const Icon = guide.icon;
@@ -118,7 +121,7 @@ const BuilderRightRail: React.FC<BuilderRightRailProps> = ({
             </div>
             <div className="flex items-center gap-2.5">
               <Calendar size={13} className="text-[#c8a165] shrink-0" strokeWidth={1.5} />
-              <span className="text-[11px] text-[#555] font-medium">Ships in 5–7 business days</span>
+              <span className="text-[11px] text-[#555] font-medium">Ships in {deliveryLabel(isSpecialty)}</span>
             </div>
             <div className="flex items-center gap-2.5">
               <Award size={13} className="text-[#c8a165] shrink-0" strokeWidth={1.5} />

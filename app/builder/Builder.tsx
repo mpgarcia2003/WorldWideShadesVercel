@@ -1,16 +1,9 @@
 import React, { useState, useEffect, useMemo, useRef } from 'react';
 import { ShoppingCart, Ruler, FileText, Hash, Truck, ArrowRight, ArrowLeft, Palette, Wrench, Layers, Package, PenTool, ChevronRight, X, Mail, Check, Phone } from 'lucide-react';
 
-const getEstimatedDelivery = () => {
-  const d = new Date();
-  let businessDays = 0;
-  while (businessDays < 7) {
-    d.setDate(d.getDate() + 1);
-    const day = d.getDay();
-    if (day !== 0 && day !== 6) businessDays++;
-  }
-  return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
-};
+// Delivery estimate is shape-aware and centralized in lib/delivery.ts (single
+// source of truth). Standard → 7–10 business days; specialty → ~4 weeks.
+const getEstimatedDelivery = (isSpecialty: boolean = false) => getArrivesBy(isSpecialty);
 import Visualizer from '@/components/Visualizer';
 import Stepper from '@/components/Stepper';
 import StickyBottomBar from '@/components/StickyBottomBar';
@@ -18,6 +11,7 @@ import BuilderRightRail from '@/components/BuilderRightRail';
 import MobileStepGuide from '@/components/MobileStepGuide';
 import { ShadeConfig, Fabric, WindowSelection, CartItem, RoomAnalysis, ShapeType } from '@/types';
 import { DEFAULT_ROOM_IMAGE, getGridPrice, SHAPE_CONFIGS, VALANCE_OPTIONS, SIDE_CHANNEL_OPTIONS, STEPS, getFabricUrl, isSaleActive, getSalePrice, getSaleShadePrice, getSaleAccessoryPrice, SALE_CONFIG, MOTOR_PRICES, applyMarkup, FREIGHT_CHARGE, FREIGHT_WIDTH_THRESHOLD } from '@/constants';
+import { getArrivesBy, deliveryLabel } from '@/lib/delivery';
 import { getDynamicFabrics, saveSwatchRequest, saveQuoteConfig, loadQuoteConfig } from '@/utils/storage';
 import { notifyAdminSwatchRequest, notifyAdminExitIntent, sendCustomerQuoteEmail } from '@/utils/email';
 import { useLanguage } from '@/LanguageContext';
@@ -1190,10 +1184,10 @@ const Builder: React.FC<BuilderProps> = ({ addToCart, addToSwatches, swatches })
           <div className="flex flex-col items-center gap-2 mb-4 mt-1">
             <div className="flex items-center justify-center gap-4 flex-wrap">
               <span className="text-[11px] text-[#666] flex items-center gap-1">
-                <span className="text-amber-500">★</span> 4.8 from 2,000+ customers
+                <span className="text-amber-500">★</span> 4.9 from 500+ customers
               </span>
               <span className="text-[11px] text-[#666] flex items-center gap-1">
-                <Truck size={11} className="text-[#888]" /> Delivered in 5–7 days
+                <Truck size={11} className="text-[#888]" /> Delivered in {deliveryLabel(false)}
               </span>
               <span className="text-[11px] text-[#666] flex items-center gap-1">
                 <Check size={11} className="text-green-600" /> Perfect fit guarantee
@@ -1241,7 +1235,7 @@ const Builder: React.FC<BuilderProps> = ({ addToCart, addToSwatches, swatches })
           <div className="flex justify-center items-center gap-12">
             {[
               { label: 'Factory Direct', Icon: Package },
-              { label: '7-Day Shipping', Icon: Truck },
+              { label: '7–10 Day Shipping', Icon: Truck },
               { label: 'Any Shape', Icon: PenTool },
             ].map(({ label, Icon }) => (
               <div key={label} className="flex flex-col items-center gap-2">
@@ -1389,7 +1383,7 @@ const Builder: React.FC<BuilderProps> = ({ addToCart, addToSwatches, swatches })
                   )}
                 </div>
                 <div className="text-[8px] font-medium text-[#2d8a4e] flex items-center gap-0.5">
-                  <Truck size={9} /> Arrives {getEstimatedDelivery()}
+                  <Truck size={9} /> Arrives {getEstimatedDelivery(config.shape !== 'Standard')}
                 </div>
               </div>
             )}
@@ -1469,7 +1463,7 @@ const Builder: React.FC<BuilderProps> = ({ addToCart, addToSwatches, swatches })
             <StickyBottomBar
               totalPrice={priceBreakdown.total}
               originalPrice={priceBreakdown.originalTotal}
-              deliveryDate={getEstimatedDelivery()}
+              deliveryDate={getEstimatedDelivery(config.shape !== 'Standard')}
               currentStepIndex={openStep}
               isStepValid={(() => {
                 if (openStep === null) return allStepsComplete && priceBreakdown.total > 0;
@@ -1510,7 +1504,8 @@ const Builder: React.FC<BuilderProps> = ({ addToCart, addToSwatches, swatches })
             totalPrice={priceBreakdown.total}
             originalPrice={priceBreakdown.originalTotal}
             saleActive={priceBreakdown.saleActive}
-            deliveryDate={getEstimatedDelivery()}
+            deliveryDate={getEstimatedDelivery(config.shape !== 'Standard')}
+            isSpecialty={config.shape !== 'Standard'}
           />
       </div>
 

@@ -12,16 +12,25 @@ import {
   Phone,
 } from "lucide-react"
 import { SITE } from "@/lib/constants"
+import { SALE_CONFIG, getPriceFromTable, getSalePrice, MOTOR_PRICES } from "@/constants"
+import { DELIVERY_LABEL_STANDARD } from "@/lib/delivery"
 
 // Canonical site URL — emits www, not apex. Previously these URLs were
 // hardcoded as https://worldwideshades.com which 307-redirected to www,
 // generating "Page with redirect" entries in GSC and inconsistent canonicals.
 const SITE_URL = `https://${SITE.domain}`
 
+// Starting prices are derived from the live pricing engine (cheapest fabric
+// group at the 36x36 minimum, current sale applied) so marketing copy never
+// drifts from what the builder actually charges.
+const STANDARD_FROM = Math.round(getSalePrice(getPriceFromTable("B", 36, 36, false)))
+const SPECIALTY_FROM = Math.round(getSalePrice(getPriceFromTable("", 36, 36, true)))
+const MOTOR_FROM = MOTOR_PRICES.base.original
+
 export const metadata: Metadata = {
   title: "Custom Roller Shades | AI-Powered Shade Builder",
   description:
-    "Design custom roller shades with our AI-powered builder. 700+ premium fabrics, blackout & light filtering, specialty shapes. Factory-direct from $153. Free shipping. Made in USA.",
+    "Design custom roller shades with our AI-powered builder. 700+ premium fabrics, blackout & light filtering, specialty shapes. Factory-direct from $" + STANDARD_FROM + ". Free shipping. Made in USA.",
   openGraph: {
     title: "Custom Roller Shades | World Wide Shades",
     description:
@@ -71,15 +80,15 @@ const jsonLd = {
       "@type": "Product",
       name: "Custom Roller Shades",
       description:
-        "Custom roller shades built to your exact windows. 700+ premium fabrics, blackout & light filtering, specialty shapes. Factory-direct pricing. Made in USA, ships in 7 days.",
+        `Custom roller shades built to your exact windows. 700+ premium fabrics, blackout & light filtering, specialty shapes. Factory-direct pricing. Made in USA. Standard shades ship in about ${DELIVERY_LABEL_STANDARD}; specialty shapes in about 4 weeks.`,
       brand: {
         "@type": "Brand",
         name: "World Wide Shades",
       },
       offers: {
         "@type": "AggregateOffer",
-        lowPrice: "153",
-        highPrice: "1950",
+        lowPrice: String(STANDARD_FROM),
+        highPrice: String(SPECIALTY_FROM),
         priceCurrency: "USD",
         availability: "https://schema.org/InStock",
         offerCount: "200",
@@ -116,7 +125,7 @@ const jsonLd = {
           name: "How much do custom roller shades cost?",
           acceptedAnswer: {
             "@type": "Answer",
-            text: "Standard custom roller shades start from $153. Specialty shape shades (triangle, trapezoid, hexagon, etc.) start from $1,950. Motorized upgrades start from an additional $250. All prices are factory-direct with no showroom markup, and include free shipping and a 100% Fit Guarantee.",
+            text: "Standard custom roller shades start from $" + STANDARD_FROM + ". Specialty shape shades (triangle, trapezoid, hexagon, etc.) start from $" + SPECIALTY_FROM.toLocaleString() + ". Motorized upgrades start from an additional $" + MOTOR_FROM + ". All prices are factory-direct with no showroom markup, and include free shipping and a 100% Fit Guarantee.",
           },
         },
         {
@@ -124,7 +133,7 @@ const jsonLd = {
           name: "How long does shipping take?",
           acceptedAnswer: {
             "@type": "Answer",
-            text: "We ship in approximately 7 business days from order confirmation via FedEx. Most traditional custom shade companies take 3–4 weeks. We've streamlined our manufacturing process to deliver faster without compromising quality.",
+            text: `We ship standard custom shades in about ${DELIVERY_LABEL_STANDARD} from order confirmation via FedEx. Specialty shape shades take approximately 4 weeks. Most traditional custom shade companies take 3–4 weeks even for standard sizes — we've streamlined manufacturing to deliver faster without compromising quality.`,
           },
         },
         {
@@ -140,7 +149,7 @@ const jsonLd = {
           name: "Can you make shades for triangle or trapezoid windows?",
           acceptedAnswer: {
             "@type": "Answer",
-            text: "Yes — specialty shapes are one of our core competencies. We manufacture custom shades for triangle, trapezoid, hexagon, pentagon, arch, and skylight windows using proprietary cutting equipment. These are the windows most companies turn away. Specialty shape shades start from $1,950.",
+            text: "Yes — specialty shapes are one of our core competencies. We manufacture custom shades for triangle, trapezoid, hexagon, pentagon, arch, and skylight windows using proprietary cutting equipment. These are the windows most companies turn away. Specialty shape shades start from $" + SPECIALTY_FROM.toLocaleString() + ".",
           },
         },
         {
@@ -218,7 +227,7 @@ export default function HomepagePage() {
         <div className="relative z-10 container-site section-padding flex flex-col items-center gap-6 px-4">
           {/* Badge */}
           <div className="inline-flex items-center gap-2 bg-gold/20 border border-gold/40 rounded-full px-5 py-1.5 text-xs font-sans font-bold tracking-widest text-gold uppercase">
-            Up to 40% OFF&nbsp;·&nbsp;LIMITED TIME
+            Up to {SALE_CONFIG.maxDiscount}% OFF&nbsp;·&nbsp;LIMITED TIME
           </div>
 
           {/* H1 */}
@@ -277,7 +286,7 @@ export default function HomepagePage() {
           <div className="grid grid-cols-2 md:grid-cols-5 divide-x divide-white/10">
             {[
               { icon: <Palette className="w-4 h-4 text-gold" />, label: "700+ Fabrics" },
-              { icon: <Truck className="w-4 h-4 text-gold" />, label: "Ships in 7 Days" },
+              { icon: <Truck className="w-4 h-4 text-gold" />, label: "Ships in 7–10 Days" },
               { icon: <Check className="w-4 h-4 text-gold" />, label: "Free Shipping" },
               { icon: <Factory className="w-4 h-4 text-gold" />, label: "Made in USA" },
               { icon: <CheckCircle className="w-4 h-4 text-gold" />, label: "100% Satisfaction" },
@@ -311,7 +320,7 @@ export default function HomepagePage() {
           <div className="grid md:grid-cols-3 gap-6">
             {[
               {
-                badge: "40% Off",
+                badge: `${SALE_CONFIG.maxDiscount}% Off`,
                 badgeColor: "bg-gold text-dark",
                 image: "https://images.unsplash.com/photo-1651336259530-362bce65fffe?auto=format&fit=crop&w=800&q=80",
                 imageAlt: "Dark bedroom with blackout roller shades",
@@ -321,7 +330,7 @@ export default function HomepagePage() {
                 href: "/blackout-roller-shades",
               },
               {
-                badge: "40% Off",
+                badge: `${SALE_CONFIG.maxDiscount}% Off`,
                 badgeColor: "bg-gold text-dark",
                 image: "https://ecosmartshades.com/wp-content/uploads/Roller-White-Living-Room-800.jpg",
                 imageAlt: "Bright living room with light filtering roller shades",
@@ -331,7 +340,7 @@ export default function HomepagePage() {
                 href: "/light-filtering-shades",
               },
               {
-                badge: "From $1,950",
+                badge: "From $" + SPECIALTY_FROM.toLocaleString(),
                 badgeColor: "bg-dark text-white",
                 image: "https://sunset.com/wp-content/uploads/living-room-puget-sound-a-frame-artisan-group-pc-poppi-photography.jpg",
                 imageAlt: "A-frame triangle window with specialty shade",
@@ -529,7 +538,7 @@ export default function HomepagePage() {
                 icon: <CheckCircle className="w-6 h-6 text-gold" />,
                 step: "04",
                 heading: "Receive & Install",
-                body: "Ships in 7 days via FedEx. 4 screws, 15 minutes. Hardware included.",
+                body: `Ships in ${DELIVERY_LABEL_STANDARD} via FedEx. 4 screws, 15 minutes. Hardware included.`,
               },
             ].map((s) => (
               <div key={s.step} className="flex flex-col gap-3">
@@ -578,7 +587,7 @@ export default function HomepagePage() {
               {
                 icon: <Factory className="w-7 h-7 text-gold" />,
                 heading: "Factory-Direct Pricing",
-                body: "No middlemen, no showroom markup. Premium quality at a fair price. Save up to 40% vs retail.",
+                body: "No middlemen, no showroom markup. Premium quality at a fair price. Save up to " + SALE_CONFIG.maxDiscount + "% vs retail.",
               },
               {
                 icon: <Palette className="w-7 h-7 text-gold" />,
@@ -593,7 +602,7 @@ export default function HomepagePage() {
               {
                 icon: <Truck className="w-7 h-7 text-gold" />,
                 heading: "Free Shipping, Always",
-                body: "Custom-cut, quality-checked, delivered to your door via FedEx in ~7 days.",
+                body: `Custom-cut, quality-checked, delivered to your door via FedEx in ${DELIVERY_LABEL_STANDARD}.`,
               },
             ].map((pillar) => (
               <div key={pillar.heading} className="flex flex-col gap-4">
@@ -616,7 +625,7 @@ export default function HomepagePage() {
               Factory-Direct Pricing. No Surprises.
             </h2>
             <p className="font-sans text-warm-gray mt-3 max-w-xl mx-auto">
-              Save up to 40% vs. retail stores. Every shade custom-made.
+              Save up to {SALE_CONFIG.maxDiscount}% vs. retail stores. Every shade custom-made.
             </p>
           </div>
 
@@ -624,7 +633,7 @@ export default function HomepagePage() {
             {[
               {
                 tier: "Standard Roller Shades",
-                price: "From $153",
+                price: "From $" + STANDARD_FROM,
                 popular: false,
                 desc: "Blackout, light filtering, solar",
                 features: [
@@ -637,7 +646,7 @@ export default function HomepagePage() {
               },
               {
                 tier: "Specialty Shapes",
-                price: "From $1,950",
+                price: "From $" + SPECIALTY_FROM.toLocaleString(),
                 popular: true,
                 desc: "Triangle, trapezoid, hexagon, pentagon",
                 features: [
@@ -650,7 +659,7 @@ export default function HomepagePage() {
               },
               {
                 tier: "Motorized Upgrade",
-                price: "From +$250",
+                price: "From +$" + MOTOR_FROM,
                 popular: false,
                 desc: "Alexa, Google, HomeKit compatible",
                 features: [
@@ -857,11 +866,11 @@ export default function HomepagePage() {
               },
               {
                 q: "How much do custom roller shades cost?",
-                a: "Standard custom roller shades start from $153. Specialty shape shades (triangle, trapezoid, hexagon, etc.) start from $1,950. Motorized upgrades start from an additional $250. All prices include free shipping, custom sizing, hardware, and our 100% Fit Guarantee. We're factory-direct — no showroom markup.",
+                a: "Standard custom roller shades start from $" + STANDARD_FROM + ". Specialty shape shades (triangle, trapezoid, hexagon, etc.) start from $" + SPECIALTY_FROM.toLocaleString() + ". Motorized upgrades start from an additional $" + MOTOR_FROM + ". All prices include free shipping, custom sizing, hardware, and our 100% Fit Guarantee. We're factory-direct — no showroom markup.",
               },
               {
                 q: "How long does shipping take?",
-                a: "We ship in approximately 7 business days from order confirmation via FedEx. Most traditional custom shade companies take 3–4 weeks. We've streamlined our manufacturing process to deliver faster without cutting corners on quality. You'll receive a tracking number and delivery estimate.",
+                a: `We ship standard custom shades in about ${DELIVERY_LABEL_STANDARD} from order confirmation via FedEx. Specialty shape shades take approximately 4 weeks. Most traditional custom shade companies take 3–4 weeks even for standard sizes. You'll receive a tracking number and delivery estimate.`,
               },
               {
                 q: "What if my shades don't fit?",
@@ -926,7 +935,7 @@ export default function HomepagePage() {
             <span className="gold-gradient-text">Better.</span>
           </h2>
           <p className="font-sans text-warm-gray text-lg max-w-lg">
-            Custom shades. Designed by you. Built by us. Delivered in 7 days.
+            Custom shades. Designed by you. Built by us. Delivered in {DELIVERY_LABEL_STANDARD}.
           </p>
 
           <a
@@ -944,7 +953,7 @@ export default function HomepagePage() {
             </span>
             <span className="flex items-center gap-1.5">
               <Truck className="w-4 h-4 text-gold" />
-              ~7 Days
+              7–10 Days
             </span>
             <span className="flex items-center gap-1.5">
               <Check className="w-4 h-4 text-gold" />

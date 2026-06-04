@@ -2,6 +2,8 @@
 // data.ts — All editable content for the Blackout Sales Page
 // ============================================================
 
+import { SALE_CONFIG } from "@/constants";
+
 export const CTA_URLS = {
   builder: "/builder?type=blackout",
   swatches: "/swatches",
@@ -20,13 +22,13 @@ export const IMAGES = {
 
 // ── Hero ──
 export const HERO = {
-  eyebrow: "Custom Blackout Roller Shades · Made to Measure · Ships in ~7 Days",
+  eyebrow: "Custom Blackout Roller Shades · Made to Measure · Ships in 7–10 Business Days",
   h1: "Custom Blackout Roller Shades — Built to Your Exact Window",
-  subheadline: "100% light blocking. No gaps. No glow. Get instant pricing in minutes. Delivered in ~7 days.",
-  deliveryLine: "Delivered in ~7 days (not 3–4 weeks like showrooms)",
-  priceOriginal: "$290",
+  subheadline: "100% light blocking. No gaps. No glow. Get instant pricing in minutes. Delivered in 7–10 business days.",
+  deliveryLine: "Delivered in 7–10 business days (not 3–4 weeks like showrooms)",
+  priceOriginal: "$242",
   priceNow: "From $145",
-  saleBadge: "Spring Sale — Up to 50% Off — Ends April 30",
+  saleBadge: `Sale — Up to ${SALE_CONFIG.maxDiscount}% Off`,
   primaryCTA: "Get Your Exact Price →",
   secondaryCTA: "Call (844) 674-2716",
   guaranteeLine: "100% Fit Guarantee — Remade free if it doesn't fit",
@@ -44,13 +46,13 @@ export const STEPS = [
   { number: "01", title: "Enter Your Window Size", description: "Width and height — we build to ⅛\" precision" },
   { number: "02", title: "Choose Your Fabric", description: "200+ premium blackout options. Free swatches available." },
   { number: "03", title: "See Your Exact Price", description: "Instant pricing. No hidden fees. No showroom quotes." },
-  { number: "04", title: "Ships in ~7 Business Days", description: "Built to order in USA. Free FedEx shipping to your door." },
+  { number: "04", title: "Ships in 7–10 Business Days", description: "Built to order in USA. Free FedEx shipping to your door." },
 ];
 
 // ── Pricing ──
 export const PRICING = {
   heading: "Real Pricing for Custom Blackout Roller Shades",
-  subheading: "Factory-direct. No middleman markup. No commissioned salespeople. Up to 50% off this spring.",
+  subheading: `Factory-direct. No middleman markup. No commissioned salespeople. Up to ${SALE_CONFIG.maxDiscount}% off.`,
   cta: "Get Your Exact Price →",
   cards: [
     {
@@ -169,7 +171,7 @@ export const SIDE_CHANNELS = {
 // ── Urgency ──
 export const URGENCY = {
   heading: "Limited Daily Production — Order Today, Ships This Week",
-  body: "Every shade is built to your exact specs in our USA facility. Daily production capacity is limited. Orders placed today ship in approximately 5-7 business days.",
+  body: "Every shade is built to your exact specs in our USA facility. Daily production capacity is limited. Orders placed today ship in approximately 7–10 business days.",
   note: "Once today's slots fill, the next batch ships tomorrow.",
   cta: "Secure Your Production Slot →",
 };
@@ -179,8 +181,8 @@ export const COMPARISON = {
   heading: "Why People Choose Us Over Showrooms & Amazon",
   rows: [
     { feature: "Custom fit", ours: "Built to your exact window — to ⅛\"", theirs: "Stock sizes with gaps" },
-    { feature: "Pricing", ours: "From $145 (50% off)", theirs: "$400–$800 with markup" },
-    { feature: "Delivery", ours: "~7 days, FedEx", theirs: "3-4 weeks or next-day (stock)" },
+    { feature: "Pricing", ours: `From $145 (${SALE_CONFIG.maxDiscount}% off)`, theirs: "$400–$800 with markup" },
+    { feature: "Delivery", ours: "7–10 business days, FedEx", theirs: "3-4 weeks or next-day (stock)" },
     { feature: "Guarantee", ours: "100% Fit — remade free", theirs: "Return hassles" },
     { feature: "AI Preview", ours: "See it in your room first", theirs: "Guess and hope" },
     { feature: "Fabrics", ours: "200+ premium blackout", theirs: "5-30 options" },
@@ -199,10 +201,10 @@ export const MOTORIZATION = {
 
 // ── FAQs ──
 export const FAQS = [
-  { question: "How much do custom blackout roller shades cost?", answer: "Most orders: $145–$300 with our Spring Sale (50% off). Large/panoramic: $200–$450. Motorized: add $250. Side channels: +$15/ft. All prices include free shipping and our 100% Fit Guarantee." },
+  { question: "How much do custom blackout roller shades cost?", answer: `Most orders: $145–$300 with our sale (${SALE_CONFIG.maxDiscount}% off). Large/panoramic: $200–$450. Motorized: add $250. Side channels: +$15/ft. All prices include free shipping and our 100% Fit Guarantee.` },
   { question: "How do I know it will fit my window?", answer: "100% Fit Guarantee. If it doesn't fit, we remake it free. No questions asked." },
   { question: "What's the difference between blackout and room darkening?", answer: "Room darkening blocks 85-95% of light. Our blackout fabrics block 100% — completely opaque. With side channels added, you get absolute zero light leakage." },
-  { question: "How fast do you ship?", answer: "Approximately 7 business days from order to your door. Made in USA, ships free via FedEx." },
+  { question: "How fast do you ship?", answer: "Approximately 7–10 business days from order to your door. Specialty shapes take about 4 weeks. Made in USA, ships free via FedEx." },
   { question: "Can I see what it looks like in my room first?", answer: "Yes. Our AI Room Visualizer lets you upload a photo of your window and preview your chosen fabric and color rendered in your actual room." },
   { question: "Do you offer fabric samples?", answer: "Yes. Order up to 10 free swatches delivered to your door." },
   { question: "Do light-colored blackout fabrics still block all light?", answer: "Yes. The blackout layer is a separate backing woven into the fabric. A white fabric blocks the same 100% of light as a dark charcoal." },
@@ -214,5 +216,5 @@ export const FINAL_CTA = {
   body: "Enter your window size and get your exact price instantly. No sales calls. No showroom appointments.",
   cta: "Start Your Order →",
   riskKiller: "100% Fit Guarantee — If it doesn't fit, we remake it free. No questions.",
-  trustItems: ["100% Fit Guarantee", "Free Shipping", "Made in USA", "~7 Day Delivery"],
+  trustItems: ["100% Fit Guarantee", "Free Shipping", "Made in USA", "7–10 Day Delivery"],
 };
