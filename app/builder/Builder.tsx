@@ -1474,7 +1474,21 @@ const Builder: React.FC<BuilderProps> = ({ addToCart, addToSwatches, swatches })
               isStepValid={(() => {
                 if (openStep === null) return allStepsComplete && priceBreakdown.total > 0;
                 if (openStep === 0) return !!config.material;
-                if (openStep === 1) return config.width > 0 && config.height > 0;
+                if (openStep === 1) {
+                  // Standard shades use width + height. Specialty shapes store their
+                  // measurements in config.customDims (and have no single "height"), so
+                  // require every input field defined for the shape to be filled.
+                  if (config.shape === 'Standard') return config.width > 0 && config.height > 0;
+                  const sc = SHAPE_CONFIGS[config.shape as ShapeType];
+                  if (!sc || !sc.inputs) return config.width > 0 && config.height > 0;
+                  const dims = (config.customDims || {}) as Record<string, number>;
+                  return sc.inputs.every((inp) => {
+                    const v = inp.key === 'width' ? (dims.width || config.width || 0)
+                            : inp.key === 'height' ? (dims.height || config.height || 0)
+                            : (dims[inp.key] || 0);
+                    return Number(v) > 0;
+                  });
+                }
                 if (openStep === STEPS.length - 1) return priceBreakdown.total > 0;
                 return true;
               })()}

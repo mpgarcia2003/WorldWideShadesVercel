@@ -276,10 +276,13 @@ export const getPriceFromTable = (
   const w = widthIdx === -1 ? 9 : Math.max(0, Math.min(widthIdx, 9));
   const h = heightIdx === -1 ? 9 : Math.max(0, Math.min(heightIdx, 9));
   
-  // Posted price = (cost + $50) × 2, where cost = table × 0.35
-  // Simplifies to: table × 0.70 + 100
-  // Then 50% off sale gives: table × 0.35 + 50 = cost + $50
-  return Math.round(table[h][w] * 0.70 + 100);
+  // Standard list/posted price formula: table × 0.70 + 100.
+  const base = Math.round(table[h][w] * 0.70 + 100);
+  // Specialty shapes (triangles, trapezoids, pentagons, etc.) are priced 60%
+  // higher than the standard formula (business decision 2026-06-04). The sale
+  // discount is unchanged, so the final customer price is exactly 1.6× the prior
+  // specialty price. Standard shades are unaffected.
+  return isSpecialty ? Math.round(base * 1.6) : base;
 };
 
 export const getGridPrice = (group: string, width: number, height: number, shape: ShapeType = 'Standard') => {
