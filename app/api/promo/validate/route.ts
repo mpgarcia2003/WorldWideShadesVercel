@@ -36,10 +36,13 @@ interface PromoCode {
 }
 
 const PROMO_CODES: PromoCode[] = [
-  { code: "COMEBACK10", type: "percent", value: 10, minOrder: 0, label: "10% Off — Welcome Back", active: true },
-  { code: "SHADE10",    type: "flat",    value: 50, minOrder: 100, label: "$50 Off", active: true },
-  { code: "SAVE15",     type: "percent", value: 15, minOrder: 300, label: "15% Off", active: true },
-  { code: "FIRST20",    type: "percent", value: 20, minOrder: 200, label: "20% Off — First Order", active: true, firstOrderOnly: true },
+  // All promo codes removed 2026-06-11 per request — none currently active.
+  // Any code a customer enters returns "Invalid promo code".
+  // To restore a code, uncomment its line below.
+  // { code: "COMEBACK10", type: "percent", value: 10, minOrder: 0, label: "10% Off — Welcome Back", active: true },
+  // { code: "SHADE10",    type: "flat",    value: 50, minOrder: 100, label: "$50 Off", active: true },
+  // { code: "SAVE15",     type: "percent", value: 15, minOrder: 300, label: "15% Off", active: true },
+  // { code: "FIRST20",    type: "percent", value: 20, minOrder: 200, label: "20% Off — First Order", active: true, firstOrderOnly: true },
 ];
 
 interface ValidateRequest {
