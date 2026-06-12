@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react"
 import { trackPurchase } from "@/lib/gtm/events"
 import { getDeliveryEstimate, hasSpecialtyShape } from "@/lib/delivery"
+import OrderReviewPrompt from "@/components/OrderReviewPrompt"
 import {
   CheckCircle,
   Factory,
@@ -632,6 +633,9 @@ export default function ThankYouPage() {
           </div>
         </div>
       </section>
+
+      {/* ─── ORDER REVIEW PROMPT (5★ → Google review) ─────────── */}
+      <OrderReviewPrompt />
 
       {/* ─── SECTION 2: PRODUCTION TIMELINE ───────────────────── */}
       <section className="section-padding bg-cream">
